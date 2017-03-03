@@ -3,7 +3,14 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """
 """
 
-from glod.metadata import ObjectReferenceField, StringField, DateField, DictFieldGroup, ObjectFieldGroupMixin
+from glod.metadata import (
+    ObjectReferenceField,
+    StringField,
+    DateField,
+    DecimalField,
+    DictFieldGroup,
+    ObjectFieldGroupMixin
+)
 
 
 class StatementItem(ObjectFieldGroupMixin):
@@ -14,9 +21,9 @@ class StatementItem(ObjectFieldGroupMixin):
             DateField('date', strfmt='%d/%m/%Y'),
             StringField('details'),
             StringField('currency'),
-            StringField('debit'),
-            StringField('credit'),
-            StringField('balance'),
+            DecimalField('debit'),
+            DecimalField('credit'),
+            DecimalField('balance'),
         )
     )
 

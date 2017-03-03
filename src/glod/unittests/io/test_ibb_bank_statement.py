@@ -3,6 +3,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """ 
 """
 
+from decimal import Decimal
 from io import StringIO
 from unittest import TestCase
 
@@ -36,9 +37,12 @@ class TestStatementLoader(TestCase):
 
         self.assertEqual(items[2]._details, 'JOSEPH BLOGGS')
         self.assertEqual(
-            set(['01638842', '17559040']),
+            {'01638842', '17559040'},
             set(stmt._account._account_no for stmt in items)
+        )
+        self.assertEqual(
+            Decimal('15.00'),
+            sum(stmt._credit for stmt in items if stmt._credit)
         )
 
     # TODO account not found
-    # TODO type conversions

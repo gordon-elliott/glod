@@ -5,7 +5,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from copy import deepcopy
 from datetime import datetime, date
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 
 
 class Field(object):
@@ -74,7 +74,7 @@ class FloatField(Field):
         if type(value) == datetime:
             return datetime.timestamp(value)
         elif type(value) == date:
-            return float(date.toordinal(value))
+            return datetime.timestamp(datetime(value.year, value.month, value.day))
         else:
             return super().type_cast(value)
 
@@ -82,6 +82,18 @@ class FloatField(Field):
 class DecimalField(Field):
     def __init__(self, name, description=None, validation=None):
         super().__init__(name, Decimal, description, validation)
+
+    def type_cast(self, value):
+        if type(value) == self._type:
+            return value
+        elif not value:
+            return None
+        else:
+            try:
+                return self._type(value)
+            except InvalidOperation as invop:
+                print(invop)
+                raise
 
 
 class DateTimeField(Field):
