@@ -22,7 +22,7 @@ def accounts_from_csv(account_csv):
     items = []
     for row in DictReader(account_csv):
         account_args = csv_to_constructor.cast_from(row)
-        items.append(Account(*account_args))
+        items.append(Account(**account_args))
 
     collection = AccountCollection(items)
     return collection

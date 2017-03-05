@@ -17,5 +17,6 @@ from glod.metadata.field_group import (
     TupleFieldGroup,
     prefix_name_with_underscore
 )
+from glod.metadata.args_field_group import ArgsFieldGroup
 from glod.metadata.mapping import Mapping
 from glod.metadata.object_field_group_mixin import ObjectFieldGroupMixin

@@ -10,6 +10,6 @@ class ObjectFieldGroupMixin(object):
             def __init__(self, fields):
                 super().__init__(fields, self.__class__)
 
-        internal = constructor.derive(prefix_name_with_underscore, SpecificObjectFieldGroup)
-        constructor_to_internal = Mapping(constructor, internal)
+        self.internal = constructor.derive(prefix_name_with_underscore, SpecificObjectFieldGroup)
+        constructor_to_internal = Mapping(constructor, self.internal)
         return constructor_to_internal

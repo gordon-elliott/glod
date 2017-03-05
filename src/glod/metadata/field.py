@@ -8,13 +8,21 @@ from datetime import datetime, date
 from decimal import Decimal, InvalidOperation
 
 
+class RequiredValueMissing(Exception):
+    pass
+
+
 class Field(object):
 
-    def __init__(self, name, datatype, description=None, validation=None):
+    def __init__(self, name, datatype, required=False, default=None, description=None, validation=None):
         self._name = name
         self._type = datatype
+        self._is_required = required
+        self._default = default
         self._description = description
         self._validation = validation
+
+        # TODO validate default
 
     def derive(self, transformation):
         target = deepcopy(self)
@@ -22,7 +30,7 @@ class Field(object):
         return target
 
     def type_cast(self, value):
-        if type(value) == self._type:
+        if value is None or type(value) == self._type:
             return value
         else:
             try:
@@ -31,17 +39,34 @@ class Field(object):
                 print(err)
                 raise
 
+    def is_filled(self, value):
+        return not self._is_required or value is not None
+
+    def use_default(self, value):
+        return self._default if (
+                value is None and
+                self._default is not None and
+                self._is_required
+        ) else value
+
+    def prepare_value(self, value):
+        value = self.type_cast(value)
+        value = self.use_default(value)
+        if not self.is_filled(value):
+            raise RequiredValueMissing()
+        return value
+
 
 class UnusedField(Field):
 
-    def __init__(self, name, description=None, validation=None):
-        super().__init__(name, str, description, validation)
+    def __init__(self, name, required=False, default=None, description=None, validation=None):
+        super().__init__(name, str, required=required, default=default, description=description, validation=validation)
 
 
 class ObjectReferenceField(Field):
 
-    def __init__(self, name, description=None, validation=None):
-        super().__init__(name, str, description, validation)
+    def __init__(self, name, required=False, default=None, description=None, validation=None):
+        super().__init__(name, str, required=required, default=default, description=description, validation=validation)
 
     def type_cast(self, value):
         return value
@@ -49,13 +74,13 @@ class ObjectReferenceField(Field):
 
 class StringField(Field):
 
-    def __init__(self, name, description=None, validation=None):
-        super().__init__(name, str, description, validation)
+    def __init__(self, name, required=False, default=None, description=None, validation=None):
+        super().__init__(name, str, required=required, default=default, description=description, validation=validation)
 
 
 class IntField(Field):
-    def __init__(self, name, description=None, validation=None):
-        super().__init__(name, int, description, validation)
+    def __init__(self, name, required=False, default=None, description=None, validation=None):
+        super().__init__(name, int, required=required, default=default, description=description, validation=validation)
 
     def type_cast(self, value):
         if type(value) == datetime:
@@ -67,8 +92,8 @@ class IntField(Field):
 
 
 class FloatField(Field):
-    def __init__(self, name, description=None, validation=None):
-        super().__init__(name, float, description, validation)
+    def __init__(self, name, required=False, default=None, description=None, validation=None):
+        super().__init__(name, float, required=required, default=default, description=description, validation=validation)
 
     def type_cast(self, value):
         if type(value) == datetime:
@@ -80,8 +105,8 @@ class FloatField(Field):
 
 
 class DecimalField(Field):
-    def __init__(self, name, description=None, validation=None):
-        super().__init__(name, Decimal, description, validation)
+    def __init__(self, name, required=False, default=None, description=None, validation=None):
+        super().__init__(name, Decimal, required=required, default=default, description=description, validation=validation)
 
     def type_cast(self, value):
         if type(value) == self._type:
@@ -95,10 +120,9 @@ class DecimalField(Field):
                 print(invop)
                 raise
 
-
 class DateTimeField(Field):
-    def __init__(self, name, description=None, validation=None, strfmt='%Y-%m-%d %H:%M:%S'):
-        super().__init__(name, datetime, description, validation)
+    def __init__(self, name, required=False, default=None, description=None, validation=None, strfmt='%Y-%m-%d %H:%M:%S'):
+        super().__init__(name, datetime, required=required, default=default, description=description, validation=validation)
         self._strfmt = strfmt
 
     def type_cast(self, value):
@@ -116,8 +140,8 @@ class DateTimeField(Field):
 
 
 class DateField(Field):
-    def __init__(self, name, description=None, validation=None, strfmt='%Y-%m-%d'):
-        super().__init__(name, date, description, validation)
+    def __init__(self, name, required=False, default=None, description=None, validation=None, strfmt='%Y-%m-%d'):
+        super().__init__(name, date, required=required, default=default, description=description, validation=validation)
         self._strfmt = strfmt
 
     def type_cast(self, value):

@@ -68,3 +68,26 @@ class TestFieldTypeCast(TestCase):
             date(2017, 11, 30),
             datefield.type_cast('30/11/2017')
         )
+
+class TestFieldRequired(TestCase):
+
+    def test_required(self):
+        field = StringField('fixture', required=True)
+        self.assertTrue(field.is_filled('valid'))
+        self.assertFalse(field.is_filled(None))
+
+    def test_not_required(self):
+        field = StringField('fixture', required=False)
+        self.assertTrue(field.is_filled('valid'))
+        self.assertTrue(field.is_filled(''))
+        self.assertTrue(field.is_filled(None))
+
+    def test_use_default_required(self):
+        field = DecimalField('fixture', required=True, default=Decimal('66.66'))
+        self.assertEqual(Decimal('0.99'), field.use_default(Decimal('0.99')))
+        self.assertEqual(Decimal('66.66'), field.use_default(None))
+
+    def test_use_default_not_required(self):
+        field = DecimalField('fixture', required=False, default=Decimal('66.66'))
+        self.assertEqual(Decimal('0.99'), field.use_default(Decimal('0.99')))
+        self.assertEqual(None, field.use_default(None))

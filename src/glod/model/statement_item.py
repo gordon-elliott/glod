@@ -8,14 +8,14 @@ from glod.metadata import (
     StringField,
     DateField,
     DecimalField,
-    DictFieldGroup,
+    ArgsFieldGroup,
     ObjectFieldGroupMixin
 )
 
 
 class StatementItem(ObjectFieldGroupMixin):
 
-    constructor = DictFieldGroup(
+    constructor = ArgsFieldGroup(
         (
             ObjectReferenceField('account'),
             DateField('date', strfmt='%d/%m/%Y'),
@@ -27,10 +27,10 @@ class StatementItem(ObjectFieldGroupMixin):
         )
     )
 
-    def __init__(self, **kwargs):
+    def __init__(self, *args, **kwargs):
         constructor_to_internal = self.map_constructor_to_internal(self.constructor)
 
-        constructor_to_internal.update_in_place(kwargs, self)
+        constructor_to_internal.update_in_place((args, kwargs), self)
 
         self._detail_override = None
         self._designated_balance = None

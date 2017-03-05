@@ -97,7 +97,7 @@ class MutableSequenceFieldGroup(FieldGroup):
         raise NotImplementedError
 
     def empty_instance(self):
-        raise NotImplementedError
+        return self._container_type()
 
 
 class ListFieldGroup(MutableSequenceFieldGroup):
@@ -117,12 +117,15 @@ class ListFieldGroup(MutableSequenceFieldGroup):
         return getitem(instance, key)
 
     def set_value(self, instance, field, value):
-        value = field.type_cast(value)
+        value = field.prepare_value(value)
         index, _ = self._get_field_index(field)
         return self._mutator(instance, index, value)
 
     def _mutator(self, instance, key, value):
         return setitem(instance, key, value)
+
+    def empty_instance(self):
+        return [None] * len(self)
 
 
 class DictFieldGroup(MutableSequenceFieldGroup):
@@ -140,7 +143,7 @@ class DictFieldGroup(MutableSequenceFieldGroup):
         return getitem(instance, key)
 
     def set_value(self, instance, field, value):
-        value = field.type_cast(value)
+        value = field.prepare_value(value)
         return self._mutator(instance, field._name, value)
 
     def _mutator(self, instance, key, value):
@@ -159,7 +162,7 @@ class ObjectFieldGroup(MutableSequenceFieldGroup):
         return getattr(instance, key)
 
     def set_value(self, instance, field, value):
-        value = field.type_cast(value)
+        value = field.prepare_value(value)
         return self._mutator(instance, field._name, value)
 
     def _mutator(self, instance, key, value):
