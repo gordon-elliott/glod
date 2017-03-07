@@ -69,6 +69,13 @@ class TestFieldTypeCast(TestCase):
             datefield.type_cast('30/11/2017')
         )
 
+    def test_date_to_string_with_format(self):
+        stringfield = StringField('fixture', strfmt='%d/%m/%Y')
+        self.assertEqual(
+            '30/03/2017',
+            stringfield.type_cast(date(2017, 3, 30))
+        )
+
 class TestFieldRequired(TestCase):
 
     def test_required(self):

@@ -123,3 +123,22 @@ class TestFieldList(TestCase):
             default_fixture,
             field_group.get_value(instance, field)
         )
+
+    def test_instances_differ_no_differences(self):
+
+        for _, field_group, constructor in field_group_fixtures():
+            instance = field_group.fill_instance_from_dict(INITIAL_VALUES)
+            other = field_group.fill_instance_from_dict(INITIAL_VALUES)
+            self.assertFalse(
+                field_group.instances_differ(instance, other)
+            )
+
+    def test_instances_differ_differences_exist(self):
+        modified = INITIAL_VALUES.copy()
+        modified['amount'] = Decimal('3.99')
+        for _, field_group, constructor in field_group_fixtures():
+            instance = field_group.fill_instance_from_dict(INITIAL_VALUES)
+            other = field_group.fill_instance_from_dict(modified)
+            self.assertTrue(
+                field_group.instances_differ(instance, other)
+            )

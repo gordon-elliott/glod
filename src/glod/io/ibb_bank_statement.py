@@ -5,7 +5,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from csv import reader
 
-from glod.metadata import StringField, UnusedField, ListFieldGroup, Mapping, prefix_name_with_underscore
+from glod.metadata import StringField, UnusedField, ListFieldGroup, Mapping
 
 statement_item_csv_fields = ListFieldGroup(
     (
@@ -34,18 +34,18 @@ class StatementLoader(object):
         )
         self.csv_to_constructor = Mapping(
             statement_item_csv_fields,
-            item_instance_class.constructor,
+            item_instance_class.constructor_parameters,
             list(
                 zip(
                     csv_fields,
-                    item_instance_class.constructor
+                    item_instance_class.constructor_parameters
                 )
             )
         )
 
     def _account_header(self, line):
         account_no = line[3]
-        self._account = list(self._account_collection.lookup(account_no))[0]
+        self._account = list(self._account_collection.lookup(account_no, '_account_no'))[0]
         return None
 
     def _statement_line(self, line):

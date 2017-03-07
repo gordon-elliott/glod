@@ -10,10 +10,10 @@ from glod.metadata.field import StringField, IntField
 from glod.metadata.field_group import DictFieldGroup
 from glod.metadata.mapping import Mapping
 from glod.metadata.args_field_group import ArgsFieldGroup
-from glod.metadata.object_field_group_mixin import ObjectFieldGroupMixin
+from glod.metadata.object_field_group_meta import ObjectFieldGroupMeta
 
 
-class Fixture(ObjectFieldGroupMixin):
+class Fixture(object, metaclass=ObjectFieldGroupMeta):
 
     public_interface = (
         IntField('id'),
@@ -25,10 +25,7 @@ class Fixture(ObjectFieldGroupMixin):
 
     constructor_parameters = ArgsFieldGroup(public_interface)
 
-    def __init__(self, named, *args, **kwargs):
-        constructor_to_internal = self.map_constructor_to_internal(self.constructor_parameters)
-        constructor_to_internal.update_in_place((args, kwargs), self)
-
+    def __init__(self, *args, named=None, **kwargs):
         self._named = named
 
 
@@ -41,7 +38,7 @@ class TestArgsFieldGroup(TestCase):
         name = 'name'
         account_no = '303820G'
 
-        fixture = Fixture(named, identity, purpose, name=name, account_no=account_no)
+        fixture = Fixture(identity, purpose, named=named, name=name, account_no=account_no)
 
         self.assertEqual(named, fixture._named)
         self.assertEqual(identity, fixture._id)
@@ -68,7 +65,7 @@ class TestArgsFieldGroup(TestCase):
             'account_no': acc_no,
             'IBAN': iban,
         })
-        from_csv = Fixture(named, **cast_values)
+        from_csv = Fixture(named=named, **cast_values)
 
         self.assertEqual(named, from_csv._named)
         self.assertEqual(identity, from_csv._id)

@@ -14,9 +14,9 @@ from glod.metadata import Mapping, DictFieldGroup
 def replace_underscore_with_space(_, target):
     target._name = target._name.replace('_', ' ')
 
-account_csv_fields = Account.constructor.derive(replace_underscore_with_space, DictFieldGroup)
+account_csv_fields = Account.constructor_parameters.derive(replace_underscore_with_space, DictFieldGroup)
 
-csv_to_constructor = Mapping(account_csv_fields, Account.constructor)
+csv_to_constructor = Mapping(account_csv_fields, Account.constructor_parameters)
 
 def accounts_from_csv(account_csv):
     items = []

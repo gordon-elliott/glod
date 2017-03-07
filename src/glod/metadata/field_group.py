@@ -70,6 +70,12 @@ class FieldGroup(object):
     def _accessor(self, instance, key):
         raise NotImplementedError
 
+    def instances_differ(self, instance, other):
+        return any(
+            self.get_value(instance, field) != self.get_value(other, field)
+            for field in self._fields
+        )
+
 
 class TupleFieldGroup(FieldGroup):
 

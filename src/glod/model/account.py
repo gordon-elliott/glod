@@ -3,12 +3,12 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """
 """
 
-from glod.metadata import StringField, IntField, ArgsFieldGroup, ObjectFieldGroupMixin
+from glod.metadata import StringField, IntField, ArgsFieldGroup, ObjectFieldGroupMeta
 
 
-class Account(ObjectFieldGroupMixin):
+class Account(object, metaclass=ObjectFieldGroupMeta):
 
-    constructor = ArgsFieldGroup(
+    constructor_parameters = ArgsFieldGroup(
         (
             IntField('id'),
             StringField('purpose'),
@@ -22,7 +22,6 @@ class Account(ObjectFieldGroupMixin):
         )
     )
 
+    # metaclass takes care of dealing with the args
     def __init__(self, *args, **kwargs):
-        constructor_to_internal = self.map_constructor_to_internal(self.constructor)
-
-        constructor_to_internal.update_in_place((args, kwargs), self)
+        pass

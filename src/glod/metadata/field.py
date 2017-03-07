@@ -72,10 +72,26 @@ class ObjectReferenceField(Field):
         return value
 
 
+class DenormalisedField(Field):
+
+    def __init__(self, name, extraction, description=None):
+        super().__init__(name, str, description=description)
+        self._extraction = extraction
+
+    def type_cast(self, value):
+        return self._extraction(value)
+
+
 class StringField(Field):
 
-    def __init__(self, name, required=False, default=None, description=None, validation=None):
+    def __init__(self, name, required=False, default=None, description=None, validation=None, strfmt=None):
         super().__init__(name, str, required=required, default=default, description=description, validation=validation)
+        self._strfmt = strfmt
+
+    def type_cast(self, value):
+        if type(value) in (date, datetime) and self._strfmt is not None:
+            return value.strftime(self._strfmt)
+        return super().type_cast(value)
 
 
 class IntField(Field):

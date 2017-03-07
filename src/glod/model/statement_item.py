@@ -3,19 +3,21 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """
 """
 
+from decimal import Decimal
+
 from glod.metadata import (
     ObjectReferenceField,
     StringField,
     DateField,
     DecimalField,
     ArgsFieldGroup,
-    ObjectFieldGroupMixin
+    ObjectFieldGroupMeta
 )
 
 
-class StatementItem(ObjectFieldGroupMixin):
+class StatementItem(object, metaclass=ObjectFieldGroupMeta):
 
-    constructor = ArgsFieldGroup(
+    constructor_parameters = ArgsFieldGroup(
         (
             ObjectReferenceField('account'),
             DateField('date', strfmt='%d/%m/%Y'),
@@ -27,10 +29,19 @@ class StatementItem(ObjectFieldGroupMixin):
         )
     )
 
+    # metaclass takes care of dealing with the args
     def __init__(self, *args, **kwargs):
-        constructor_to_internal = self.map_constructor_to_internal(self.constructor)
-
-        constructor_to_internal.update_in_place((args, kwargs), self)
-
         self._detail_override = None
         self._designated_balance = None
+
+    @property
+    def debit(self):
+        return self._debit if self._debit is not None else Decimal('0.00')
+
+    @property
+    def credit(self):
+        return self._credit if self._credit is not None else Decimal('0.00')
+
+    @property
+    def net(self):
+        return self.credit - self.debit
