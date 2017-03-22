@@ -6,7 +6,14 @@ from datetime import datetime
 from decimal import Decimal
 from unittest import TestCase
 
-from glod.metadata.field_group import prefix_name_with_underscore
+from glod.metadata.field import (
+    StringField,
+    RequiredValueMissing
+)
+from glod.metadata.field_group import (
+    prefix_name_with_underscore,
+    ListFieldGroup
+)
 from glod.unittests.metadata.fixture_field_group import (
     field_group_fixtures,
     INITIAL_VALUES,
@@ -94,3 +101,44 @@ class TestFieldList(TestCase):
                     updates[field._name],
                     field_group.get_value(instance, field)
                 )
+
+    def test_set_update_none(self):
+
+        field = StringField('fixture', required=True)
+        field_group = ListFieldGroup((field,))
+        instance = field_group.empty_instance()
+
+        with self.assertRaises(RequiredValueMissing):
+            field_group.set_value(instance, field, None)
+
+    def test_set_update_default(self):
+
+        default_fixture = 'default'
+        field = StringField('fixture', required=True, default=default_fixture)
+        field_group = ListFieldGroup((field,))
+        instance = field_group.empty_instance()
+
+        field_group.set_value(instance, field, None)
+        self.assertEqual(
+            default_fixture,
+            field_group.get_value(instance, field)
+        )
+
+    def test_instances_differ_no_differences(self):
+
+        for _, field_group, constructor in field_group_fixtures():
+            instance = field_group.fill_instance_from_dict(INITIAL_VALUES)
+            other = field_group.fill_instance_from_dict(INITIAL_VALUES)
+            self.assertFalse(
+                field_group.instances_differ(instance, other)
+            )
+
+    def test_instances_differ_differences_exist(self):
+        modified = INITIAL_VALUES.copy()
+        modified['amount'] = Decimal('3.99')
+        for _, field_group, constructor in field_group_fixtures():
+            instance = field_group.fill_instance_from_dict(INITIAL_VALUES)
+            other = field_group.fill_instance_from_dict(modified)
+            self.assertTrue(
+                field_group.instances_differ(instance, other)
+            )

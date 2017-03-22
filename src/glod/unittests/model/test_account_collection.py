@@ -23,5 +23,5 @@ class TestAccountCollection(TestCase):
 
         self.assertEqual(
             account_list_fixture[3],
-            list(account_collection.lookup('account_3'))[0]
+            list(account_collection.lookup('account_3', '_account_no'))[0]
         )
