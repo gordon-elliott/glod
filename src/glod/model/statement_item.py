@@ -45,3 +45,7 @@ class StatementItem(object, metaclass=ObjectFieldGroupMeta):
     @property
     def net(self):
         return self.credit - self.debit
+
+    @property
+    def month(self):
+        return self._date.month

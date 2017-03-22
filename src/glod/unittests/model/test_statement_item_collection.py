@@ -62,3 +62,24 @@ class TestStatementItemCollection(TestCase):
 
         self.assertEqual(4, len(deduped))
 
+    def test_most_common_month(self):
+        one_month = timedelta(days=31)
+        last_month = self.today - one_month
+        next_month = self.today + one_month
+        items = (
+            # earliest
+            StatementItem(self.account, last_month, 'details', 'EUR', None, Decimal('1.01'), Decimal('1000.00')),
+            StatementItem(self.account, last_month, 'details', 'EUR', Decimal('1.01'), None, Decimal('1001.01')),
+            StatementItem(self.account, self.today, 'details', 'EUR', None, None, Decimal('1000.00')),
+            StatementItem(self.account, self.today, 'details', 'EUR', None, None, Decimal('1000.00')),
+            StatementItem(self.account, self.today, 'details', 'EUR', None, Decimal('1.01'), Decimal('1000.00')),
+            StatementItem(self.account, self.today, 'details', 'EUR', None, None, Decimal('1001.01')),
+            StatementItem(self.account, self.today, 'details', 'EUR', None, Decimal('1.01'), Decimal('1001.01')),
+            StatementItem(self.account, next_month, 'details', 'EUR', None, Decimal('1.01'), Decimal('1002.02')),
+            # latest
+        )
+        collection = StatementItemCollection(items)
+        single_month = list(collection.only_most_common_months(1))
+
+        self.assertEqual(5, len(single_month))
+
