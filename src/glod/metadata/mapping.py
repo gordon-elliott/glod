@@ -44,7 +44,7 @@ class Mapping(object):
 
     def cast_from(self, source):
         input_dict = {
-            destination_field._name: self._source_entity.get_value(source, source_field)
+            destination_field.name: self._source_entity.get_value(source, source_field)
             for source_field, destination_field in self._field_mappings
         }
         return self._destination_entity.fill_instance_from_dict(input_dict)

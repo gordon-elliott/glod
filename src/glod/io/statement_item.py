@@ -12,7 +12,7 @@ from glod.model.statement_item import StatementItem
 def statement_item_csv(statement_items, csv_file):
 
     field_names = tuple(
-        field._name
+        field.name
         for field in StatementItem.constructor_parameters
     )
 

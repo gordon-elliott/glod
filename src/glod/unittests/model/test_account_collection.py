@@ -14,7 +14,7 @@ class TestAccountCollection(TestCase):
     def test_lookup(self):
 
         account_list_fixture = [
-            Account(i, 'purpose', 'status', 'name', 'institution', 'sort code', 'account_{}'.format(i), 'bic', 'iban')
+            Account('purpose', 'status', 'name', 'institution', 'sort code', 'account_{}'.format(i), 'bic', 'iban')
             for i in range(5)
         ]
         account_collection = AccountCollection(

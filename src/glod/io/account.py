@@ -8,15 +8,26 @@ from csv import DictReader
 from glod.model.account import Account
 from glod.model.account_collection import AccountCollection
 
-from glod.metadata import Mapping, DictFieldGroup
+from glod.metadata import (
+    Mapping,
+    DictFieldGroup,
+    IntField,
+    UnusedField,
+    replace_underscore_with_space
+)
 
 
-def replace_underscore_with_space(_, target):
-    target._name = target._name.replace('_', ' ')
+account_csv_fields = Account.constructor_parameters.derive(
+    replace_underscore_with_space,
+    DictFieldGroup
+)
 
-account_csv_fields = Account.constructor_parameters.derive(replace_underscore_with_space, DictFieldGroup)
+field_mappings = [
+     (IntField('id'), UnusedField('automatically assigned'))
+ ] + list(zip(account_csv_fields, Account.constructor_parameters))
 
-csv_to_constructor = Mapping(account_csv_fields, Account.constructor_parameters)
+csv_to_constructor = Mapping(account_csv_fields, Account.constructor_parameters, field_mappings)
+
 
 def accounts_from_csv(account_csv):
     items = []
