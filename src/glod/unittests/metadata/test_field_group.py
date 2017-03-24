@@ -11,9 +11,9 @@ from glod.metadata.field import (
     RequiredValueMissing
 )
 from glod.metadata.field_group import (
-    prefix_name_with_underscore,
     ListFieldGroup
 )
+from glod.metadata import prefix_name_with_underscore
 from glod.unittests.metadata.fixture_field_group import (
     field_group_fixtures,
     INITIAL_VALUES,
@@ -34,7 +34,7 @@ class TestFieldList(TestCase):
                     ('amount', Decimal),
                     ('timestamp', datetime)
                 ],
-                [(field._name, field._type) for field in field_group]
+                [(field.name, field._type) for field in field_group]
             )
 
     def test_derivation(self):
@@ -63,7 +63,7 @@ class TestFieldList(TestCase):
         for _, field_group, constructor in field_group_fixtures():
             for field in field_group:
                 self.assertEqual(
-                    INITIAL_VALUES[field._name],
+                    INITIAL_VALUES[field.name],
                     field_group.get_value(constructor(INITIAL_VALUES), field)
                 )
 
@@ -91,14 +91,14 @@ class TestFieldList(TestCase):
             instance = constructor(INITIAL_VALUES)
             for field in field_group:
                 self.assertEqual(
-                    INITIAL_VALUES[field._name],
+                    INITIAL_VALUES[field.name],
                     field_group.get_value(instance, field)
                 )
 
-                field_group.set_value(instance, field, updates[field._name])
+                field_group.set_value(instance, field, updates[field.name])
 
                 self.assertEqual(
-                    updates[field._name],
+                    updates[field.name],
                     field_group.get_value(instance, field)
                 )
 

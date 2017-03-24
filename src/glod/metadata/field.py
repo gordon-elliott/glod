@@ -3,7 +3,6 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """ 
 """
 
-from copy import deepcopy
 from datetime import datetime, date
 from decimal import Decimal, InvalidOperation
 
@@ -24,10 +23,12 @@ class Field(object):
 
         # TODO validate default
 
+    @property
+    def name(self):
+        return self._name
+
     def derive(self, transformation):
-        target = deepcopy(self)
-        transformation(self, target)
-        return target
+        return transformation(self)
 
     def type_cast(self, value):
         if value is None or type(value) == self._type:
