@@ -67,7 +67,7 @@ def field_group_fixtures(fields=None, field_group_classes=None):
 
     def dict_as_sequence(d, sequence_type):
         return sequence_type(
-            d[field._name] for field in fields
+            d[field.name] for field in fields
         )
 
     fixture_constructors = {

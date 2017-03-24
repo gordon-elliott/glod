@@ -35,12 +35,60 @@ class StatementItem(object, metaclass=ObjectFieldGroupMeta):
         self._designated_balance = None
 
     @property
+    def account(self):
+        return self._account
+
+    @account.setter
+    def account(self, value):
+        self._account = value
+
+    @property
+    def book_date(self):
+        return self._date
+
+    @book_date.setter
+    def book_date(self, value):
+        self._date = value
+
+    @property
+    def details(self):
+        return self._details
+
+    @details.setter
+    def details(self, value):
+        self._details = value
+
+    @property
+    def currency(self):
+        return self._currency
+
+    @currency.setter
+    def currency(self, value):
+        self._currency = value
+
+    @property
     def debit(self):
         return self._debit if self._debit is not None else Decimal('0.00')
+
+    @debit.setter
+    def debit(self, value):
+        self._debit = value
 
     @property
     def credit(self):
         return self._credit if self._credit is not None else Decimal('0.00')
+
+    @credit.setter
+    def credit(self, value):
+        self._credit = value
+
+    @property
+    def balance(self):
+        return self._balance
+
+    @balance.setter
+    def balance(self, value):
+        self._balance = value
 
     @property
     def net(self):

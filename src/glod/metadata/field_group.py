@@ -5,6 +5,8 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from operator import getitem, setitem
 
+from glod.metadata.field_derivations import copy_field
+
 
 class FieldGroup(object):
 
@@ -28,7 +30,8 @@ class FieldGroup(object):
     def __len__(self):
         return len(self._fields)
 
-    def derive(self, transformation, field_group_class=None):
+    def derive(self, transformation=None, field_group_class=None):
+        transformation = copy_field if transformation is None else transformation
         field_group_class = field_group_class if field_group_class else self.__class__
         return field_group_class(
             [
@@ -39,7 +42,7 @@ class FieldGroup(object):
 
     def _get_values_in_order(self, input_dict):
         return [
-            field.type_cast(input_dict[field._name])
+            field.type_cast(input_dict[field.name])
             for field in self._fields
         ]
 
@@ -54,7 +57,7 @@ class FieldGroup(object):
 
     def _type_cast(self, input_dict):
         return {
-            field._name: field.type_cast(input_dict[field._name])
+            field.name: field.type_cast(input_dict[field.name])
             for field in self._fields
         }
 
@@ -63,7 +66,7 @@ class FieldGroup(object):
 
     def as_dict(self, instance):
         return {
-            field._name: self.get_value(instance, field)
+            field.name: self.get_value(instance, field)
             for field in self._fields
         }
 
@@ -143,14 +146,14 @@ class DictFieldGroup(MutableSequenceFieldGroup):
         return self._container_type(self._type_cast(input_dict))
 
     def get_value(self, instance, field):
-        return self._accessor(instance, field._name)
+        return self._accessor(instance, field.name)
 
     def _accessor(self, instance, key):
         return getitem(instance, key)
 
     def set_value(self, instance, field, value):
         value = field.prepare_value(value)
-        return self._mutator(instance, field._name, value)
+        return self._mutator(instance, field.name, value)
 
     def _mutator(self, instance, key, value):
         return setitem(instance, key, value)
@@ -162,18 +165,14 @@ class ObjectFieldGroup(MutableSequenceFieldGroup):
         return self._container_type(**self._type_cast(input_dict))
 
     def get_value(self, instance, field):
-        return self._accessor(instance, field._name)
+        return self._accessor(instance, field.name)
 
     def _accessor(self, instance, key):
         return getattr(instance, key)
 
     def set_value(self, instance, field, value):
         value = field.prepare_value(value)
-        return self._mutator(instance, field._name, value)
+        return self._mutator(instance, field.name, value)
 
     def _mutator(self, instance, key, value):
         return setattr(instance, key, value)
-
-
-def prefix_name_with_underscore(source, target):
-    target._name = '_' + source._name

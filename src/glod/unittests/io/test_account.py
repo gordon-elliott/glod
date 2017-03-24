@@ -21,6 +21,6 @@ class TestAccount(TestCase):
         collection = accounts_from_csv(StringIO(ACCOUNT_CSV))
 
         self.assertEqual(3, len(collection))
-        item3 = list(collection.lookup(7004, '_id'))[0]
-        self.assertEqual('17559040', item3._account_no)
+        item3 = list(collection.lookup('01638842', '_account_no'))[0]
+        self.assertEqual('mission committee', item3._purpose)
 

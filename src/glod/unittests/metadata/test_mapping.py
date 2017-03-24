@@ -7,7 +7,8 @@ from decimal import Decimal
 from unittest import TestCase
 
 from glod.metadata.field import DateTimeField, DateField, DecimalField
-from glod.metadata.field_group import prefix_name_with_underscore, ListFieldGroup
+from glod.metadata.field_group import ListFieldGroup
+from glod.metadata import prefix_name_with_underscore
 from glod.metadata.mapping import Mapping, IncompatibleFieldTypes
 from glod.unittests.metadata.fixture_field_group import (
     FIELD_COMBINATIONS,
@@ -39,14 +40,14 @@ class TestMapping(TestCase):
 
             self.assertEqual(
                 ['name', '_name'],
-                [f._name for f in mapping._field_mappings[0]]
+                [f.name for f in mapping._field_mappings[0]]
             )
 
             reverse_mapping = mapping.reverse()
 
             self.assertEqual(
                 ['_name', 'name'],
-                [f._name for f in reverse_mapping._field_mappings[0]]
+                [f.name for f in reverse_mapping._field_mappings[0]]
             )
 
     def test_update_in_place(self):
