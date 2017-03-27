@@ -42,21 +42,14 @@ DB_COLUMN_TYPE_MAP = {
 # TODO functions to class
 # TODO drive from metadata relationships
 
-def assign_db_column(source):
-    target = prefix_name_with_underscore(source)
-    target.db_column = Column(source.name, DB_COLUMN_TYPE_MAP[type(source)], key=target.name)
-    return target
-
 
 def db_columns_from_model(model_class):
     columns = {
         ID_FIELDNAME: Column(ID_COLUMN_NAME, Integer, key=ID_FIELDNAME)
     }
-    # TODO do we need to derive()?
-    db_columns = model_class.constructor_parameters.derive(assign_db_column)
 
-    for field in db_columns:
-        columns[field.name] = field.db_column
+    for source, dest in model_class.constructor_to_internal:
+        columns[dest.name] = Column(source.name, DB_COLUMN_TYPE_MAP[type(dest)], key=dest.name)
 
     return columns
 
