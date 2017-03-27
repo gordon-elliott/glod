@@ -18,8 +18,8 @@ class TestStatementItem(DBSessionTestCase):
     def test_relationship(self):
         account = Account('purpose', 'active', 'current', 'AcmeBank', IBAN='IE49ACME30393002923423223')
         self.session.add(account)
-        statment_item = StatementItem(account, TODAY, 'details', 'EUR', Decimal('0.00'), Decimal('30.00'), Decimal('346.65'))
-        self.session.add(statment_item)
+        statement_item = StatementItem(account, TODAY, 'details', 'EUR', Decimal('0.00'), Decimal('30.00'), Decimal('346.65'))
+        self.session.add(statement_item)
         self.session.commit()
         ac_id = account.id
 
@@ -36,3 +36,4 @@ class TestStatementItem(DBSessionTestCase):
         for reread_statement in self.session.query(StatementItem):
             self.assertEqual(new_ac_id, reread_statement.account.id)
 
+        self.assertEqual(1, len(reread_statement.account.statement_items))

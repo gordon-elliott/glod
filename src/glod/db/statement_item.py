@@ -3,23 +3,18 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """ 
 """
 
-from glod.db.mapper import do_map, db_columns_from_model, db_constraints_from_model, db_fk_from_model
+from glod.db.relation_map import RelationMap
+from glod.db.table_map import TableMap
+from glod.model.references import statement_item__account
 from glod.model.statement_item import StatementItem
 
-fk_fieldname = '_account_id'
-object_ref_fieldname = '_account'
-fk_column_name = 'account_id'
-referenced_pk_fieldname = 'account._id'
-
-columns = db_columns_from_model(StatementItem)
-fk_constraint = db_fk_from_model(
-    columns,
-    fk_fieldname,
-    fk_column_name,
-    object_ref_fieldname,
-    referenced_pk_fieldname
+TableMap(
+    StatementItem,
+    'statement_item',
+    RelationMap(
+        statement_item__account,
+        'account._id',
+        backref='statement_items',
+        lazy='joined'
+    ),
 )
-fk_constraints = (fk_constraint,)
-constraints = db_constraints_from_model(StatementItem, fk_constraints)
-do_map(StatementItem, 'statement_item', columns, constraints)
-
