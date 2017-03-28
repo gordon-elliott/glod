@@ -9,7 +9,7 @@ from sqlalchemy import (
     Numeric
 )
 
-from glod.metadata import (
+from a_tuin.metadata import (
     ObjectReferenceField,
     IntField,
     StringField,

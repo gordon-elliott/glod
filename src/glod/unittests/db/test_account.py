@@ -4,8 +4,9 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """
 
 from glod.unittests.db.db_sesssion_test_case import DBSessionTestCase
+from glod.unittests.db.fixtures import accounts_fixture
 
-from glod.db.account import Account
+from glod.db.account import Account, AccountStatus
 
 
 class TestAccount(DBSessionTestCase):
@@ -18,7 +19,8 @@ class TestAccount(DBSessionTestCase):
     def test_crud(self):
 
         institution = 'AcmeBank'
-        account = Account('purpose', 'active', 'current', institution, IBAN='IE49ACME30393002923423223')
+        accounts = accounts_fixture((AccountStatus.Active,), ('current',), (institution,), ('IE49ACME30393002923423223',))
+        account = next(accounts)
         self.session.add(account)
         self.session.commit()
         ac_id = account.id
@@ -31,7 +33,7 @@ class TestAccount(DBSessionTestCase):
 
         self.assertEqual(1, num_accounts)
 
-        new_status = 'closed'
+        new_status = AccountStatus.Closed
         read_account.status = new_status
         self.session.commit()
 

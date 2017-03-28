@@ -27,6 +27,10 @@ class Field(object):
     def name(self):
         return self._name
 
+    @name.setter
+    def name(self, value):
+        self._name = value
+
     def derive(self, transformation):
         return transformation(self)
 
@@ -55,6 +59,11 @@ class Field(object):
         value = self.use_default(value)
         if not self.is_filled(value):
             raise RequiredValueMissing()
+        return value
+
+    def conform_value(self, value):
+        """ Convert value on on extraction by FieldGroup
+        """
         return value
 
 
@@ -106,6 +115,12 @@ class IntField(Field):
             return date.toordinal(value)
         else:
             return super().type_cast(value)
+
+
+class IntEnumField(IntField):
+    def __init__(self, name, enum_class, required=False, default=None, description=None, validation=None):
+        super().__init__(name, required, default, description, validation)
+        self._enum_class = enum_class
 
 
 class FloatField(Field):
@@ -181,6 +196,7 @@ INVALID_FIELD_COMBINATIONS = (
     (DecimalField, DateField),
     (DateField, DecimalField),
     (ObjectReferenceField, IntField),
+    (ObjectReferenceField, IntEnumField),
     (ObjectReferenceField, FloatField),
     (ObjectReferenceField, DecimalField),
     (ObjectReferenceField, DateTimeField),

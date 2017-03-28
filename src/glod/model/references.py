@@ -3,7 +3,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """ 
 """
 
-from glod.metadata.reference import Reference
+from a_tuin.metadata.reference import Reference
 
 from glod.model.account import Account
 from glod.model.statement_item import StatementItem

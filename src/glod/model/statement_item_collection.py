@@ -7,26 +7,28 @@ from collections import defaultdict
 from decimal import Decimal
 from operator import itemgetter
 
-from glod.model.collection import Collection
+from a_tuin.metadata.collection import Collection, chainable
 
 
 # TODO sequence no
-# TODO more elegant way to chain semantic filters
+
 
 class StatementItemCollection(Collection):
 
-    def remove_net_zero_items(self):
+    @chainable
+    def remove_net_zero_items(self, items):
 
         last_item = None
-        for item in self._items:
+        for item in items:
             is_different_account = last_item is None or last_item._account != item._account
             if is_different_account or item.net != Decimal('0.00'):
                 yield item
             last_item = item
 
-    def only_most_common_months(self, num_months):
+    @chainable
+    def only_most_common_months(self, items, num_months):
 
-        item_list = list(self._items)
+        item_list = list(items)
         month_counts = defaultdict(int)
         for item in item_list:
             month_counts[item.month] += 1

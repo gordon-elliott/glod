@@ -6,6 +6,9 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 from contextlib import contextmanager
 from sqlalchemy.orm import sessionmaker
 
+Session = sessionmaker()
+
+
 @contextmanager
 def session_scope():
     """Provide a transactional scope around a series of operations."""

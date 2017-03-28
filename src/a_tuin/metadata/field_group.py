@@ -5,7 +5,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from operator import getitem, setitem
 
-from glod.metadata.field_derivations import copy_field
+from a_tuin.metadata.field_derivations import copy_field
 
 
 class FieldGroup(object):
@@ -29,6 +29,22 @@ class FieldGroup(object):
 
     def __len__(self):
         return len(self._fields)
+
+    def __getitem__(self, key):
+        for field in self._fields:
+            if field.name == key:
+                return field
+        raise KeyError
+
+    def __setitem__(self, key, replacement_field):
+
+        assert key == replacement_field.name, 'Key does not match field name.'
+
+        # replace field
+        for i, field in enumerate(self._fields):
+            if field.name == key:
+                self._fields[i] = replacement_field
+                break
 
     def derive(self, transformation=None, field_group_class=None):
         transformation = copy_field if transformation is None else transformation
@@ -91,7 +107,8 @@ class TupleFieldGroup(FieldGroup):
 
     def get_value(self, instance, field):
         index, _ = self._get_field_index(field)
-        return self._accessor(instance, index)
+        value = self._accessor(instance, index)
+        return field.conform_value(value)
 
     def _accessor(self, instance, key):
         return getitem(instance, key)
@@ -120,7 +137,8 @@ class ListFieldGroup(MutableSequenceFieldGroup):
 
     def get_value(self, instance, field):
         index, _ = self._get_field_index(field)
-        return self._accessor(instance, index)
+        value = self._accessor(instance, index)
+        return field.conform_value(value)
 
     def _accessor(self, instance, key):
         return getitem(instance, key)
@@ -146,7 +164,8 @@ class DictFieldGroup(MutableSequenceFieldGroup):
         return self._container_type(self._type_cast(input_dict))
 
     def get_value(self, instance, field):
-        return self._accessor(instance, field.name)
+        value = self._accessor(instance, field.name)
+        return field.conform_value(value)
 
     def _accessor(self, instance, key):
         return getitem(instance, key)
@@ -165,7 +184,8 @@ class ObjectFieldGroup(MutableSequenceFieldGroup):
         return self._container_type(**self._type_cast(input_dict))
 
     def get_value(self, instance, field):
-        return self._accessor(instance, field.name)
+        value = self._accessor(instance, field.name)
+        return field.conform_value(value)
 
     def _accessor(self, instance, key):
         return getattr(instance, key)

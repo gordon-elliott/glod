@@ -1,6 +1,6 @@
 __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
-from glod.metadata import ObjectFieldGroup, prefix_name_with_underscore, Mapping
+from a_tuin.metadata import ObjectFieldGroup, prefix_name_with_underscore, Mapping
 
 
 class ObjectFieldGroupMeta(type):
