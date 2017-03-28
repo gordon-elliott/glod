@@ -3,8 +3,8 @@ from unittest import TestCase
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+from a_tuin.db.metadata import metadata
 from glod.configuration import configuration
-from glod.db.metadata import metadata
 
 
 class DBSessionTestCase(TestCase):

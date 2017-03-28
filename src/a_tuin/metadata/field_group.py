@@ -5,7 +5,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from operator import getitem, setitem
 
-from glod.metadata.field_derivations import copy_field
+from a_tuin.metadata.field_derivations import copy_field
 
 
 class FieldGroup(object):

@@ -3,7 +3,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """
 """
 
-from glod.metadata import StringField, ArgsFieldGroup, ObjectFieldGroupMeta
+from a_tuin.metadata import StringField, ArgsFieldGroup, ObjectFieldGroupMeta
 
 
 class Account(object, metaclass=ObjectFieldGroupMeta):

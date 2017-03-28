@@ -3,10 +3,10 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """ 
 """
 
-from glod.db.relation_map import RelationMap
-from glod.db.table_map import TableMap
-from glod.model.references import statement_item__account
+from a_tuin.db import RelationMap, TableMap
+
 from glod.model.statement_item import StatementItem
+from glod.model.references import statement_item__account
 
 TableMap(
     StatementItem,

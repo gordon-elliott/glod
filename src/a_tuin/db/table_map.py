@@ -6,8 +6,9 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 from sqlalchemy import Column, Integer, PrimaryKeyConstraint, ForeignKeyConstraint, Table
 from sqlalchemy.orm import mapper
 
-from glod.db.mapper import DB_COLUMN_TYPE_MAP
-from glod.db.metadata import metadata
+from a_tuin.db.metadata import metadata
+from a_tuin.db.mapper import DB_COLUMN_TYPE_MAP
+
 
 ID_COLUMN_NAME = 'id'
 ID_FIELDNAME = '_id'

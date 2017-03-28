@@ -5,7 +5,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from decimal import Decimal
 
-from glod.metadata import (
+from a_tuin.metadata import (
     ObjectReferenceField,
     StringField,
     DateField,

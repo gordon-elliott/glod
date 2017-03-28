@@ -5,7 +5,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from csv import DictWriter, excel_tab
 
-from glod.metadata import StringField, DenormalisedField, DictFieldGroup, Mapping
+from a_tuin.metadata import StringField, DenormalisedField, DictFieldGroup, Mapping
 from glod.model.statement_item import StatementItem
 
 

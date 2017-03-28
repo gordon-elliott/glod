@@ -6,11 +6,11 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from unittest import TestCase
 
-from glod.metadata.field import StringField, IntField
-from glod.metadata.field_group import DictFieldGroup
-from glod.metadata.mapping import Mapping
-from glod.metadata.args_field_group import ArgsFieldGroup
-from glod.metadata.object_field_group_meta import ObjectFieldGroupMeta
+from a_tuin.metadata.field import StringField, IntField
+from a_tuin.metadata.field_group import DictFieldGroup
+from a_tuin.metadata.mapping import Mapping
+from a_tuin.metadata.args_field_group import ArgsFieldGroup
+from a_tuin.metadata.object_field_group_meta import ObjectFieldGroupMeta
 
 
 class Fixture(object, metaclass=ObjectFieldGroupMeta):

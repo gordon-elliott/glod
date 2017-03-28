@@ -8,7 +8,7 @@ from csv import DictReader
 from glod.model.account import Account
 from glod.model.account_collection import AccountCollection
 
-from glod.metadata import (
+from a_tuin.metadata import (
     Mapping,
     DictFieldGroup,
     IntField,

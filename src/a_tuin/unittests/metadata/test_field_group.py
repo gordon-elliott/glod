@@ -6,15 +6,15 @@ from datetime import datetime
 from decimal import Decimal
 from unittest import TestCase
 
-from glod.metadata.field import (
+from a_tuin.metadata import prefix_name_with_underscore
+from a_tuin.metadata.field import (
     StringField,
     RequiredValueMissing
 )
-from glod.metadata.field_group import (
+from a_tuin.metadata.field_group import (
     ListFieldGroup
 )
-from glod.metadata import prefix_name_with_underscore
-from glod.unittests.metadata.fixture_field_group import (
+from a_tuin.unittests.metadata.fixture_field_group import (
     field_group_fixtures,
     INITIAL_VALUES,
     MUTABLE_FIELD_GROUP_CLASSES,
