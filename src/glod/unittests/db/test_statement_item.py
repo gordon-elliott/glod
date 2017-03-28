@@ -36,3 +36,4 @@ class TestStatementItem(DBSessionTestCase):
         for reread_statement in self.session.query(StatementItem):
             self.assertEqual(new_ac_id, reread_statement.account.id)
 
+        self.assertEqual(1, len(reread_statement.account.statement_items))
