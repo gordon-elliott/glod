@@ -3,7 +3,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """ 
 """
 
-from glod.metadata.field import INVALID_FIELD_COMBINATIONS
+from a_tuin.metadata.field import INVALID_FIELD_COMBINATIONS
 
 
 class IncompatibleFieldTypes(Exception):

@@ -7,13 +7,13 @@ from datetime import datetime
 from decimal import Decimal
 from itertools import product
 
-from glod.metadata.field_group import (
+from a_tuin.metadata.field_group import (
     TupleFieldGroup,
     ListFieldGroup,
     DictFieldGroup,
     ObjectFieldGroup,
 )
-from glod.metadata.field import (
+from a_tuin.metadata.field import (
     StringField,
     IntField,
     FloatField,

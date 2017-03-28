@@ -5,7 +5,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from csv import reader
 
-from glod.metadata import StringField, UnusedField, ListFieldGroup, Mapping
+from a_tuin.metadata import StringField, UnusedField, ListFieldGroup, Mapping
 
 statement_item_csv_fields = ListFieldGroup(
     (

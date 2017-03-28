@@ -7,7 +7,7 @@ from datetime import datetime, date
 from decimal import Decimal
 from unittest import TestCase
 
-from glod.metadata.field import StringField, IntField, FloatField, DecimalField, DateTimeField, DateField
+from a_tuin.metadata.field import StringField, IntField, FloatField, DecimalField, DateTimeField, DateField
 
 
 class TestFieldTypeCast(TestCase):

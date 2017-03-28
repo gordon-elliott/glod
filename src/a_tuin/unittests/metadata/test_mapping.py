@@ -6,11 +6,11 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 from decimal import Decimal
 from unittest import TestCase
 
-from glod.metadata.field import DateTimeField, DateField, DecimalField
-from glod.metadata.field_group import ListFieldGroup
-from glod.metadata import prefix_name_with_underscore
-from glod.metadata.mapping import Mapping, IncompatibleFieldTypes
-from glod.unittests.metadata.fixture_field_group import (
+from a_tuin.metadata import prefix_name_with_underscore
+from a_tuin.metadata.field import DateTimeField, DateField, DecimalField
+from a_tuin.metadata.field_group import ListFieldGroup
+from a_tuin.metadata.mapping import Mapping, IncompatibleFieldTypes
+from a_tuin.unittests.metadata.fixture_field_group import (
     FIELD_COMBINATIONS,
     INITIAL_VALUES,
     field_group_combinations,
