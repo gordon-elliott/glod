@@ -20,7 +20,7 @@ class TestAccount(TestCase):
     def test_load(self):
         collection = accounts_from_csv(StringIO(ACCOUNT_CSV))
 
-        self.assertEqual(3, len(collection))
+        self.assertEqual(3, len(list(collection)))
         item3 = list(collection.lookup('01638842', '_account_no'))[0]
         self.assertEqual('mission committee', item3._purpose)
 

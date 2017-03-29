@@ -18,12 +18,12 @@ def do_load(account_file, export_file, output_csv, num_months):
     loader = StatementLoader(StatementItem, account_collection)
 
     items = loader.load_from_statement(export_file)
-    collection = StatementItemCollection(items)
-    collection = StatementItemCollection(collection.only_most_common_months(num_months))
-    required_items = collection.remove_net_zero_items()
+    collection = StatementItemCollection(items) \
+        .only_most_common_months(num_months) \
+        .remove_net_zero_items()
 
     with output_csv:
-        statement_item_csv(required_items, output_csv)
+        statement_item_csv(collection, output_csv)
 
 
 if __name__ == '__main__':
