@@ -53,5 +53,6 @@ class TableMap(object):
         )
         constraints = self._db_constraints_from_model(columns)
 
-        table = Table(self._table_name, metadata, *columns.values(), *constraints.values())
-        mapper(self._model_class, table, properties=fk_properties)
+        self._table = Table(self._table_name, metadata, *columns.values(), *constraints.values())
+        self._model_class.c = self._table.c
+        mapper(self._model_class, self._table, properties=fk_properties)
