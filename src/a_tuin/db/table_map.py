@@ -7,7 +7,6 @@ from sqlalchemy import Column, Integer, PrimaryKeyConstraint, ForeignKeyConstrai
 from sqlalchemy.orm import mapper
 
 from a_tuin.db.metadata import metadata
-from a_tuin.db.mapper import DB_COLUMN_TYPE_MAP
 
 
 ID_COLUMN_NAME = 'id'
@@ -15,9 +14,10 @@ ID_FIELDNAME = '_id'
 
 
 class TableMap(object):
-    def __init__(self, model_class, table_name, *relation_maps):
+    def __init__(self, model_class, table_name, db_column_type_map, *relation_maps):
         self._model_class = model_class
         self._table_name = table_name
+        self._db_column_type_map = db_column_type_map
         self._relation_maps = relation_maps
 
         self._db_table_mapper()
@@ -28,7 +28,7 @@ class TableMap(object):
         }
 
         for source, dest in self._model_class.constructor_to_internal:
-            columns[dest.name] = Column(source.name, DB_COLUMN_TYPE_MAP[type(dest)], key=dest.name)
+            columns[dest.name] = Column(source.name, self._db_column_type_map[type(dest)], key=dest.name)
 
         return columns
 

@@ -30,3 +30,6 @@ class Query(object):
     def filter(self, *criteria):
         self._query = self._query.filter(*criteria)
         return self
+
+    def delete(self):
+        self._query.delete()

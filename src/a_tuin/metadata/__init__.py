@@ -6,6 +6,7 @@ from a_tuin.metadata.field import (
     DenormalisedField,
     StringField,
     IntField,
+    IntEnumField,
     FloatField,
     DecimalField,
     DateTimeField,

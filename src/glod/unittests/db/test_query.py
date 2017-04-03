@@ -6,7 +6,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 from glod.unittests.db.db_sesssion_test_case import DBSessionTestCase
 from glod.unittests.db.fixtures import accounts_fixture
 
-from glod.db.account import Account, AccountQuery
+from glod.db.account import Account, AccountStatus, AccountQuery
 
 
 class TestQuery(DBSessionTestCase):
@@ -15,7 +15,7 @@ class TestQuery(DBSessionTestCase):
         super().setUp()
 
         self.accounts = accounts_fixture(
-            ('active', 'closed'),
+            (AccountStatus.Active, AccountStatus.Closed),
             ('current', 'savings'),
             ('BigBank', 'TooBigBank'),
             ('IE88BBNK3938320298229',)
@@ -52,7 +52,7 @@ class TestQuery(DBSessionTestCase):
     def test_one_match(self):
         self._load_fixtures()
 
-        status = 'active'
+        status = AccountStatus.Active
         name = 'savings'
         institution = 'TooBigBank'
 
