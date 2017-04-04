@@ -1,10 +1,23 @@
+__copyright__ = 'Copyright(c) Gordon Elliott 2017'
+
+"""
+"""
+import logging
 from unittest import TestCase
+from uuid import uuid1
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy_utils import database_exists, create_database
 
-from a_tuin.db.metadata import metadata
+from a_tuin.db.metadata import metadata, truncate_all
 from glod.configuration import configuration
+
+
+TEST_DB_NAME = 'test_{}'.format(uuid1().hex)
+LOG = logging.getLogger(__name__)
+
+# TODO drop test schema if all tests complete successfully
 
 
 class DBSessionTestCase(TestCase):
@@ -13,17 +26,20 @@ class DBSessionTestCase(TestCase):
     def setUpClass(cls):
         super().setUpClass()
 
-        cls.engine = create_engine(configuration.db.connection_string, echo=True)
+        connection_string = configuration.db.connection_template.format(TEST_DB_NAME)
 
-        # TODO create a new schema for each test run (not each suite)
-        # TODO only create if schema is not present
-        metadata.create_all(cls.engine)
+        cls.engine = create_engine(connection_string, echo=False)   # to avoid duplicate log messages
+        if not database_exists(cls.engine.url):
+            LOG.info('Creating test DB %s' % TEST_DB_NAME)
+            create_database(cls.engine.url)
+
+            metadata.create_all(cls.engine)
 
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
 
-        metadata.drop_all(cls.engine)
+        truncate_all(cls.engine, TEST_DB_NAME)
 
     def setUp(self):
         super().setUp()

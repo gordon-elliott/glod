@@ -7,6 +7,6 @@ from sqlalchemy import create_engine
 from a_tuin.db.session_scope import Session
 from glod.configuration import configuration
 
-
-engine = create_engine(configuration.db.connection_string, echo=True)
+connection_string = configuration.db.connection_template.format(configuration.db.default_database_name)
+engine = create_engine(connection_string, echo=False)
 Session.configure(bind=engine)

@@ -104,6 +104,11 @@ class StringField(Field):
         return super().type_cast(value)
 
 
+class BooleanField(Field):
+    def __init__(self, name, required=False, default=None, description=None, validation=None):
+        super().__init__(name, bool, required, default, description, validation)
+
+
 class IntField(Field):
     def __init__(self, name, required=False, default=None, description=None, validation=None):
         super().__init__(name, int, required=required, default=default, description=description, validation=validation)

@@ -14,7 +14,10 @@ class Query(object):
         self._query = self._session.query(self._model_class)
 
     def __iter__(self):
-        return iter(self._model_collection(self._query.all()))
+        return iter(self.collection())
+
+    def collection(self):
+        return self._model_collection(self._query.all())
 
     def __len__(self):
         return self._query.count()
