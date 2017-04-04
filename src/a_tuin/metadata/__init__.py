@@ -5,6 +5,7 @@ from a_tuin.metadata.field import (
     ObjectReferenceField,
     DenormalisedField,
     StringField,
+    BooleanField,
     IntField,
     IntEnumField,
     FloatField,

@@ -5,15 +5,16 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from csv import DictReader
 
-from glod.model.account import Account, AccountStatus
-from glod.model.account_collection import AccountCollection
-
+from a_tuin.io.gsheet_integration import get_gsheet_fields, load_class
 from a_tuin.metadata import (
     Mapping,
     DictFieldGroup,
     StringField,
     replace_underscore_with_space
 )
+
+from glod.model.account import Account, AccountStatus
+from glod.model.account_collection import AccountCollection
 
 
 ACCOUNT_STATUS_MAP = {
@@ -46,3 +47,15 @@ def accounts_from_csv(account_csv):
 
     collection = AccountCollection(items)
     return collection
+
+
+def accounts_from_gsheet(session, extract_from_detailed_ledger):
+    account_gsheet = get_gsheet_fields(Account, {'reference no': 'id'})
+    account_gsheet['status'] = AccountStatusString('status')
+    account_mapping = Mapping(account_gsheet, Account.constructor_parameters)
+    accounts = extract_from_detailed_ledger(
+        'bank accounts',
+        'A1',
+        ('id', 'purpose', 'status', 'name', 'institution', 'sort code', 'account no', 'BIC', 'IBAN')
+    )
+    load_class(session, accounts, account_mapping, Account)

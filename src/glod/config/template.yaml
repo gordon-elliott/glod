@@ -1,0 +1,31 @@
+db:
+  default_database_name:
+  connection_template:
+
+logging:
+  version: 1
+  formatters:
+    simple:
+      format: '%(asctime)s - %(levelname)s - %(name)s - %(message)s'
+  handlers:
+    console:
+      class: logging.StreamHandler
+      level: DEBUG
+      formatter: simple
+      stream: ext://sys.stdout
+  loggers:
+    default:
+      level: DEBUG
+      handlers: [console]
+      propagate: no
+    sqlalchemy.engine:
+      level: INFO
+      handlers: [console]
+      propagate: no
+  root:
+    level: DEBUG
+    handlers: [console]
+
+google_sheets:
+  credentials_file:
+  idl_sheet_id:
