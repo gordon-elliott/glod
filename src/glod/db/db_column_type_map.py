@@ -12,6 +12,20 @@ from a_tuin.db.mapper import DB_COLUMN_TYPE_MAP
 
 from glod.model.account import AccountStatusField, AccountStatus
 from glod.model.fund import FundTypeField, FundType
+from glod.model.nominal_account import (
+    NominalAccountSOFAHeadingField,
+    NominalAccountSOFAHeading,
+    NominalAccountCategoryField,
+    NominalAccountCategory,
+    NominalAccountSubCategoryField,
+    NominalAccountSubCategory,
+)
+
 
 DB_COLUMN_TYPE_MAP[AccountStatusField] = Enum(AccountStatus)
+
 DB_COLUMN_TYPE_MAP[FundTypeField] = Enum(FundType)
+
+DB_COLUMN_TYPE_MAP[NominalAccountSOFAHeadingField] = Enum(NominalAccountSOFAHeading)
+DB_COLUMN_TYPE_MAP[NominalAccountCategoryField] = Enum(NominalAccountCategory)
+DB_COLUMN_TYPE_MAP[NominalAccountSubCategoryField] = Enum(NominalAccountSubCategory)

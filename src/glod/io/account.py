@@ -13,8 +13,7 @@ from a_tuin.metadata import (
     replace_underscore_with_space
 )
 
-from glod.model.account import Account, AccountStatus
-from glod.model.account_collection import AccountCollection
+from glod.db.account import Account, AccountStatus, AccountCollection
 
 
 ACCOUNT_STATUS_MAP = {

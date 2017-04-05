@@ -7,7 +7,7 @@ from collections import defaultdict
 from decimal import Decimal
 from operator import itemgetter
 
-from a_tuin.metadata.collection import Collection, chainable
+from a_tuin.metadata import Collection, chainable
 
 
 # TODO sequence no
