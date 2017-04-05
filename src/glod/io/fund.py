@@ -7,7 +7,6 @@ from a_tuin.io.gsheet_integration import get_gsheet_fields, load_class
 from a_tuin.metadata import StringField, Mapping
 
 from glod.db.fund import FundType, Fund
-from glod.model.account_collection import AccountCollection
 from glod.db.account import AccountQuery
 
 
