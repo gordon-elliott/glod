@@ -18,6 +18,7 @@ from glod.io.account import accounts_from_gsheet
 from glod.io.fund import funds_from_gsheet
 from glod.io.nominal_account import nominal_accounts_from_gsheet
 from glod.io.subject import subjects_from_gsheet
+from glod.io.parishioner import parishioners_from_gsheet
 
 
 LOG = logging.getLogger(__file__)
@@ -43,7 +44,6 @@ def do_idl():
         funds_from_gsheet(session, extract_from_detailed_ledger)
         nominal_accounts_from_gsheet(session, extract_from_detailed_ledger)
         subjects_from_gsheet(session, extract_from_detailed_ledger)
-
-# parishioners = extract_from_detailed_ledger('parishioners', 'A1', ('ID', 'SURNAME', 'FIRST_NAME', 'TITLE', 'SPOUSE', 'ADDRESS1', 'ADDRESS2', 'ADDRESS3', 'County', 'EIRCODE', 'CHILD_1', 'DOB1', 'CHILD_2', 'DOB2', 'CHILD_3', 'DOB3', 'child 4', 'DOB 4', 'TELEPHONE', 'GIVING', 'email'))
+        parishioners_from_gsheet(session, extract_from_detailed_ledger)
 
 do_idl()
