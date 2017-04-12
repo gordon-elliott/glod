@@ -13,6 +13,7 @@ class ObjectFieldGroupMeta(type):
                     super().__init__(fields, cls)
 
             cls.internal = cls.constructor_parameters.derive(prefix_name_with_underscore, SpecificObjectFieldGroup)
+# TODO          cls.properties = cls.constructor_parameters.derive(field_group_class=SpecificObjectFieldGroup)
             cls.constructor_to_internal = Mapping(cls.constructor_parameters, cls.internal)
 
     def __call__(self, *args, **kwargs):

@@ -14,11 +14,9 @@ from glod.model.subject import Subject
 
 statement_item__account = Reference(StatementItem, 'account', Account)
 fund__account = Reference(Fund, 'account', Account)
-subject__nominal_account = Reference(Subject, 'nominal_account', NominalAccount)
 
 
 REFERENCES = (
     statement_item__account,
     fund__account,
-    subject__nominal_account,
 )

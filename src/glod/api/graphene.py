@@ -3,14 +3,20 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """ 
 """
 
-from collections import OrderedDict
-
 import graphene
+
+from collections import OrderedDict
 
 from glod.api.types import GRAPHENE_FIELD_TYPE_MAP, OBJECT_REFERENCE_MAP
 
+# TODO consider moving to a_tuin
 
-def map_field(field):
+def _map_field(field):
+    """ Produce a Graphene field for a model metadata Field
+
+    :param field a_tuin.metadata.Field:
+    :return: graphene.Field
+    """
     graphene_field_type = GRAPHENE_FIELD_TYPE_MAP.get(type(field))
     if graphene_field_type is None:
         if hasattr(field, 'enum_class'):
@@ -22,7 +28,12 @@ def map_field(field):
 
 
 def get_local_fields(model_class):
+    """ Use model metadata to produce Graphene Fields
+
+    :param model_class: class to inspect
+    :return: OrderedDict of fieldname to Graphene Field
+    """
     return OrderedDict(
-        (field.name, map_field(field))
+        (field.name, _map_field(field))
         for field in model_class.constructor_parameters
     )

@@ -3,7 +3,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """
 """
 
-from a_tuin.metadata import StringField, ObjectReferenceField, ArgsFieldGroup, ObjectFieldGroupMeta
+from a_tuin.metadata import StringField, ArgsFieldGroup, ObjectFieldGroupMeta
 
 
 class Subject(object, metaclass=ObjectFieldGroupMeta):
@@ -13,7 +13,6 @@ class Subject(object, metaclass=ObjectFieldGroupMeta):
             StringField('name'),
             StringField('select_vestry_summary'),
             StringField('easter_vestry_summary'),
-            ObjectReferenceField('nominal_account'),
         )
     )
 
@@ -48,11 +47,3 @@ class Subject(object, metaclass=ObjectFieldGroupMeta):
     @easter_vestry_summary.setter
     def easter_vestry_summary(self, value):
         self._easter_vestry_summary = value
-
-    @property
-    def nominal_account(self):
-        return self._nominal_account
-
-    @nominal_account.setter
-    def nominal_account(self, value):
-        self._nominal_account = value
