@@ -127,6 +127,10 @@ class IntEnumField(IntField):
         super().__init__(name, required, default, description, validation)
         self._enum_class = enum_class
 
+    @property
+    def enum_class(self):
+        return self._enum_class
+
 
 class FloatField(Field):
     def __init__(self, name, required=False, default=None, description=None, validation=None):

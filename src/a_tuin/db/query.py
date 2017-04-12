@@ -34,5 +34,8 @@ class Query(object):
         self._query = self._query.filter(*criteria)
         return self
 
+    def instance(self, id):
+        return self._query.get(id)
+
     def delete(self):
         self._query.delete()
