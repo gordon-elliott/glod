@@ -9,7 +9,7 @@ from glod.api.fund_leaf import FundLeaf, fund_fields
 from glod.db.fund import Fund, FundQuery
 
 
-funds_connection_field = node_connection_field(
+FundNode, funds_connection_field = node_connection_field(
     FundQuery,
     FundLeaf,
     fund_fields,

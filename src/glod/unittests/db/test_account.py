@@ -23,11 +23,11 @@ class TestAccount(DBSessionTestCase):
         account = next(accounts)
         self.session.add(account)
         self.session.commit()
-        ac_id = account.id
+        ac_id = account._id
 
         num_accounts = 0
         for read_account in self.session.query(Account):
-            self.assertEqual(ac_id, read_account.id)
+            self.assertEqual(ac_id, read_account._id)
             self.assertEqual(institution, read_account.institution)
             num_accounts += 1
 

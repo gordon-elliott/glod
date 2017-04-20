@@ -5,7 +5,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from itertools import product
 
-from glod.model.account import Account
+from glod.db.account import Account
 
 
 def accounts_fixture(statuses, names, institutions, ibans):

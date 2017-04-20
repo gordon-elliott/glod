@@ -46,10 +46,10 @@ module.exports = {
                 return data.data.account
             },
             updateResponseData: data => {
-                if (data.data.changeAccount.errors) {
-                    throw new crudl.ValidationError(transformErrors(data.data.changeAccount.errors))
+                if (data.data.accountUpdate.errors) {
+                    throw new crudl.ValidationError(transformErrors(data.data.accountUpdate.errors))
                 }
-                return data.data.changeAccount.account
+                return data.data.accountUpdate.account
             },
         }
     },

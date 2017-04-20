@@ -9,7 +9,7 @@ from glod.db.parishioner import Parishioner, ParishionerQuery
 from glod.api.parishioner_leaf import ParishionerLeaf, parishioner_fields
 
 
-parishioners_connection_field = node_connection_field(
+ParishionerNode, parishioners_connection_field = node_connection_field(
     ParishionerQuery,
     ParishionerLeaf,
     parishioner_fields,

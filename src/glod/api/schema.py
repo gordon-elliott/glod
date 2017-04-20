@@ -7,11 +7,11 @@ import graphene
 
 from graphene.relay import Node
 
-from glod.api.account_node import accounts_connection_field, CreateAccountLeaf, UpdateAccountLeaf
-from glod.api.fund_node import funds_connection_field, CreateFundLeaf, UpdateFundLeaf
-from glod.api.nominal_account_node import nominal_accounts_connection_field, CreateNominalAccountLeaf, UpdateNominalAccountLeaf
-from glod.api.subject_node import subjects_connection_field, CreateSubjectLeaf, UpdateSubjectLeaf
-from glod.api.parishioner_node import parishioners_connection_field, CreateParishionerLeaf, UpdateParishionerLeaf
+from glod.api.account_node import AccountNode, accounts_connection_field, CreateAccountLeaf, UpdateAccountLeaf
+from glod.api.fund_node import FundNode, funds_connection_field, CreateFundLeaf, UpdateFundLeaf
+from glod.api.nominal_account_node import NominalAccountNode, nominal_accounts_connection_field, CreateNominalAccountLeaf, UpdateNominalAccountLeaf
+from glod.api.subject_node import SubjectNode, subjects_connection_field, CreateSubjectLeaf, UpdateSubjectLeaf
+from glod.api.parishioner_node import ParishionerNode, parishioners_connection_field, CreateParishionerLeaf, UpdateParishionerLeaf
 
 
 class RootQueryType(graphene.ObjectType):
@@ -19,14 +19,16 @@ class RootQueryType(graphene.ObjectType):
     """
     node = Node.Field()
     accounts = accounts_connection_field
+    account = Node.Field(AccountNode)
     funds = funds_connection_field
+    fund = Node.Field(FundNode)
     nominal_accounts = nominal_accounts_connection_field
+    nominal_account = Node.Field(NominalAccountNode)
     subjects = subjects_connection_field
+    subject = Node.Field(SubjectNode)
     parishioners = parishioners_connection_field
+    parishioner = Node.Field(ParishionerNode)
 
-    # TODO start here
-    # account = account_lookup
-    # ....
 
 class Mutations(graphene.ObjectType):
     account_create = CreateAccountLeaf.Field()

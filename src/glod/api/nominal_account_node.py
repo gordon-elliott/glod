@@ -9,7 +9,7 @@ from glod.db.nominal_account import NominalAccount, NominalAccountQuery
 from glod.api.nominal_account_leaf import NominalAccountLeaf, nominal_account_fields
 
 
-nominal_accounts_connection_field = node_connection_field(
+NominalAccountNode, nominal_accounts_connection_field = node_connection_field(
     NominalAccountQuery,
     NominalAccountLeaf,
     nominal_account_fields,

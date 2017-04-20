@@ -65,6 +65,9 @@ class FieldGroup(object):
     def fill_instance_from_dict(self, input_dict):
         raise NotImplementedError
 
+    def update_instance_from_dict(self, instance, input_dict, ignore_failed_updates=True):
+        raise NotImplementedError
+
     def _get_field_index(self, field):
         for i, item in enumerate(self._fields):
             if item == field:
@@ -115,6 +118,15 @@ class TupleFieldGroup(FieldGroup):
 
 
 class MutableSequenceFieldGroup(FieldGroup):
+
+    def update_instance_from_dict(self, instance, input_dict, ignore_failed_updates=True):
+        for field_name, value in input_dict.items():
+            try:
+                field = self[field_name]
+                self.set_value(instance, field, value)
+            except (KeyError, AttributeError):
+                if not ignore_failed_updates:
+                    raise
 
     def set_value(self, instance, field, value):
         raise NotImplementedError

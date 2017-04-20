@@ -9,24 +9,29 @@ from unittest import TestCase
 from a_tuin.metadata.field import StringField, IntField
 from a_tuin.metadata.field_group import DictFieldGroup
 from a_tuin.metadata.mapping import Mapping
-from a_tuin.metadata.args_field_group import ArgsFieldGroup
-from a_tuin.metadata.object_field_group_meta import ObjectFieldGroupMeta
+from a_tuin.metadata.object_field_group_meta import ObjectFieldGroupBase
 
 
-class Fixture(object, metaclass=ObjectFieldGroupMeta):
+class Fixture(ObjectFieldGroupBase):
 
     public_interface = (
-        IntField('id'),
+        IntField('id', is_mutable=False),
         StringField('purpose'),
         StringField('name'),
         StringField('account_no'),
-        StringField('IBAN'),
+        StringField('IBAN', use_custom_properties=True),
     )
-
-    constructor_parameters = ArgsFieldGroup(public_interface)
 
     def __init__(self, *args, named=None, **kwargs):
         self._named = named
+
+    @property
+    def IBAN(self):
+        return self._IBAN
+
+    @IBAN.setter
+    def IBAN(self, value):
+        self._IBAN = 'IBAN:' + value
 
 
 class TestArgsFieldGroup(TestCase):
@@ -71,3 +76,41 @@ class TestArgsFieldGroup(TestCase):
         self.assertEqual(identity, from_csv._id)
         self.assertEqual(purpose, from_csv._purpose)
         self.assertEqual(iban, from_csv._IBAN)
+
+    def test_update_from_dict(self):
+
+        named = 'named parameter'
+        identity = 83993
+        purpose = 'purpose'
+        name = 'name'
+        acc_no = '38387RR'
+        iban = '3038 3093 3030 03'
+
+        initial_values = {
+            'id': identity,
+            'purpose': purpose,
+            'name': name,
+        }
+        fixture = Fixture(named=named, **initial_values)
+
+        self.assertEqual(named, fixture._named)
+        self.assertEqual(identity, fixture._id)
+        self.assertEqual(purpose, fixture._purpose)
+        self.assertEqual(None, fixture._IBAN)
+        self.assertEqual(None, fixture._account_no)
+
+        new_name = 'updated'
+        update_values = {
+            'id': 88888,        # this update is ignored
+            'name': new_name,
+            'account_no': acc_no,
+            'IBAN': iban,
+        }
+        fixture.update_from(update_values)
+
+        self.assertEqual(named, fixture._named)
+        self.assertEqual(identity, fixture.id)  # id is unchanged
+        self.assertEqual(new_name, fixture.name)
+        self.assertEqual(purpose, fixture.purpose)
+        self.assertEqual(acc_no, fixture.account_no)
+        self.assertEqual('IBAN:' + iban, fixture.IBAN)

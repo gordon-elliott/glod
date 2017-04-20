@@ -117,9 +117,14 @@ changeView.fieldsets = [
     {
         fields: [
             {
+                name: 'id',
+                field: 'hidden',
+            },
+            {
                 name: 'referenceNo',
                 label: 'Ref. No',
                 field: 'String',
+                readOnly: true,
             },
             {
                 name: 'purpose',

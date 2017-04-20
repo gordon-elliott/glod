@@ -3,14 +3,14 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """ 
 """
 
-import graphene
-
 from collections import OrderedDict
 
+import graphene
 from graphene import Node, Connection, ConnectionField
 from graphene.relay import ClientIDMutation
-from glod.model.references import references_from
+
 from glod.api.types import GRAPHENE_FIELD_TYPE_MAP, OBJECT_REFERENCE_MAP
+from glod.model.references import references_from
 
 # TODO consider moving to a_tuin
 
@@ -64,6 +64,9 @@ def node_connection_field(query_class, leaf_class, node_fields, description):
     """
     entity_name = query_class.__name__
 
+    # add id to node_fields
+    # node_fields[ID_FIELD_NAME] = graphene.Field.mounted(graphene.ID(required=True))
+
     # node_class is based on the Leaf class but may include collections
     # of related objects; results can also be paged, filtered and sorted
     node_class = type(
@@ -114,11 +117,8 @@ def node_connection_field(query_class, leaf_class, node_fields, description):
         context['count'] = len(accounts)
         return accounts
 
-    return ConnectionField(
-        connection_class,
-        resolver=resolver,
-        description=description
-    )
+    connection_field = ConnectionField(connection_class, resolver=resolver, description=description)
+    return node_class, connection_field
 
 
 def _replace_object_ids_with_references(model_class, input_dict, context, info):
@@ -223,8 +223,7 @@ def get_update_mutation(model_class, input_fields, leaf_class):
             # use ids in payload to lookup related entities
             _replace_object_ids_with_references(model_class, input_dict, context, info)
             # assign properties from input
-            for name, value in input_dict.items():
-                setattr(instance, name, value)
+            instance.update_from(input_dict)
             # must be passed as a kwarg with a name that matches the schema
             tagged_instance = {field_name: instance}
             return cls(**tagged_instance)

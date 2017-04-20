@@ -9,7 +9,7 @@ from glod.db.subject import Subject, SubjectQuery
 from glod.api.subject_leaf import SubjectLeaf, subject_fields
 
 
-subjects_connection_field = node_connection_field(
+SubjectNode, subjects_connection_field = node_connection_field(
     SubjectQuery,
     SubjectLeaf,
     subject_fields,

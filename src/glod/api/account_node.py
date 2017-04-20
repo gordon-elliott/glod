@@ -18,7 +18,7 @@ account_node_fields['funds'] = graphene.Field(
     graphene.List(FundLeaf, description='Funds for this account.')
 )
 
-accounts_connection_field = node_connection_field(
+AccountNode, accounts_connection_field = node_connection_field(
     AccountQuery,
     AccountLeaf,
     account_node_fields,

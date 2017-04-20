@@ -7,10 +7,12 @@ from sqlalchemy import Column, Integer, PrimaryKeyConstraint, ForeignKeyConstrai
 from sqlalchemy.orm import mapper
 
 from a_tuin.db.metadata import metadata
+from a_tuin.metadata import IntField
 
 
 ID_COLUMN_NAME = 'id'
 ID_FIELDNAME = '_id'
+ID_PROPERTY_NAME = 'id'
 
 
 class TableMap(object):
@@ -23,6 +25,11 @@ class TableMap(object):
         self._db_table_mapper()
 
     def _db_columns_from_model(self):
+        # now that model class is connected to the DB expose a readonly property for the id
+        id_field = IntField(ID_PROPERTY_NAME, is_mutable=False)
+        id_field.create_property_on_class(self._model_class, ID_FIELDNAME)
+
+        # map the id column
         columns = {
             ID_FIELDNAME: Column(ID_COLUMN_NAME, Integer, key=ID_FIELDNAME)
         }
