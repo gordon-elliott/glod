@@ -67,3 +67,7 @@ class Fund(object, metaclass=ObjectFieldGroupMeta):
     @property
     def account(self):
         return self._account
+
+    @account.setter
+    def account(self, value):
+        self._account = value

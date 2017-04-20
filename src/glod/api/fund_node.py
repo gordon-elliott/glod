@@ -3,19 +3,17 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """ 
 """
 
-from graphene.relay import Node
+from glod.api.graphene import node_connection_field, get_update_mutation, get_create_mutation
 
 from glod.api.fund_leaf import FundLeaf, fund_fields
-from glod.db.fund import FundQuery
+from glod.db.fund import Fund, FundQuery
 
 
-class FundNode(FundLeaf):
-    class Meta:
-        interfaces = (Node,)
-        local_fields = fund_fields
-
-
-def resolve_funds(self, args, context, info):
-    session = context['request']['session']
-    funds = list(FundQuery(session).collection())
-    return funds
+funds_connection_field = node_connection_field(
+    FundQuery,
+    FundLeaf,
+    fund_fields,
+    description='List of all funds'
+)
+CreateFundLeaf = get_create_mutation(Fund, fund_fields, FundLeaf)
+UpdateFundLeaf = get_update_mutation(Fund, fund_fields, FundLeaf)

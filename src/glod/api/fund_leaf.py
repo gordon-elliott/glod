@@ -8,7 +8,7 @@ import graphene
 from graphene.relay import Node
 
 from glod.api.types import OBJECT_REFERENCE_MAP
-from glod.api.graphene import get_local_fields
+from glod.api.graphene import get_local_fields, with_session
 from glod.db.fund import Fund, FundQuery
 
 
@@ -21,8 +21,8 @@ class FundLeaf(graphene.ObjectType):
         local_fields = fund_fields
 
     @classmethod
-    def get_node(cls, id_, context, info):
-        session = context['request']['session']
+    @with_session
+    def get_node(cls, id_, context, info, session):
         return FundQuery(session).instance(id_)
 
 

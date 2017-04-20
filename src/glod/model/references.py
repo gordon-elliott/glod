@@ -8,8 +8,6 @@ from a_tuin.metadata.reference import Reference
 from glod.model.account import Account
 from glod.model.statement_item import StatementItem
 from glod.model.fund import Fund
-from glod.model.nominal_account import NominalAccount
-from glod.model.subject import Subject
 
 
 statement_item__account = Reference(StatementItem, 'account', Account)
@@ -20,3 +18,11 @@ REFERENCES = (
     statement_item__account,
     fund__account,
 )
+
+
+def references_from(model_class):
+    return (
+        reference
+        for reference in REFERENCES
+        if reference.source_model_class == model_class
+    )

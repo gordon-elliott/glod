@@ -3,21 +3,17 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """ 
 """
 
-from graphene.relay import Node
+from glod.api.graphene import node_connection_field, get_update_mutation, get_create_mutation
 
-from glod.db.nominal_account import NominalAccountQuery
+from glod.db.nominal_account import NominalAccount, NominalAccountQuery
 from glod.api.nominal_account_leaf import NominalAccountLeaf, nominal_account_fields
 
 
-class NominalAccountNode(NominalAccountLeaf):
-    class Meta:
-        interfaces = (Node,)
-        local_fields = nominal_account_fields
-
-
-def resolve_nominal_accounts(self, args, context, info):
-    session = context['request']['session']
-    nominal_accounts = list(NominalAccountQuery(session).collection())
-    return nominal_accounts
-
-
+nominal_accounts_connection_field = node_connection_field(
+    NominalAccountQuery,
+    NominalAccountLeaf,
+    nominal_account_fields,
+    description='List of all nominal accounts'
+)
+CreateNominalAccountLeaf = get_create_mutation(NominalAccount, nominal_account_fields, NominalAccountLeaf)
+UpdateNominalAccountLeaf = get_update_mutation(NominalAccount, nominal_account_fields, NominalAccountLeaf)

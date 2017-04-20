@@ -8,7 +8,7 @@ import graphene
 from graphene.relay import Node
 
 from glod.api.types import OBJECT_REFERENCE_MAP
-from glod.api.graphene import get_local_fields
+from glod.api.graphene import get_local_fields, with_session
 from glod.db.parishioner import Parishioner, ParishionerQuery
 
 
@@ -21,8 +21,8 @@ class ParishionerLeaf(graphene.ObjectType):
         local_fields = parishioner_fields
 
     @classmethod
-    def get_node(cls, id_, context, info):
-        session = context['request']['session']
+    @with_session
+    def get_node(cls, id_, context, info, session):
         return ParishionerQuery(session).instance(id_)
 
 

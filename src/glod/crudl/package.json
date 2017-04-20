@@ -1,0 +1,47 @@
+{
+  "name": "glod-crudl-graphql",
+  "version": "0.1.0",
+  "description": "glod crudl (graphql)",
+  "main": "index.js",
+  "scripts": {
+    "browserify": "mkdir -p ./static/admin && browserify . --extension=.jsx > ./static/admin/admin.js",
+    "watchify": "mkdir -p ./static/admin && watchify . --extension=.jsx -o ./static/admin/admin.js -v --poll=5000"
+  },
+  "browserify": {
+    "presets": [
+      "es2015",
+      "react"
+    ],
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            "es2015",
+            "react"
+          ],
+          "plugins": [
+            "syntax-class-properties",
+            "transform-class-properties",
+            "transform-object-rest-spread"
+          ]
+        }
+      ]
+    ]
+  },
+  "browser": "./index.js",
+  "author": "Gordon Elliott",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-plugin-syntax-class-properties": "^6.8.0",
+    "babel-plugin-transform-class-properties": "^6.10.2",
+    "babel-plugin-transform-object-rest-spread": "^6.8.0",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-react": "^6.5.0",
+    "babelify": "^7.3.0",
+    "watchify": "^3.7.0"
+  },
+  "dependencies": {
+    "react": "^15.1.0"
+  }
+}

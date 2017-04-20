@@ -8,6 +8,7 @@ class ObjectFieldGroupMeta(type):
         super().__init__(what, bases, dict_)
 
         if hasattr(cls, 'constructor_parameters'):
+            # create a class with a specific set of fields
             class SpecificObjectFieldGroup(ObjectFieldGroup):
                 def __init__(self, fields):
                     super().__init__(fields, cls)
