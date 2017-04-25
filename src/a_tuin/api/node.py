@@ -7,8 +7,6 @@ from graphene import Node
 
 
 def node_class(entity_name, leaf_class, node_fields):
-    # add id to node_fields
-    # node_fields[ID_FIELD_NAME] = graphene.Field.mounted(graphene.ID(required=True))
 
     # node_class is based on the Leaf class but may include collections
     # of related objects; results can also be paged, filtered and sorted
