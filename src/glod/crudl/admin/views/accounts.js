@@ -14,13 +14,7 @@ var listView = {
     actions: {
         list: function (req) {
             let accounts = crudl.connectors.accounts.read(req)
-            /* here we add a custom column based on the currently logged-in user */
-            let accountsWithCustomColumn = transform(accounts, (item) => {
-                item.is_owner = false
-                if (item.owner) item.is_owner = crudl.auth.user == item.owner.originalId
-                return item
-            })
-            return accountsWithCustomColumn
+            return accounts
         }
     },
 }
@@ -30,6 +24,7 @@ listView.fields = [
     {
         name: 'referenceNo',
         label: 'Ref. No',
+        main: true,
     },
     {
         name: 'purpose',
@@ -64,14 +59,6 @@ listView.fields = [
 listView.filters = {
     fields: [
         {
-            name: 'search',
-            label: 'Search',
-            field: 'Search',
-            props: {
-                helpText: 'Section, Category, Title'
-            }
-        },
-        {
             name: 'status',
             label: 'Status',
             field: 'Select',
@@ -101,7 +88,7 @@ var changeView = {
     },
     validate: function (values) {
         if (!values.name || values.name == "") {
-            return { _error: 'Either `Name` is required.' }
+            return { _error: '`Name` is required.' }
         }
     },
     denormalize: function (data) {
@@ -164,6 +151,16 @@ changeView.fieldsets = [
             {
                 name: 'IBAN',
                 label: 'IBAN',
+                field: 'String',
+            },
+            {
+                name: 'sortCode',
+                label: 'Sort Code',
+                field: 'String',
+            },
+            {
+                name: 'accountNo',
+                label: 'Account No',
                 field: 'String',
             },
         ]

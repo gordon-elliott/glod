@@ -117,7 +117,15 @@ def node_connection_field(query_class, leaf_class, node_fields, description):
         context['count'] = len(accounts)
         return accounts
 
-    connection_field = ConnectionField(connection_class, resolver=resolver, description=description)
+    connection_field = ConnectionField(
+        connection_class,
+        resolver=resolver,
+        description=description,
+        # filter=graphene.Argument(leaf_class),
+    )
+
+    # TODO start here - design filter input atom and collection
+
     return node_class, connection_field
 
 
