@@ -4,13 +4,10 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """
 
 import graphene
-
 from graphene.relay import Node
 
-from glod.api.types import OBJECT_REFERENCE_MAP
-from glod.api.graphene import get_local_fields, with_session
+from a_tuin.api import get_local_fields, with_session, OBJECT_REFERENCE_MAP
 from glod.db.fund import Fund, FundQuery
-
 
 fund_fields = get_local_fields(Fund)
 

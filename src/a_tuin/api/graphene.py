@@ -9,7 +9,7 @@ import graphene
 from graphene import Node, Connection, ConnectionField
 from graphene.relay import ClientIDMutation
 
-from glod.api.types import GRAPHENE_FIELD_TYPE_MAP, OBJECT_REFERENCE_MAP
+from a_tuin.api.types import GRAPHENE_FIELD_TYPE_MAP, OBJECT_REFERENCE_MAP
 from glod.model.references import references_from
 
 # TODO consider moving to a_tuin
