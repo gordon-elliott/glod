@@ -1,132 +1,16 @@
 __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
-""" 
+"""
 """
 
-from collections import OrderedDict
-
 import graphene
-from graphene import Node, Connection, ConnectionField
-from graphene.relay import ClientIDMutation
+from graphene import ClientIDMutation
 
-from a_tuin.api.types import GRAPHENE_FIELD_TYPE_MAP, OBJECT_REFERENCE_MAP
+from a_tuin.api import with_session
 from glod.model.references import references_from
 
-# TODO consider moving to a_tuin
 
 ID_FIELD_NAME = 'id'
-
-
-def _map_field(field):
-    """ Produce a Graphene field for a model metadata Field
-
-    :param field a_tuin.metadata.Field:
-    :return: graphene.Field
-    """
-    graphene_field_type = GRAPHENE_FIELD_TYPE_MAP.get(type(field))
-    if graphene_field_type is None:
-        if hasattr(field, 'enum_class'):
-            graphene_field_type = graphene.Enum.from_enum(field.enum_class)
-        else:
-            return graphene.Field(OBJECT_REFERENCE_MAP[field.name])
-
-    return graphene.Field.mounted(graphene_field_type())
-
-
-def get_local_fields(model_class):
-    """ Use model metadata to produce Graphene Fields
-
-    :param model_class: class to inspect
-    :return: OrderedDict of fieldname to Graphene Field
-    """
-    return OrderedDict(
-        (field.name, _map_field(field))
-        for field in model_class.constructor_parameters
-    )
-
-
-def with_session(fn):
-    def wrapped_with_session(self, args, context, info):
-        session = context['request']['session']
-        return fn(self, args, context, info, session)
-
-    return wrapped_with_session
-
-
-def node_connection_field(query_class, leaf_class, node_fields, description):
-    """ Make a ConnectionField for a model class
-
-    :param query_class: query class for model
-    :param leaf_class: simple ObjectType
-    :param node_fields: list of Fields
-    :param description: string describing the collection
-    :return: ConnectionField
-    """
-    entity_name = query_class.__name__
-
-    # add id to node_fields
-    # node_fields[ID_FIELD_NAME] = graphene.Field.mounted(graphene.ID(required=True))
-
-    # node_class is based on the Leaf class but may include collections
-    # of related objects; results can also be paged, filtered and sorted
-    node_class = type(
-        # e.g. AccountNode
-        '{}Node'.format(entity_name),
-        # inherit from the leaf class
-        (leaf_class,),
-        # equivalent to
-        # class Meta:
-        #   interfaces = (Node,)
-        #   local_fields = node_fields
-        {'Meta': type('Meta', (object,), {
-            'interfaces': (Node,),
-            'local_fields': node_fields
-        })}
-    )
-
-    class NodeConnection(object):
-        @with_session
-        def resolve_total_count(self, args, context, info, session):
-            return len(query_class(session))
-
-        @with_session
-        def resolve_filtered_count(self, args, context, info, session):
-            return context['count']
-
-    connection_class = type(
-        '{}NodeConnection'.format(entity_name),
-        # inherit class methods from NodeConnection and other behaviour from
-        # graphene.relay.Connection
-        (NodeConnection, Connection),
-        # equivalent to
-        # total_count = graphene.Int()
-        # filtered_count = graphene.Int()
-        # class Meta:
-        #     node = node_class
-        {
-            'total_count': graphene.Int(),
-            'filtered_count': graphene.Int(),
-            'Meta': type('Meta', (object,), {'node': node_class,})
-        }
-    )
-
-    @with_session
-    def resolver(self, args, context, info, session):
-        query = query_class(session)
-        accounts = list(query.collection())
-        context['count'] = len(accounts)
-        return accounts
-
-    connection_field = ConnectionField(
-        connection_class,
-        resolver=resolver,
-        description=description,
-        # filter=graphene.Argument(leaf_class),
-    )
-
-    # TODO start here - design filter input atom and collection
-
-    return node_class, connection_field
 
 
 def _replace_object_ids_with_references(model_class, input_dict, context, info):

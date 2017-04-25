@@ -11,6 +11,7 @@ from sanic.exceptions import SanicException, RequestTimeout
 from sanic_graphql import GraphQLView
 from sanic_jinja2 import SanicJinja2, PackageLoader
 
+from a_tuin.constants import SESSION
 from a_tuin.db.metadata import metadata
 from a_tuin.db.session_scope import Session
 from glod.db.engine import engine
@@ -27,20 +28,20 @@ jinja = SanicJinja2(app, PackageLoader('glod', 'crudl/templates'))
 async def add_session_to_request(request):
     # before each request initialize a session
     # using the client's request
-    request['session'] = Session()
+    request[SESSION] = Session()
 
 
 @app.middleware('response')
 async def commit_session(request, response):
     # after each request commit and close the session
-    request['session'].commit()
-    request['session'].close()
+    request[SESSION].commit()
+    request[SESSION].close()
 
 
 @app.exception(SanicException)
 def rollback_session(request, exception):
-    request['session'].rollback()
-    request['session'].close()
+    request[SESSION].rollback()
+    request[SESSION].close()
     return app.error_handler.default(request, exception)
 
 
