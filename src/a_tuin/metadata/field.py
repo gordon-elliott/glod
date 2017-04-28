@@ -168,6 +168,12 @@ class IntEnumField(IntField):
     def enum_class(self):
         return self._enum_class
 
+    def type_cast(self, value):
+        if value is not None:
+            return self._enum_class(value)
+        else:
+            return None
+
 
 class FloatField(Field):
     def __init__(self, name, is_mutable=True, required=False, default=None, description=None, validation=None, use_custom_properties=False):

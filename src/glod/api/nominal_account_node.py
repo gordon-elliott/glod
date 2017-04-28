@@ -16,6 +16,7 @@ from glod.db.nominal_account import NominalAccount, NominalAccountQuery
 NominalAccountNode = node_class(NominalAccount.__name__, NominalAccountLeaf, nominal_account_fields)
 
 nominal_accounts_connection_field = node_connection_field(
+    NominalAccount,
     NominalAccountQuery,
     NominalAccountNode,
     description='List of all nominal accounts'

@@ -17,7 +17,8 @@ from a_tuin.metadata.field_group import (
     ListFieldGroup,
     DictFieldGroup,
     ObjectFieldGroup,
-    TupleFieldGroup
+    TupleFieldGroup,
+    PartialDictFieldGroup,
 )
 from a_tuin.metadata.field_derivations import (
     copy_field,

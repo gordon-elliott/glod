@@ -208,3 +208,33 @@ class ObjectFieldGroup(MutableSequenceFieldGroup):
 
     def _mutator(self, instance, key, value):
         return setattr(instance, key, value)
+
+
+class PartialDictFieldGroup(DictFieldGroup):
+    def _get_values_in_order(self, input_dict):
+        return [
+            field.type_cast(input_dict[field.name])
+            for field in self._fields
+            if field.name in input_dict
+        ]
+
+    def _type_cast(self, input_dict):
+        return {
+            field.name: field.type_cast(input_dict[field.name])
+            for field in self._fields
+            if field.name in input_dict
+        }
+
+    def as_dict(self, instance):
+        return {
+            field.name: self.get_value(instance, field)
+            for field in self._fields
+            if field.name in instance
+        }
+
+    def instances_differ(self, instance, other):
+        return any(
+            self.get_value(instance, field) != self.get_value(other, field)
+            for field in self._fields
+            if field.name in instance and field.name in other
+        )

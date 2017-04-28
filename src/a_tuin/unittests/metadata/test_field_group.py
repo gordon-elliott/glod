@@ -12,10 +12,11 @@ from a_tuin.metadata.field import (
     RequiredValueMissing
 )
 from a_tuin.metadata.field_group import (
-    ListFieldGroup
+    ListFieldGroup, PartialDictFieldGroup
 )
 from a_tuin.unittests.metadata.fixture_field_group import (
     field_group_fixtures,
+    FIELDS,
     INITIAL_VALUES,
     MUTABLE_FIELD_GROUP_CLASSES,
     DATETIME_FIXTURE
@@ -142,3 +143,15 @@ class TestFieldList(TestCase):
             self.assertTrue(
                 field_group.instances_differ(instance, other)
             )
+
+class TestPartialDictFieldGroup(TestCase):
+
+    def test_fill_instance_from_dict(self):
+        modified = INITIAL_VALUES.copy()
+        del modified['count']
+        del modified['timestamp']
+        field_group = PartialDictFieldGroup(FIELDS)
+
+        filled = field_group.fill_instance_from_dict(modified)
+
+        self.assertEqual(modified, filled)

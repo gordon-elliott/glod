@@ -60,13 +60,15 @@ class Mapping(object):
         return None
 
     def update_in_place(self, source, destination):
+        # TODO implement allow_partial and tests for same
         for source_field, destination_field in self._field_mappings:
             value = self._source_entity.get_value(source, source_field)
             self._destination_entity.set_value(destination, destination_field, value)
 
-    def cast_from(self, source):
+    def cast_from(self, source, allow_partial=False):
         input_dict = {
             destination_field.name: self._source_entity.get_value(source, source_field)
             for source_field, destination_field in self._field_mappings
+            if not allow_partial or source_field.name in source
         }
         return self._destination_entity.fill_instance_from_dict(input_dict)

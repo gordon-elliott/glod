@@ -25,6 +25,7 @@ account_node_fields['funds'] = graphene.Field(
 AccountNode = node_class(Account.__name__, AccountLeaf, account_node_fields)
 
 accounts_connection_field = node_connection_field(
+    Account,
     AccountQuery,
     AccountNode,
     description='List of all bank accounts'

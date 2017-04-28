@@ -16,6 +16,7 @@ from glod.db.subject import Subject, SubjectQuery
 SubjectNode = node_class(Subject.__name__, SubjectLeaf, subject_fields)
 
 subjects_connection_field = node_connection_field(
+    Subject,
     SubjectQuery,
     SubjectNode,
     description="List of all subjects"

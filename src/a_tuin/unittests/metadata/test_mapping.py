@@ -8,10 +8,11 @@ from unittest import TestCase
 
 from a_tuin.metadata import prefix_name_with_underscore
 from a_tuin.metadata.field import DateTimeField, DateField, DecimalField
-from a_tuin.metadata.field_group import ListFieldGroup
+from a_tuin.metadata.field_group import ListFieldGroup, PartialDictFieldGroup
 from a_tuin.metadata.mapping import Mapping, IncompatibleFieldTypes
 from a_tuin.unittests.metadata.fixture_field_group import (
     FIELD_COMBINATIONS,
+    FIELDS,
     INITIAL_VALUES,
     field_group_combinations,
     inplace_field_group_combinations,
@@ -103,4 +104,19 @@ class TestMapping(TestCase):
             source_instance = source_constructor(INITIAL_VALUES)
             mapping = Mapping(source_field_group, dest_field_group)
             mapping.cast_from(source_instance)
+
+    def test_partial_cast_from(self):
+
+        source_field_group = PartialDictFieldGroup(FIELDS)
+        dest_field_group = PartialDictFieldGroup(FIELDS)
+        source_instance = INITIAL_VALUES.copy()
+        del source_instance['name']
+        del source_instance['timestamp']
+        mapping = Mapping(source_field_group, dest_field_group)
+        destination_instance = mapping.cast_from(source_instance, allow_partial=True)
+
+        self.assertEqual(
+            source_instance,
+            dest_field_group.as_dict(destination_instance)
+        )
 

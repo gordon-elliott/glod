@@ -15,9 +15,15 @@ export function continuousPagination(res) {
 }
 
 //-------------------------------------------------------------------
-function objectToArgs(object) {
+
+function objectToArgs(object, prepareFilters) {
     let args = Object.getOwnPropertyNames(object).map(name => {
-        return `${name}: ${JSON.stringify(object[name])}`
+        if (name == 'filters' && prepareFilters) {
+            return `${name}: ${prepareFilters(object[name])}`
+        }
+        else {
+            return `${name}: ${JSON.stringify(object[name])}`
+        }
     }).join(', ')
     return args ? `(${args})` : ''
 }
@@ -34,6 +40,15 @@ function sorting(req) {
     return {}
 }
 
+function filters(req) {
+    if (req.filters && Object.keys(req.filters).length) {
+        return {
+            filters: req.filters
+        }
+    }
+    return {}
+}
+
 export function listQuery(options) {
     if (Object.prototype.toString.call(options.fields) === '[object Array]') {
         options.fields = options.fields.join(', ')
@@ -42,9 +57,9 @@ export function listQuery(options) {
         let args = objectToArgs(Object.assign({},
             options.args,
             req.page,
-            req.filters,
+            filters(req),
             sorting(req)
-        ))
+        ), options.prepareFilters)
         return `{
             ${options.name} ${args} {
                 totalCount, filteredCount,

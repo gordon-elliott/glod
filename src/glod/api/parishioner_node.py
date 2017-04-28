@@ -16,6 +16,7 @@ from glod.db.parishioner import Parishioner, ParishionerQuery
 ParishionerNode = node_class(Parishioner.__name__, ParishionerLeaf, parishioner_fields)
 
 parishioners_connection_field = node_connection_field(
+    Parishioner,
     ParishionerQuery,
     ParishionerNode,
     description="List of all parishioners"

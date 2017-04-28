@@ -17,6 +17,7 @@ from glod.db.fund import Fund, FundQuery
 FundNode = node_class(Fund.__name__, FundLeaf, fund_fields)
 
 funds_connection_field = node_connection_field(
+    Fund,
     FundQuery,
     FundNode,
     description='List of all funds'

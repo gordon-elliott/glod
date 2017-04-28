@@ -8,7 +8,18 @@ module.exports = {
             read: listQuery({
                 name: 'accounts',
                 fields: 'id, referenceNo, purpose, status, name, institution, sortCode, accountNo, BIC, IBAN',
-                args: { first: 7 }
+                args: { first: 7 },
+                prepareFilters: object => {
+                    let args = Object.getOwnPropertyNames(object).map(name => {
+                        if (['referenceNo', 'status'].includes(name)) {
+                            return `${name}: ${object[name]}`
+                        }
+                        else {
+                            return `${name}: "${object[name]}"`
+                        }
+                    }).join(', ')
+                    return args ? `{${args}}` : ''
+                }
             }),
             create: `mutation ($input: AccountCreateLeafInput!) {
                 accountCreate(input: $input) {

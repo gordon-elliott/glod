@@ -59,6 +59,16 @@ listView.fields = [
 listView.filters = {
     fields: [
         {
+            name: 'referenceNo',
+            label: 'Ref. No',
+            field: 'Search',
+        },
+        {
+            name: 'purpose',
+            label: 'Purpose',
+            field: 'Search',
+        },
+        {
             name: 'status',
             label: 'Status',
             field: 'Select',
@@ -70,8 +80,23 @@ listView.filters = {
             },
         },
         {
-            name: 'name_Icontains',
-            label: 'Search (Name)',
+            name: 'name',
+            label: 'Name',
+            field: 'Search',
+        },
+        {
+            name: 'institution',
+            label: 'Institution',
+            field: 'Search',
+        },
+        {
+            name: 'accountNo',
+            label: 'Account No',
+            field: 'Search',
+        },
+        {
+            name: 'IBAN',
+            label: 'IBAN',
             field: 'Search',
         },
     ]

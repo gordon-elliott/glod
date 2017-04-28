@@ -30,6 +30,14 @@ class Query(object):
         self._query = self._query.limit(num_items)
         return self
 
+    def criteria_from_dict(self, filters):
+        columns_collection = self._model_class.c
+        for filter_field, filter_value in filters.items():
+            column = columns_collection.get(filter_field)
+            if column is not None:
+                yield column.__eq__(filter_value)
+                # TODO allow custom operators
+
     def filter(self, *criteria):
         self._query = self._query.filter(*criteria)
         return self
