@@ -4,6 +4,8 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """
 import graphene
 from graphene import Node
+from graphql_relay.connection.arrayconnection import cursor_to_offset, offset_to_cursor
+from unittest.mock import Mock
 
 from a_tuin.api.connection import node_connection_field
 from a_tuin.unittests.api.graphql_schema_test_case import GraphQLSchemaTestCase
@@ -96,7 +98,135 @@ class TestConnection(GraphQLSchemaTestCase):
         self.assertTrue(edge_tested)
         self.assertTrue(aclass_tested)
 
-    def test_resolve_filter(self):
-        # TODO start here
-        # {'first': 7, 'filters': {'status': 1, 'name': 'somename'}}
-        pass
+    def _apply_filter_with_mocks(self, num_instances, offset, limit, filters):
+        expected_instances = [Mock() for _ in range(num_instances)]
+        # mock entities with row numbers
+        mock_results = [(instance, index + 1) for index, instance in enumerate(expected_instances)]
+        mock_query = Mock()
+        mock_session = Mock()
+        mock_query.add_columns.return_value = mock_query
+        mock_query.filter.return_value = mock_query
+        mock_query.count.return_value = len(mock_results)
+
+        def apply_offset():
+            del mock_results[0:offset]
+            del expected_instances[0:offset]
+            return mock_query
+
+        mock_query.from_self.side_effect = apply_offset
+
+        def apply_limit(num_results):
+            del mock_results[num_results:]
+            del expected_instances[num_results:]
+            return mock_query
+
+        mock_query.limit.side_effect = apply_limit
+        mock_query.all.return_value = mock_results
+        mock_session.query.return_value = mock_query
+
+        context = {'request': {'session': mock_session}}
+        args = {}
+        if offset:
+            args['after'] = offset_to_cursor(offset)
+        if limit:
+            args['first'] = limit
+        if filters:
+            args['filters'] = filters
+
+        instances = aclass_connection_field.resolver(
+            None, args, context, None
+        )
+
+        return context, expected_instances, instances, mock_query, mock_session
+
+    def _assert_standard_checks(self, expected_instances, instances, mock_session, mock_query):
+        self.assertEqual(expected_instances, instances)
+        mock_session.query.assert_called_once_with(AClass)
+        mock_query.count.assert_called_once_with()
+        mock_query.all.assert_called_once_with()
+
+    def _assert_offset(self, offset, mock_query):
+        offset_expression = mock_query.filter.call_args_list[1][0][0]
+        self.assertEqual('_row_number', offset_expression.left.key)
+        self.assertEqual(offset, offset_expression.right.value - 1)
+        mock_query.from_self.assert_called_once_with()
+
+    def _assert_filter(self, filters, mock_query):
+        filter_expressions = {
+            expression.left.description: expression.right.value
+            for criterion in mock_query.filter.call_args_list[0]
+            for expression in criterion
+        }
+        self.assertEqual(filters, filter_expressions)
+
+    def _assert_page_info(self, page_info, has_next, has_prev, start, end):
+        self.assertEqual(has_next, page_info.has_next_page)
+        self.assertEqual(has_prev, page_info.has_previous_page)
+        self.assertEqual(start, cursor_to_offset(page_info.start_cursor))
+        self.assertEqual(end, cursor_to_offset(page_info.end_cursor))
+
+    def test_resolve_filter_no_page(self):
+        num_instances = 14
+        limit = None
+        offset = None
+        filters = {'status': 1, 'name': 'somename'}
+
+        context, expected_instances, instances, mock_query, mock_session = self._apply_filter_with_mocks(
+            num_instances, offset, limit, filters
+        )
+
+        self._assert_standard_checks(expected_instances, instances, mock_session, mock_query)
+        self.assertEqual(num_instances, context['count'])
+        self._assert_filter(filters, mock_query)
+        self._assert_page_info(context['pageInfo'], False, False, 0, num_instances - 1)
+
+    def test_resolve_filter_first_page(self):
+        num_instances = 9
+        limit = 4
+        offset = 0
+        filters = {'status': 1}
+
+        context, expected_instances, instances, mock_query, mock_session = self._apply_filter_with_mocks(
+            num_instances, offset, limit, filters
+        )
+
+        self._assert_standard_checks(expected_instances, instances, mock_session, mock_query)
+        self.assertEqual(limit, context['count'])
+        self._assert_filter(filters, mock_query)
+        mock_query.limit.assert_called_once_with(limit)
+        self._assert_page_info(context['pageInfo'], True, False, 0, limit - 1)
+
+    def test_resolve_filter_middle_page(self):
+        num_instances = 22
+        limit = 4
+        offset = 13
+        filters = {'status': 1, 'name': 'somename'}
+
+        context, expected_instances, instances, mock_query, mock_session = self._apply_filter_with_mocks(
+            num_instances, offset, limit, filters
+        )
+
+        self._assert_standard_checks(expected_instances, instances, mock_session, mock_query)
+        self.assertEqual(limit, context['count'])
+        self._assert_offset(offset, mock_query)
+        self._assert_filter(filters, mock_query)
+        mock_query.limit.assert_called_once_with(limit)
+        self._assert_page_info(context['pageInfo'], True, True, offset, offset + limit - 1)
+
+    def test_resolve_filter_last_page(self):
+        num_instances = 17
+        limit = 6
+        offset = 14
+        filters = {'name': 'somename'}
+
+        context, expected_instances, instances, mock_query, mock_session = self._apply_filter_with_mocks(
+            num_instances, offset, limit, filters
+        )
+
+        self._assert_standard_checks(expected_instances, instances, mock_session, mock_query)
+        self.assertEqual(num_instances - offset, context['count'])
+        self._assert_offset(offset, mock_query)
+        self._assert_filter(filters, mock_query)
+        mock_query.limit.assert_called_once_with(limit)
+        self._assert_page_info(context['pageInfo'], False, True, offset, num_instances - 1)
+

@@ -7,7 +7,7 @@ import graphene
 from graphene.relay import Node
 
 from a_tuin.api import get_local_fields, with_session, OBJECT_REFERENCE_MAP
-from glod.db.fund import Fund, FundQuery
+from glod.db.fund import Fund, FundInstanceQuery
 
 fund_fields = get_local_fields(Fund)
 
@@ -20,7 +20,7 @@ class FundLeaf(graphene.ObjectType):
     @classmethod
     @with_session
     def get_node(cls, id_, context, info, session):
-        return FundQuery(session).instance(id_)
+        return FundInstanceQuery(session).instance(id_)
 
 
 OBJECT_REFERENCE_MAP['fund'] = FundLeaf

@@ -40,6 +40,7 @@ async def commit_session(request, response):
 
 @app.exception(SanicException)
 def rollback_session(request, exception):
+    # TODO confirm that this is working
     request[SESSION].rollback()
     request[SESSION].close()
     return app.error_handler.default(request, exception)
@@ -58,6 +59,14 @@ app.static('/favicon.ico', '{}/favicon.ico'.format(static_path), use_modified_si
 # async def admin(request):
 #     return jinja.render('admin/index.html', request, config=configuration)
 
+
+@app.route('crudl-graphql/<entity>/<id>')
+async def admin(request, entity, id):
+    return jinja.render('admin/index.html', request, config=configuration)
+
+@app.route('crudl-graphql/<entity>')
+async def admin(request, entity):
+    return jinja.render('admin/index.html', request, config=configuration)
 
 @app.route('crudl-graphql/')
 async def admin(request):

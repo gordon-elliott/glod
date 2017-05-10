@@ -3,7 +3,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """ 
 """
 
-from a_tuin.db import RelationMap, TableMap, Query
+from a_tuin.db import TableMap, RelationMap, PagedQuery, InstanceQuery
 
 from glod.model.fund import Fund, FundType
 from glod.model.fund_collection import FundCollection
@@ -23,6 +23,11 @@ TableMap(
     ),
 )
 
-class FundQuery(Query):
+class FundInstanceQuery(InstanceQuery):
+    def __init__(self, session):
+        super().__init__(Fund, FundCollection, session)
+
+
+class FundQuery(PagedQuery):
     def __init__(self, session):
         super().__init__(Fund, FundCollection, session)

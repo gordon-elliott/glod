@@ -7,7 +7,7 @@ import graphene
 from graphene.relay import Node
 
 from a_tuin.api import get_local_fields, with_session, OBJECT_REFERENCE_MAP
-from glod.db.nominal_account import NominalAccount, NominalAccountQuery
+from glod.db.nominal_account import NominalAccount, NominalAccountInstanceQuery
 
 nominal_account_fields = get_local_fields(NominalAccount)
 
@@ -20,7 +20,7 @@ class NominalAccountLeaf(graphene.ObjectType):
     @classmethod
     @with_session
     def get_node(cls, id_, context, info, session):
-        return NominalAccountQuery(session).instance(id_)
+        return NominalAccountInstanceQuery(session).instance(id_)
 
 
 OBJECT_REFERENCE_MAP['nominal_account'] = NominalAccountLeaf

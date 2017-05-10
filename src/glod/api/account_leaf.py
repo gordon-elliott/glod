@@ -7,7 +7,7 @@ import graphene
 from graphene.relay import Node
 
 from a_tuin.api import get_local_fields, with_session, OBJECT_REFERENCE_MAP
-from glod.db.account import Account, AccountQuery
+from glod.db.account import Account, AccountInstanceQuery
 
 account_fields = get_local_fields(Account)
 
@@ -20,7 +20,7 @@ class AccountLeaf(graphene.ObjectType):
     @classmethod
     @with_session
     def get_node(cls, id_, context, info, session):
-        return AccountQuery(session).instance(id_)
+        return AccountInstanceQuery(session).instance(id_)
 
 
 OBJECT_REFERENCE_MAP['account'] = AccountLeaf

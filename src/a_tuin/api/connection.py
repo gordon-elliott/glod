@@ -4,7 +4,8 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """
 
 import graphene
-from graphene import Connection, ConnectionField
+from graphene import Connection, ConnectionField, Node, PageInfo
+from graphql_relay.connection.arrayconnection import offset_to_cursor
 
 from a_tuin.metadata import Mapping, PartialDictFieldGroup
 from a_tuin.api import with_session, get_input_fields
@@ -28,6 +29,10 @@ def node_connection_field(model_class, query_class, node_class, description):
         @with_session
         def resolve_filtered_count(self, args, context, info, session):
             return context['count']
+
+        @with_session
+        def resolve_page_info(self, args, context, info, session):
+            return context['pageInfo']
 
     connection_class = type(
         '{}NodeConnection'.format(entity_name),
@@ -53,13 +58,35 @@ def node_connection_field(model_class, query_class, node_class, description):
     @with_session
     def resolver(self, args, context, info, session):
         query = query_class(session)
+
         filters = args.get('filters')
         if filters:
             typed = filter_to_internal.cast_from(filters, allow_partial=True)
             criteria = tuple(query.criteria_from_dict(typed))
             query.filter(*criteria)
-        instances = list(query.collection())
+
+        filtered_count = len(query)
+
+        after = args.get('after')
+        if after:
+            offset = int(Node.from_global_id(after)[1])
+            query.offset(offset)
+            args.pop('after')
+
+        first = args.get('first')
+        if first:
+            limit = int(first)
+            query.limit(limit)
+
+        instance_generator = query.collection()
+        instances = list(instance_generator)
         context['count'] = len(instances)
+        context['pageInfo'] = PageInfo(
+            start_cursor=offset_to_cursor(query.start_index),
+            end_cursor=offset_to_cursor(query.end_index),
+            has_previous_page=query.start_index > 0,
+            has_next_page=query.end_index < filtered_count - 1
+        )
         return instances
 
     # equivalent to

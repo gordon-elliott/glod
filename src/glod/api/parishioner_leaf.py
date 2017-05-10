@@ -7,7 +7,7 @@ import graphene
 from graphene.relay import Node
 
 from a_tuin.api import get_local_fields, with_session, OBJECT_REFERENCE_MAP
-from glod.db.parishioner import Parishioner, ParishionerQuery
+from glod.db.parishioner import Parishioner, ParishionerInstanceQuery
 
 parishioner_fields = get_local_fields(Parishioner)
 
@@ -20,7 +20,7 @@ class ParishionerLeaf(graphene.ObjectType):
     @classmethod
     @with_session
     def get_node(cls, id_, context, info, session):
-        return ParishionerQuery(session).instance(id_)
+        return ParishionerInstanceQuery(session).instance(id_)
 
 
 OBJECT_REFERENCE_MAP['parishioner'] = ParishionerLeaf

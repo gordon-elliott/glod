@@ -52,7 +52,7 @@ module.exports = {
         transform: {
             readResponseData: data => {
                 if (!data.data.account) {
-                    throw crudl.notFoundError('The requested account was not found')
+                    throw new crudl.NotFoundError('The requested account was not found')
                 }
                 return data.data.account
             },

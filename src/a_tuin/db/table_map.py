@@ -3,7 +3,13 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """ 
 """
 
-from sqlalchemy import Column, Integer, PrimaryKeyConstraint, ForeignKeyConstraint, Table
+from sqlalchemy import (
+    Column,
+    Integer,
+    PrimaryKeyConstraint,
+    ForeignKeyConstraint,
+    Table
+)
 from sqlalchemy.orm import mapper
 
 from a_tuin.db.metadata import metadata

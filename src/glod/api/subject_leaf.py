@@ -7,7 +7,7 @@ import graphene
 from graphene.relay import Node
 
 from a_tuin.api import get_local_fields, with_session, OBJECT_REFERENCE_MAP
-from glod.db.subject import Subject, SubjectQuery
+from glod.db.subject import Subject, SubjectInstanceQuery
 
 subject_fields = get_local_fields(Subject)
 
@@ -20,7 +20,7 @@ class SubjectLeaf(graphene.ObjectType):
     @classmethod
     @with_session
     def get_node(cls, id_, context, info, session):
-        return SubjectQuery(session).instance(id_)
+        return SubjectInstanceQuery(session).instance(id_)
 
 
 OBJECT_REFERENCE_MAP['subject'] = SubjectLeaf
