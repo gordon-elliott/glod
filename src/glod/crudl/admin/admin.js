@@ -2,6 +2,7 @@ import React from 'react'
 import CustomDashboard from './custom/Dashboard'
 
 var accounts = require('./views/accounts')
+var nominalAccounts = require('./views/nominalAccounts')
 var connectors = require('./connectors/connectors')
 var { login, logout } = require('./auth')
 
@@ -15,6 +16,7 @@ var admin = {
     connectors,
     views: {
         accounts,
+        nominalAccounts,
     },
     auth: {
         login,

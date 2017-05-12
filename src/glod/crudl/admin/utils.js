@@ -1,5 +1,9 @@
+export function optionsFromMap(selectMap) {
+    return Object.keys(selectMap).map(k => {
+        return {value: k, label: selectMap[k]}
+    })
+}
 
-//-------------------------------------------------------------------
 export function continuousPagination(res) {
     let key = Object.keys(res.data.data)[0]
     let hasNext = res.data.data[key].pageInfo.hasNextPage
@@ -13,8 +17,6 @@ export function continuousPagination(res) {
         filteredTotal: res.data.data[key].filteredCount
     }
 }
-
-//-------------------------------------------------------------------
 
 function objectToArgs(object, prepareFilters) {
     let args = Object.getOwnPropertyNames(object).map(name => {

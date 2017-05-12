@@ -1,12 +1,6 @@
 import { formatDate } from '../utils'
 import React from 'react'
 
-function transform(p, func) {
-    return p.then(response => {
-        return response.set('data', response.data.map(func))
-    })
-}
-
 //-------------------------------------------------------------------
 var listView = {
     path: 'accounts',
@@ -32,33 +26,33 @@ listView.fields = [
     {
         name: 'purpose',
         label: 'Purpose',
+        sortable: true,
     },
     {
         name: 'status',
         label: 'Status',
+        sortable: true,
     },
     {
         name: 'name',
         label: 'Name',
         main: true,
         sortable: true,
-        sorted: 'ascending',
-        sortpriority: '2',
     },
     {
         name: 'institution',
         label: 'Institution',
         sortable: true,
-        sorted: 'ascending',
-        sortpriority: '3',
     },
     {
         name: 'accountNo',
         label: 'Account No',
+        sortable: true,
     },
     {
         name: 'IBAN',
         label: 'IBAN',
+        sortable: true,
     },
 ]
 
@@ -215,30 +209,6 @@ changeView.fieldsets = [
         ]
     }
 ]
-
-// changeView.tabs = [
-//     {
-//         title: 'Legacy',
-//         actions: {
-//             list: (req) => crudl.connectors.links.read(req.filter('account', crudl.path.id)),
-//             add: (req) => crudl.connectors.links.create(req),
-//             save: (req) => crudl.connectors.link(req.data.id).update(req),
-//         },
-//         itemTitle: '{url}',
-//         fields: [
-//             {
-//                 name: 'sortCode',
-//                 label: 'Sort Code',
-//                 field: 'String',
-//             },
-//             {
-//                 name: 'accountNo',
-//                 label: 'Account No',
-//                 field: 'String',
-//             },
-//         ],
-//     },
-// ]
 
 //-------------------------------------------------------------------
 var addView = {
