@@ -10,10 +10,9 @@ class Query(object):
         self._model_class = model_class
         self._model_collection = model_collection
 
-        self._query = self._session.query(self._model_class)
-
 
 class InstanceQuery(Query):
 
     def instance(self, id):
-        return self._query.get(id)
+        query = self._session.query(self._model_class)
+        return query.get(id)

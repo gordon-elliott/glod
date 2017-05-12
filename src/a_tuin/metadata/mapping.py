@@ -2,7 +2,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 """ 
 """
-
+from collections import OrderedDict
 from a_tuin.metadata.field import INVALID_FIELD_COMBINATIONS
 
 
@@ -65,10 +65,13 @@ class Mapping(object):
             value = self._source_entity.get_value(source, source_field)
             self._destination_entity.set_value(destination, destination_field, value)
 
-    def cast_from(self, source, allow_partial=False):
-        input_dict = {
-            destination_field.name: self._source_entity.get_value(source, source_field)
-            for source_field, destination_field in self._field_mappings
-            if not allow_partial or source_field.name in source
-        }
+    def cast_from(self, source):
+        source_field_to_destination_field = dict(self._field_mappings)
+        input_dict = OrderedDict(
+            (destination_field.name, value)
+            for source_field, value, destination_field in self._source_entity.iterate_instance(
+                source, source_field_to_destination_field
+            )
+            if destination_field is not None
+        )
         return self._destination_entity.fill_instance_from_dict(input_dict)

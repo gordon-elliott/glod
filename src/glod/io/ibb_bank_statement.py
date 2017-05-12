@@ -49,9 +49,7 @@ class StatementLoader(object):
         return None
 
     def _statement_line(self, line):
-        kwargs = self.csv_to_constructor.cast_from(
-            [self._account] + line
-        )
+        kwargs = self.csv_to_constructor.cast_from([self._account] + line)
         return self._item_instance_class(**kwargs)
 
     def _eof(self, line):

@@ -4,11 +4,23 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """
 
 import graphene
+
+from collections import OrderedDict
 from graphene import Connection, ConnectionField, Node, PageInfo
 from graphql_relay.connection.arrayconnection import offset_to_cursor
 
-from a_tuin.metadata import Mapping, PartialDictFieldGroup
+from a_tuin.metadata import Mapping, PartialDictFieldGroup, make_boolean, snake_to_camel_case
 from a_tuin.api import with_session, get_input_fields
+
+
+def _parse_order_by(order_by_string):
+    for column_spec in order_by_string.split(','):
+        if column_spec[0] == '-':
+            column_spec = column_spec[1:]
+            sort_ascending = False
+        else:
+            sort_ascending = True
+        yield column_spec, sort_ascending
 
 
 def node_connection_field(model_class, query_class, node_class, description):
@@ -55,17 +67,31 @@ def node_connection_field(model_class, query_class, node_class, description):
     typed_filter_field_group = model_class.internal.derive(field_group_class=PartialDictFieldGroup)
     filter_to_internal = Mapping(untyped_filter_field_group, typed_filter_field_group)
 
+    camel_case_field_group = model_class.properties.derive(snake_to_camel_case, PartialDictFieldGroup)
+    order_by_field_group = model_class.internal.derive(make_boolean, PartialDictFieldGroup)
+    order_by_to_mapped = Mapping(camel_case_field_group, order_by_field_group)
+
     @with_session
     def resolver(self, args, context, info, session):
         query = query_class(session)
 
         filters = args.get('filters')
         if filters:
-            typed = filter_to_internal.cast_from(filters, allow_partial=True)
+            typed = filter_to_internal.cast_from(filters)
             criteria = tuple(query.criteria_from_dict(typed))
             query.filter(*criteria)
 
         filtered_count = len(query)
+
+        order_by = args.get('orderBy')
+        if order_by:
+            order_by_values = OrderedDict(_parse_order_by(order_by))
+            mapped = order_by_to_mapped.cast_from(order_by_values)
+            # TODO only add this sort by id if there is no other sort by a unique field
+            # required in order have stable sorting and paging when sorting by a non-unique field
+            mapped['_id'] = True
+            criteria = tuple(query.sort_criteria_from_dict(mapped))
+            query.order_by(*criteria)
 
         after = args.get('after')
         if after:
@@ -78,8 +104,8 @@ def node_connection_field(model_class, query_class, node_class, description):
             limit = int(first)
             query.limit(limit)
 
-        instance_generator = query.collection()
-        instances = list(instance_generator)
+        instances = list(query.collection())
+
         context['count'] = len(instances)
         context['pageInfo'] = PageInfo(
             start_cursor=offset_to_cursor(query.start_index),
@@ -104,6 +130,7 @@ def node_connection_field(model_class, query_class, node_class, description):
         resolver=resolver,
         description=description,
         filters=graphene.Argument(filter_input),
+        orderBy=graphene.Argument(graphene.String),
     )
 
     return connection_field

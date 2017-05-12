@@ -44,6 +44,7 @@ class TestConnection(GraphQLSchemaTestCase):
                 self.assertEqual(
                     (
                         ('filters', 'AClassFilterInput'),
+                        ('orderBy', 'String'),
                         ('before', 'String'),
                         ('after', 'String'),
                         ('first', 'Int'),
@@ -98,7 +99,7 @@ class TestConnection(GraphQLSchemaTestCase):
         self.assertTrue(edge_tested)
         self.assertTrue(aclass_tested)
 
-    def _apply_filter_with_mocks(self, num_instances, offset, limit, filters):
+    def _apply_filter_with_mocks(self, num_instances, offset, limit, filters, order_by):
         expected_instances = [Mock() for _ in range(num_instances)]
         # mock entities with row numbers
         mock_results = [(instance, index + 1) for index, instance in enumerate(expected_instances)]
@@ -121,6 +122,7 @@ class TestConnection(GraphQLSchemaTestCase):
             return mock_query
 
         mock_query.limit.side_effect = apply_limit
+        mock_query.order_by.return_value = mock_query
         mock_query.all.return_value = mock_results
         mock_session.query.return_value = mock_query
 
@@ -132,6 +134,8 @@ class TestConnection(GraphQLSchemaTestCase):
             args['first'] = limit
         if filters:
             args['filters'] = filters
+        if order_by:
+            args['orderBy'] = order_by
 
         instances = aclass_connection_field.resolver(
             None, args, context, None
@@ -141,12 +145,13 @@ class TestConnection(GraphQLSchemaTestCase):
 
     def _assert_standard_checks(self, expected_instances, instances, mock_session, mock_query):
         self.assertEqual(expected_instances, instances)
-        mock_session.query.assert_called_once_with(AClass)
+        mock_session.query.assert_called_with(AClass)
+        self.assertEqual(2, mock_session.query.call_count)
         mock_query.count.assert_called_once_with()
         mock_query.all.assert_called_once_with()
 
     def _assert_offset(self, offset, mock_query):
-        offset_expression = mock_query.filter.call_args_list[1][0][0]
+        offset_expression = mock_query.filter.call_args_list[2][0][0]
         self.assertEqual('_row_number', offset_expression.left.key)
         self.assertEqual(offset, offset_expression.right.value - 1)
         mock_query.from_self.assert_called_once_with()
@@ -172,7 +177,7 @@ class TestConnection(GraphQLSchemaTestCase):
         filters = {'status': 1, 'name': 'somename'}
 
         context, expected_instances, instances, mock_query, mock_session = self._apply_filter_with_mocks(
-            num_instances, offset, limit, filters
+            num_instances, offset, limit, filters, None
         )
 
         self._assert_standard_checks(expected_instances, instances, mock_session, mock_query)
@@ -187,7 +192,7 @@ class TestConnection(GraphQLSchemaTestCase):
         filters = {'status': 1}
 
         context, expected_instances, instances, mock_query, mock_session = self._apply_filter_with_mocks(
-            num_instances, offset, limit, filters
+            num_instances, offset, limit, filters, None
         )
 
         self._assert_standard_checks(expected_instances, instances, mock_session, mock_query)
@@ -203,7 +208,7 @@ class TestConnection(GraphQLSchemaTestCase):
         filters = {'status': 1, 'name': 'somename'}
 
         context, expected_instances, instances, mock_query, mock_session = self._apply_filter_with_mocks(
-            num_instances, offset, limit, filters
+            num_instances, offset, limit, filters, None
         )
 
         self._assert_standard_checks(expected_instances, instances, mock_session, mock_query)
@@ -220,7 +225,7 @@ class TestConnection(GraphQLSchemaTestCase):
         filters = {'name': 'somename'}
 
         context, expected_instances, instances, mock_query, mock_session = self._apply_filter_with_mocks(
-            num_instances, offset, limit, filters
+            num_instances, offset, limit, filters, None
         )
 
         self._assert_standard_checks(expected_instances, instances, mock_session, mock_query)
@@ -230,3 +235,47 @@ class TestConnection(GraphQLSchemaTestCase):
         mock_query.limit.assert_called_once_with(limit)
         self._assert_page_info(context['pageInfo'], False, True, offset, num_instances - 1)
 
+    def test_sort_one_ascending(self):
+        num_instances = 12
+        order_by = 'name'
+
+        context, expected_instances, instances, mock_query, mock_session = self._apply_filter_with_mocks(
+            num_instances, None, None, None, order_by
+        )
+
+        self._assert_standard_checks(expected_instances, instances, mock_session, mock_query)
+        call_args = mock_query.order_by.call_args_list[0]
+        self.assertEqual(order_by, call_args[0][0].element.name)
+        self.assertIn('ASC', str(call_args[0][0].expression))
+
+    def test_sort_one_descending(self):
+        num_instances = 12
+        order_by = 'refNo'
+        order_by_with_direction = '-{}'.format(order_by)
+
+        context, expected_instances, instances, mock_query, mock_session = self._apply_filter_with_mocks(
+            num_instances, None, None, None, order_by_with_direction
+        )
+
+        self._assert_standard_checks(expected_instances, instances, mock_session, mock_query)
+        call_args = mock_query.order_by.call_args_list[0]
+        self.assertEqual('ref_no', call_args[0][0].element.name)
+        self.assertIn('DESC', str(call_args[0][0].expression))
+
+    def test_sort_ascending_descending(self):
+        num_instances = 9
+        order_by_with_direction = 'refNo,-name'
+
+        context, expected_instances, instances, mock_query, mock_session = self._apply_filter_with_mocks(
+            num_instances, None, None, None, order_by_with_direction
+        )
+
+        self._assert_standard_checks(expected_instances, instances, mock_session, mock_query)
+
+        sort_expression = mock_query.order_by.call_args_list[0][0][0]
+        self.assertEqual('ref_no', sort_expression.element.name)
+        self.assertIn('ASC', str(sort_expression.expression))
+
+        sort_expression = mock_query.order_by.call_args_list[0][0][1]
+        self.assertEqual('name', sort_expression.element.name)
+        self.assertIn('DESC', str(sort_expression.expression))

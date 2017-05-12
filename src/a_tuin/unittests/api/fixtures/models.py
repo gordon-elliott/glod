@@ -28,9 +28,9 @@ class AClassStatusField(IntEnumField):
 
 class AClass(ObjectFieldGroupBase):
     public_interface = (
-        IntField('refNo'),
+        IntField('ref_no'),
         StringField('name'),
-        BooleanField('isRunning'),
+        BooleanField('is_running'),
         AClassStatusField('status')
     )
 

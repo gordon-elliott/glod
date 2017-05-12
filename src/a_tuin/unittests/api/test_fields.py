@@ -19,9 +19,9 @@ class TestFields(TestCase):
     def test_get_local_fields(self):
         expected = OrderedDict(
             (
-                ('refNo', graphene.Int),
+                ('ref_no', graphene.Int),
                 ('name', graphene.String),
-                ('isRunning', graphene.Boolean),
+                ('is_running', graphene.Boolean),
             )
         )
 

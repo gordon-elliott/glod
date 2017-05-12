@@ -43,6 +43,14 @@ class Field(object):
     def name(self, value):
         self._name = value
 
+    @property
+    def type(self):
+        return self._type
+
+    @type.setter
+    def type(self, value):
+        self._type = value
+
     def derive(self, transformation):
         return transformation(self)
 
