@@ -4,6 +4,7 @@ import CustomDashboard from './custom/Dashboard'
 var accounts = require('./views/accounts')
 var nominalAccounts = require('./views/nominalAccounts')
 var parishioners = require('./views/parishioners')
+var subjects = require('./views/subjects')
 var connectors = require('./connectors/connectors')
 var { login, logout } = require('./auth')
 
@@ -19,6 +20,7 @@ var admin = {
         accounts,
         nominalAccounts,
         parishioners,
+        subjects,
     },
     auth: {
         login,
