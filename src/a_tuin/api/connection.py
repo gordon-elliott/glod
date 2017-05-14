@@ -110,8 +110,8 @@ def node_connection_field(model_class, query_class, node_class, description):
         context['pageInfo'] = PageInfo(
             start_cursor=offset_to_cursor(query.start_index),
             end_cursor=offset_to_cursor(query.end_index),
-            has_previous_page=query.start_index > 0,
-            has_next_page=query.end_index < filtered_count - 1
+            has_previous_page=False if query.start_index is None else query.start_index > 0,
+            has_next_page=False if query.end_index is None else query.end_index < filtered_count - 1
         )
         return instances
 

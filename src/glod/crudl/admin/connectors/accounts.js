@@ -5,7 +5,7 @@ var accounts = {
         read: listQuery({
             name: 'accounts',
             fields: 'id, referenceNo, purpose, status, name, institution, sortCode, accountNo, BIC, IBAN',
-            args: { first: 7 },
+            args: { first: 20 },
             prepareFilters: object => {
                 let args = Object.getOwnPropertyNames(object).map(name => {
                     if (['referenceNo', 'status'].includes(name)) {

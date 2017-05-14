@@ -1,5 +1,6 @@
 import { accounts, account } from './accounts'
 import { nominalAccounts, nominalAccount } from './nominalAccounts'
+import { parishioners, parishioner } from './parishioners'
 
 module.exports = {
 
@@ -8,6 +9,9 @@ module.exports = {
 
     nominalAccounts: nominalAccounts,
     nominalAccount: nominalAccount,
+
+    parishioners: parishioners,
+    parishioner: parishioner,
 
     // AUTHENTICATION
     login: {
