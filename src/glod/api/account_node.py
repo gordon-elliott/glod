@@ -30,5 +30,13 @@ accounts_connection_field = node_connection_field(
     AccountNode,
     description='List of all bank accounts'
 )
+
+accounts_options_field = node_connection_field(
+    Account,
+    AccountQuery,
+    AccountLeaf,
+    description='List of all bank accounts for select fields'
+)
+
 CreateAccountLeaf = get_create_mutation(Account, account_fields, AccountLeaf)
 UpdateAccountLeaf = get_update_mutation(Account, account_fields, AccountLeaf)

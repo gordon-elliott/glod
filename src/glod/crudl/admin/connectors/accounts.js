@@ -63,7 +63,26 @@ var account = {
     }
 }
 
+// a helper for retrieving the accounts used with select fields
+var accountsOptions = {
+    query: {
+        read: listQuery({
+            name: 'accountOptions',
+            args: { orderBy: 'name' },
+            fields: 'id, name, institution, IBAN'
+        }),
+    },
+    transform: {
+        readResponseData: data => ({
+            options: data.data.accountOptions.edges.map(function(item) {
+                return { value: item.node.id, label: item.node.name }
+            }),
+        })
+    },
+}
+
 module.exports = {
     accounts,
-    account
+    account,
+    accountsOptions,
 }

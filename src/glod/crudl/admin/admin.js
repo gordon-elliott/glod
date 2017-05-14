@@ -2,6 +2,7 @@ import React from 'react'
 import CustomDashboard from './custom/Dashboard'
 
 var accounts = require('./views/accounts')
+var funds = require('./views/funds')
 var nominalAccounts = require('./views/nominalAccounts')
 var parishioners = require('./views/parishioners')
 var subjects = require('./views/subjects')
@@ -18,6 +19,7 @@ var admin = {
     connectors,
     views: {
         accounts,
+        funds,
         nominalAccounts,
         parishioners,
         subjects,

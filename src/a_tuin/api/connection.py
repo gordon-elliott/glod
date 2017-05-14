@@ -31,7 +31,7 @@ def node_connection_field(model_class, query_class, node_class, description):
     :param description: string describing the collection
     :return: ConnectionField
     """
-    entity_name = model_class.__name__
+    entity_name = node_class.__name__
 
     class NodeConnection(object):
         @with_session
@@ -47,7 +47,7 @@ def node_connection_field(model_class, query_class, node_class, description):
             return context['pageInfo']
 
     connection_class = type(
-        '{}NodeConnection'.format(entity_name),
+        '{}Connection'.format(entity_name),
         # inherit class methods from NodeConnection and other behaviour from
         # graphene.relay.Connection
         (NodeConnection, Connection),

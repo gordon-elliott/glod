@@ -7,7 +7,7 @@ import graphene
 
 from graphene.relay import Node
 
-from glod.api.account_node import AccountNode, accounts_connection_field, CreateAccountLeaf, UpdateAccountLeaf
+from glod.api.account_node import AccountNode, accounts_connection_field, accounts_options_field, CreateAccountLeaf, UpdateAccountLeaf
 from glod.api.fund_node import FundNode, funds_connection_field, CreateFundLeaf, UpdateFundLeaf
 from glod.api.nominal_account_node import NominalAccountNode, nominal_accounts_connection_field, CreateNominalAccountLeaf, UpdateNominalAccountLeaf
 from glod.api.subject_node import SubjectNode, subjects_connection_field, CreateSubjectLeaf, UpdateSubjectLeaf
@@ -19,6 +19,7 @@ class RootQueryType(graphene.ObjectType):
     """
     node = Node.Field()
     accounts = accounts_connection_field
+    account_options = accounts_options_field
     account = Node.Field(AccountNode)
     funds = funds_connection_field
     fund = Node.Field(FundNode)

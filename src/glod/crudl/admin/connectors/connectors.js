@@ -1,4 +1,5 @@
-import { accounts, account } from './accounts'
+import { accounts, account, accountsOptions } from './accounts'
+import { funds, fund } from './funds'
 import { nominalAccounts, nominalAccount } from './nominalAccounts'
 import { parishioners, parishioner } from './parishioners'
 import { subjects, subject } from './subjects'
@@ -7,6 +8,10 @@ module.exports = {
 
     accounts: accounts,
     account: account,
+    accountsOptions: accountsOptions,
+
+    funds: funds,
+    fund: fund,
 
     nominalAccounts: nominalAccounts,
     nominalAccount: nominalAccount,
