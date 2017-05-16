@@ -10,21 +10,20 @@ from a_tuin.metadata import (
     StringField,
     DateField,
     DecimalField,
-    ArgsFieldGroup,
-    ObjectFieldGroupMeta
+    ObjectFieldGroupBase
 )
 
 
-class StatementItem(object, metaclass=ObjectFieldGroupMeta):
+class StatementItem(ObjectFieldGroupBase):
 
-    constructor_parameters = ArgsFieldGroup(
+    public_interface = (
         (
             ObjectReferenceField('account'),
-            DateField('date', strfmt='%d/%m/%Y'),
+            DateField('date', strfmt='%d/%m/%Y', use_custom_properties=True),
             StringField('details'),
             StringField('currency'),
-            DecimalField('debit'),
-            DecimalField('credit'),
+            DecimalField('debit', use_custom_properties=True),
+            DecimalField('credit', use_custom_properties=True),
             DecimalField('balance'),
         )
     )
@@ -35,36 +34,12 @@ class StatementItem(object, metaclass=ObjectFieldGroupMeta):
         self._designated_balance = None
 
     @property
-    def account(self):
-        return self._account
-
-    @account.setter
-    def account(self, value):
-        self._account = value
-
-    @property
     def book_date(self):
         return self._date
 
     @book_date.setter
     def book_date(self, value):
         self._date = value
-
-    @property
-    def details(self):
-        return self._details
-
-    @details.setter
-    def details(self, value):
-        self._details = value
-
-    @property
-    def currency(self):
-        return self._currency
-
-    @currency.setter
-    def currency(self, value):
-        self._currency = value
 
     @property
     def debit(self):
@@ -81,14 +56,6 @@ class StatementItem(object, metaclass=ObjectFieldGroupMeta):
     @credit.setter
     def credit(self, value):
         self._credit = value
-
-    @property
-    def balance(self):
-        return self._balance
-
-    @balance.setter
-    def balance(self, value):
-        self._balance = value
 
     @property
     def net(self):

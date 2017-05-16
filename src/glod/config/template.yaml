@@ -22,6 +22,14 @@ logging:
       level: INFO
       handlers: [console]
       propagate: no
+    a_tuin:
+      level: INFO
+      handlers: [console]
+      propagate: no
+    sanic:
+      level: INFO
+      handlers: [console]
+      propagate: no
   root:
     level: DEBUG
     handlers: [console]

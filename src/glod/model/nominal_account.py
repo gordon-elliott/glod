@@ -5,7 +5,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from enum import IntEnum
 
-from a_tuin.metadata import IntEnumField, StringField, ArgsFieldGroup, ObjectFieldGroupMeta
+from a_tuin.metadata import IntEnumField, StringField, ObjectFieldGroupBase
 
 
 class NominalAccountSOFAHeading(IntEnum):
@@ -20,8 +20,8 @@ class NominalAccountSOFAHeading(IntEnum):
 
 
 class NominalAccountSOFAHeadingField(IntEnumField):
-    def __init__(self, name, required=False, default=None, description=None, validation=None):
-        super().__init__(name, NominalAccountSOFAHeading, required, default, description, validation)
+    def __init__(self, name, is_mutable=True, required=False, default=None, description=None, validation=None):
+        super().__init__(name, NominalAccountSOFAHeading, is_mutable, required, default, description, validation)
 
 
 class NominalAccountCategory(IntEnum):
@@ -32,8 +32,8 @@ class NominalAccountCategory(IntEnum):
     Liabilities = 5
 
 class NominalAccountCategoryField(IntEnumField):
-    def __init__(self, name, required=False, default=None, description=None, validation=None):
-        super().__init__(name, NominalAccountCategory, required, default, description, validation)
+    def __init__(self, name, is_mutable=True, required=False, default=None, description=None, validation=None):
+        super().__init__(name, NominalAccountCategory, is_mutable, required, default, description, validation)
 
 
 class NominalAccountSubCategory(IntEnum):
@@ -48,66 +48,18 @@ class NominalAccountSubCategory(IntEnum):
 
 
 class NominalAccountSubCategoryField(IntEnumField):
-    def __init__(self, name, required=False, default=None, description=None, validation=None):
-        super().__init__(name, NominalAccountSubCategory, required, default, description, validation)
+    def __init__(self, name, is_mutable=True, required=False, default=None, description=None, validation=None):
+        super().__init__(name, NominalAccountSubCategory, is_mutable, required, default, description, validation)
 
 
-class NominalAccount(object, metaclass=ObjectFieldGroupMeta):
+class NominalAccount(ObjectFieldGroupBase):
 
-    constructor_parameters = ArgsFieldGroup(
+    public_interface = (
         (
-            StringField('code'),
+            StringField('code', is_mutable=False),
             StringField('description'),
             NominalAccountSOFAHeadingField('SOFA_heading'),
             NominalAccountCategoryField('category'),
             NominalAccountSubCategoryField('sub_category'),
         )
     )
-
-    # metaclass takes care of dealing with the args
-    def __init__(self, *args, **kwargs):
-        pass
-
-    @property
-    def id(self):
-        return self._id
-
-    @property
-    def code(self):
-        return self._code
-
-    @code.setter
-    def code(self, value):
-        self._code = value
-
-    @property
-    def description(self):
-        return self._description
-
-    @description.setter
-    def description(self, value):
-        self._description = value
-
-    @property
-    def SOFA_heading(self):
-        return self._SOFA_heading
-
-    @SOFA_heading.setter
-    def SOFA_heading(self, value):
-        self._SOFA_heading = value
-
-    @property
-    def category(self):
-        return self._category
-
-    @category.setter
-    def category(self, value):
-        self._category = value
-
-    @property
-    def sub_category(self):
-        return self._sub_category
-
-    @sub_category.setter
-    def sub_category(self, value):
-        self._sub_category = value

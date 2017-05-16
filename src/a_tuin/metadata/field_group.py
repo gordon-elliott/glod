@@ -3,9 +3,10 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """ 
 """
 
+from collections import OrderedDict
 from operator import getitem, setitem
 
-from a_tuin.metadata.field_derivations import copy_field
+from a_tuin.metadata.field_transformations import copy_field
 
 
 class FieldGroup(object):
@@ -34,7 +35,7 @@ class FieldGroup(object):
         for field in self._fields:
             if field.name == key:
                 return field
-        raise KeyError
+        raise KeyError('{} not found.'.format(key))
 
     def __setitem__(self, key, replacement_field):
 
@@ -64,6 +65,13 @@ class FieldGroup(object):
 
     def fill_instance_from_dict(self, input_dict):
         raise NotImplementedError
+
+    def update_instance_from_dict(self, instance, input_dict, ignore_failed_updates=True):
+        raise NotImplementedError
+
+    def iterate_instance(self, instance, per_field_map):
+        for field in self._fields:
+            yield field, self.get_value(instance, field), per_field_map.get(field)
 
     def _get_field_index(self, field):
         for i, item in enumerate(self._fields):
@@ -96,25 +104,37 @@ class FieldGroup(object):
         )
 
 
-class TupleFieldGroup(FieldGroup):
-
-    def __init__(self, fields):
-        super().__init__(fields, tuple)
+class SequenceFieldGroup(FieldGroup):
 
     def fill_instance_from_dict(self, input_dict):
         values_in_order = self._get_values_in_order(input_dict)
         return self._container_type(values_in_order)
+
+    def _accessor(self, instance, key):
+        return getitem(instance, key)
 
     def get_value(self, instance, field):
         index, _ = self._get_field_index(field)
         value = self._accessor(instance, index)
         return field.conform_value(value)
 
-    def _accessor(self, instance, key):
-        return getitem(instance, key)
+
+class TupleFieldGroup(SequenceFieldGroup):
+
+    def __init__(self, fields):
+        super().__init__(fields, tuple)
 
 
 class MutableSequenceFieldGroup(FieldGroup):
+
+    def update_instance_from_dict(self, instance, input_dict, ignore_failed_updates=True):
+        for field_name, value in input_dict.items():
+            try:
+                field = self[field_name]
+                self.set_value(instance, field, value)
+            except (KeyError, AttributeError):
+                if not ignore_failed_updates:
+                    raise
 
     def set_value(self, instance, field, value):
         raise NotImplementedError
@@ -126,22 +146,10 @@ class MutableSequenceFieldGroup(FieldGroup):
         return self._container_type()
 
 
-class ListFieldGroup(MutableSequenceFieldGroup):
+class ListFieldGroup(MutableSequenceFieldGroup, SequenceFieldGroup):
 
     def __init__(self, fields):
         super().__init__(fields, list)
-
-    def fill_instance_from_dict(self, input_dict):
-        values_in_order = self._get_values_in_order(input_dict)
-        return self._container_type(values_in_order)
-
-    def get_value(self, instance, field):
-        index, _ = self._get_field_index(field)
-        value = self._accessor(instance, index)
-        return field.conform_value(value)
-
-    def _accessor(self, instance, key):
-        return getitem(instance, key)
 
     def set_value(self, instance, field, value):
         value = field.prepare_value(value)
@@ -157,8 +165,9 @@ class ListFieldGroup(MutableSequenceFieldGroup):
 
 class DictFieldGroup(MutableSequenceFieldGroup):
 
-    def __init__(self, fields):
-        super().__init__(fields, dict)
+    def __init__(self, fields, container_type=None):
+        container_type = dict if not container_type else container_type
+        super().__init__(fields, container_type)
 
     def fill_instance_from_dict(self, input_dict):
         return self._container_type(self._type_cast(input_dict))
@@ -196,3 +205,45 @@ class ObjectFieldGroup(MutableSequenceFieldGroup):
 
     def _mutator(self, instance, key, value):
         return setattr(instance, key, value)
+
+
+class PartialDictFieldGroup(DictFieldGroup):
+
+    def __init__(self, fields):
+        super().__init__(fields, OrderedDict)
+
+    def iterate_instance(self, instance, per_field_map):
+        for fieldname, value in instance.items():
+            field = self[fieldname]
+            yield field, field.conform_value(value), per_field_map.get(field)
+
+    def _get_values_in_order(self, input_dict):
+        return [
+            field.type_cast(input_dict[field.name])
+            for field in self._fields
+            if field.name in input_dict
+        ]
+
+    def _type_cast(self, input_dict):
+        field_and_value = (
+            (fieldname, self[fieldname], value)
+            for fieldname, value in input_dict.items()
+        )
+        return OrderedDict(
+            (fieldname, field.type_cast(value))
+            for fieldname, field, value in field_and_value
+        )
+
+    def as_dict(self, instance):
+        return OrderedDict(
+            (field.name, self.get_value(instance, field))
+            for field in self._fields
+            if field.name in instance
+        )
+
+    def instances_differ(self, instance, other):
+        return any(
+            self.get_value(instance, field) != self.get_value(other, field)
+            for field in self._fields
+            if field.name in instance and field.name in other
+        )

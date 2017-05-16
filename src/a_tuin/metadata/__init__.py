@@ -17,14 +17,17 @@ from a_tuin.metadata.field_group import (
     ListFieldGroup,
     DictFieldGroup,
     ObjectFieldGroup,
-    TupleFieldGroup
+    TupleFieldGroup,
+    PartialDictFieldGroup,
 )
-from a_tuin.metadata.field_derivations import (
+from a_tuin.metadata.field_transformations import (
     copy_field,
     prefix_name_with_underscore,
     replace_underscore_with_space,
+    make_boolean,
+    snake_to_camel_case,
 )
 from a_tuin.metadata.args_field_group import ArgsFieldGroup
 from a_tuin.metadata.mapping import Mapping
-from a_tuin.metadata.object_field_group_meta import ObjectFieldGroupMeta
+from a_tuin.metadata.object_field_group_meta import ObjectFieldGroupMeta, ObjectFieldGroupBase
 from a_tuin.metadata.collection import Collection, chainable
