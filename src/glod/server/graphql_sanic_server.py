@@ -7,11 +7,11 @@ import pkg_resources
 
 from sanic import Sanic
 from sanic.response import text, json
-from sanic.exceptions import SanicException, RequestTimeout
+from sanic.exceptions import SanicException, RequestTimeout, ServerError
 from sanic_graphql import GraphQLView
 from sanic_jinja2 import SanicJinja2, PackageLoader
 
-from a_tuin.constants import SESSION
+from a_tuin.constants import SESSION, EXCEPTIONS_TRAPPED
 from a_tuin.db.metadata import metadata
 from a_tuin.db.session_scope import Session
 from glod.db.engine import engine
@@ -33,22 +33,29 @@ async def add_session_to_request(request):
 
 @app.middleware('response')
 async def commit_session(request, response):
+    if request[EXCEPTIONS_TRAPPED]:
+        raise ServerError(request[EXCEPTIONS_TRAPPED])
+
     # after each request commit and close the session
     request[SESSION].commit()
     request[SESSION].close()
 
 
-@app.exception(SanicException)
+@app.exception(ServerError)
 def rollback_session(request, exception):
-    # TODO confirm that this is working
+
     request[SESSION].rollback()
     request[SESSION].close()
-    return app.error_handler.default(request, exception)
+
+    trapped_exceptions = request.get(EXCEPTIONS_TRAPPED, exception)
+
+    return json(dict(data=trapped_exceptions))
 
 
 @app.exception(RequestTimeout)
 def timeout(request, exception):
     return text('RequestTimeout from error_handler.', 408)
+
 
 static_path = pkg_resources.resource_filename(__name__, '../crudl/static')
 app.static('/static', static_path, use_modified_since=configuration.use_modified_since)

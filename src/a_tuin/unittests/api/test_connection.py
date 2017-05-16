@@ -43,7 +43,7 @@ class TestConnection(GraphQLSchemaTestCase):
             if reported_type['name'] == 'RootQueryType':
                 self.assertEqual(
                     (
-                        ('filters', 'AClassFilterInput'),
+                        ('filters', 'AClassNodeFilterInput'),
                         ('orderBy', 'String'),
                         ('before', 'String'),
                         ('after', 'String'),
@@ -56,7 +56,7 @@ class TestConnection(GraphQLSchemaTestCase):
                     )
                 )
                 root_tested = True
-            if reported_type['name'] == 'AClassFilterInput':
+            if reported_type['name'] == 'AClassNodeFilterInput':
                 self.assertEqual(
                     (
                         ('refNo', 'Int'),

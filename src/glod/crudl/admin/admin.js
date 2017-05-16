@@ -6,6 +6,7 @@ var funds = require('./views/funds')
 var nominalAccounts = require('./views/nominalAccounts')
 var parishioners = require('./views/parishioners')
 var subjects = require('./views/subjects')
+var statementItems = require('./views/statementItems')
 var connectors = require('./connectors/connectors')
 var { login, logout } = require('./auth')
 
@@ -23,6 +24,7 @@ var admin = {
         nominalAccounts,
         parishioners,
         subjects,
+        statementItems,
     },
     auth: {
         login,

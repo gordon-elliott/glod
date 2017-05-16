@@ -12,7 +12,7 @@ from glod.api.fund_node import FundNode, funds_connection_field, CreateFundLeaf,
 from glod.api.nominal_account_node import NominalAccountNode, nominal_accounts_connection_field, CreateNominalAccountLeaf, UpdateNominalAccountLeaf
 from glod.api.subject_node import SubjectNode, subjects_connection_field, CreateSubjectLeaf, UpdateSubjectLeaf
 from glod.api.parishioner_node import ParishionerNode, parishioners_connection_field, CreateParishionerLeaf, UpdateParishionerLeaf
-
+from glod.api.statement_item_node import StatementItemNode, statement_items_connection_field, CreateStatementItemLeaf, UpdateStatementItemLeaf
 
 class RootQueryType(graphene.ObjectType):
     """ Root query for entity lists which support paging
@@ -29,6 +29,8 @@ class RootQueryType(graphene.ObjectType):
     subject = Node.Field(SubjectNode)
     parishioners = parishioners_connection_field
     parishioner = Node.Field(ParishionerNode)
+    statement_items = statement_items_connection_field
+    statement_item = Node.Field(StatementItemNode)
 
 
 class Mutations(graphene.ObjectType):
@@ -38,10 +40,12 @@ class Mutations(graphene.ObjectType):
     fund_update = UpdateFundLeaf.Field()
     nominal_account_create = CreateNominalAccountLeaf.Field()
     nominal_account_update = UpdateNominalAccountLeaf.Field()
-    parishioner_create = CreateParishionerLeaf.Field()
-    parishioner_update = UpdateParishionerLeaf.Field()
     subject_create = CreateSubjectLeaf.Field()
     subject_update = UpdateSubjectLeaf.Field()
+    parishioner_create = CreateParishionerLeaf.Field()
+    parishioner_update = UpdateParishionerLeaf.Field()
+    statement_item_create = CreateStatementItemLeaf.Field()
+    statement_item_update = UpdateStatementItemLeaf.Field()
 
 
 schema = graphene.Schema(query=RootQueryType, mutation=Mutations)

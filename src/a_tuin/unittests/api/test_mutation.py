@@ -31,7 +31,7 @@ class TestMutation(GraphQLSchemaTestCase):
 
     def assertLeafPayload(self, reported_type):
         self.assertEqual(
-            ('aclass', 'errors', 'clientMutationId'),
+            ('aClass', 'errors', 'clientMutationId'),
             tuple(field['name'] for field in reported_type['fields'])
         )
         self.assertEqual(

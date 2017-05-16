@@ -3,6 +3,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """ 
 """
 from collections import OrderedDict
+from a_tuin.metadata.exceptions import FieldAssignmentError, field_errors_check
 from a_tuin.metadata.field import INVALID_FIELD_COMBINATIONS
 
 
@@ -60,10 +61,14 @@ class Mapping(object):
         return None
 
     def update_in_place(self, source, destination):
-        # TODO implement allow_partial and tests for same
-        for source_field, destination_field in self._field_mappings:
-            value = self._source_entity.get_value(source, source_field)
-            self._destination_entity.set_value(destination, destination_field, value)
+        with field_errors_check() as errors:
+            for source_field, destination_field in self._field_mappings:
+                try:
+                    value = self._source_entity.get_value(source, source_field)
+                    self._destination_entity.set_value(destination, destination_field, value)
+                except FieldAssignmentError as fae:
+                    fae.field = source_field
+                    errors.append(fae)
 
     def cast_from(self, source):
         source_field_to_destination_field = dict(self._field_mappings)

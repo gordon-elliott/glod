@@ -7,10 +7,8 @@ from decimal import Decimal
 from unittest import TestCase
 
 from a_tuin.metadata import prefix_name_with_underscore
-from a_tuin.metadata.field import (
-    StringField,
-    RequiredValueMissing
-)
+from a_tuin.metadata.field import StringField
+from a_tuin.metadata.exceptions import RequiredValueMissing
 from a_tuin.metadata.field_group import (
     ListFieldGroup, PartialDictFieldGroup
 )

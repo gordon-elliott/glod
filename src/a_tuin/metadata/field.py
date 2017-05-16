@@ -2,14 +2,16 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 """ 
 """
+import logging
 
 from functools import partial
 from datetime import datetime, date
 from decimal import Decimal, InvalidOperation
 
+from a_tuin.metadata.exceptions import RequiredValueMissing
 
-class RequiredValueMissing(Exception):
-    pass
+
+LOG = logging.getLogger(__name__)
 
 
 # wrap built in functions in order that a partial can be created for each of them
@@ -61,7 +63,7 @@ class Field(object):
             try:
                 return self._type(value)
             except TypeError as err:
-                print(err)
+                LOG.warning(err)
                 raise
 
     def is_filled(self, value):
@@ -78,7 +80,7 @@ class Field(object):
         value = self.type_cast(value)
         value = self.use_default(value)
         if not self.is_filled(value):
-            raise RequiredValueMissing()
+            raise RequiredValueMissing(self)
         return value
 
     def conform_value(self, value):
@@ -209,7 +211,7 @@ class DecimalField(Field):
             try:
                 return self._type(value)
             except InvalidOperation as invop:
-                print(invop)
+                LOG.exception(invop)
                 raise
 
 class DateTimeField(Field):
