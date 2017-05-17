@@ -23,19 +23,19 @@ ACCOUNT_STATUS_MAP = {
 }
 
 
-class AccountStatusString(StringField):
-    def conform_value(self, value):
-        return ACCOUNT_STATUS_MAP.get(value.lower(), AccountStatus.Active)
+def conform_value(value, _):
+    return ACCOUNT_STATUS_MAP.get(value.lower(), AccountStatus.Active)
 
+field_casts = dict(status=conform_value)
 
 account_csv_fields = Account.constructor_parameters.derive(
     replace_underscore_with_space,
     DictFieldGroup
 )
 account_csv_fields['reference no'].name = 'id'
-account_csv_fields['status'] = AccountStatusString('status')
+account_csv_fields['status'] = StringField('status')
 
-csv_to_constructor = Mapping(account_csv_fields, Account.constructor_parameters)
+csv_to_constructor = Mapping(account_csv_fields, Account.constructor_parameters, field_casts=field_casts)
 
 
 def accounts_from_csv(account_csv):
@@ -50,8 +50,8 @@ def accounts_from_csv(account_csv):
 
 def accounts_from_gsheet(session, extract_from_detailed_ledger):
     account_gsheet = get_gsheet_fields(Account, {'reference no': 'id'})
-    account_gsheet['status'] = AccountStatusString('status')
-    account_mapping = Mapping(account_gsheet, Account.constructor_parameters)
+    account_gsheet['status'] = StringField('status')
+    account_mapping = Mapping(account_gsheet, Account.constructor_parameters, field_casts=field_casts)
     accounts = extract_from_detailed_ledger(
         'bank accounts',
         'A1',

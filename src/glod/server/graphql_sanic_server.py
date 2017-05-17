@@ -33,7 +33,7 @@ async def add_session_to_request(request):
 
 @app.middleware('response')
 async def commit_session(request, response):
-    if request[EXCEPTIONS_TRAPPED]:
+    if request.get(EXCEPTIONS_TRAPPED):
         raise ServerError(request[EXCEPTIONS_TRAPPED])
 
     # after each request commit and close the session

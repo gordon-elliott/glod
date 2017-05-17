@@ -63,6 +63,9 @@ def get_create_mutation(model_class, input_fields, leaf_class):
         @handle_field_errors
         @with_session
         def mutate_and_get_payload(cls, input_dict, context, info, session):
+            # extract the 'clientMutationId'
+            # TODO work out what to do with this?
+            client_id = input_dict.pop('clientMutationId')
             # use ids in payload to lookup related entities
             _replace_object_ids_with_references(model_class, input_dict, context, info)
             # construct new instance from input
@@ -110,6 +113,9 @@ def get_update_mutation(model_class, input_fields, leaf_class):
         @classmethod
         @handle_field_errors
         def mutate_and_get_payload(cls, input_dict, context, info):
+            # extract the 'clientMutationId'
+            # TODO work out what to do with this?
+            client_id = input_dict.pop('clientMutationId')
             # get the id
             id_ = input_dict.pop(ID_FIELD_NAME)
             # lookup the entity

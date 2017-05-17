@@ -7,7 +7,6 @@ from a_tuin.io.gsheet_integration import get_gsheet_fields, load_class
 from a_tuin.metadata import (
     Mapping,
     StringField,
-    replace_underscore_with_space
 )
 
 from glod.db.nominal_account import (
@@ -31,9 +30,8 @@ SOFA_HEADING_MAP = {
 }
 
 
-class SOFAHeadingString(StringField):
-    def conform_value(self, value):
-        return SOFA_HEADING_MAP.get(value)
+def conform_sofa_heading(value, _):
+    return SOFA_HEADING_MAP.get(value)
 
 
 NOMINAL_ACCOUNT_CATEGORY_MAP = {
@@ -45,9 +43,8 @@ NOMINAL_ACCOUNT_CATEGORY_MAP = {
 }
 
 
-class NominalAccountCategoryString(StringField):
-    def conform_value(self, value):
-        return NOMINAL_ACCOUNT_CATEGORY_MAP[value]
+def conform_category(value, _):
+    return NOMINAL_ACCOUNT_CATEGORY_MAP[value]
 
 
 NOMINAL_ACCOUNT_SUB_CATEGORY_MAP = {
@@ -62,9 +59,8 @@ NOMINAL_ACCOUNT_SUB_CATEGORY_MAP = {
 }
 
 
-class NominalAccountSubCategoryString(StringField):
-    def conform_value(self, value):
-        return NOMINAL_ACCOUNT_SUB_CATEGORY_MAP.get(value)
+def conform_sub_category(value, _):
+    return NOMINAL_ACCOUNT_SUB_CATEGORY_MAP.get(value)
 
 
 def nominal_accounts_from_gsheet(session, extract_from_detailed_ledger):
@@ -78,10 +74,15 @@ def nominal_accounts_from_gsheet(session, extract_from_detailed_ledger):
             'sub category': 'Sub-category',
         }
     )
-    nominal_account_gsheet['SOFA heading'] = SOFAHeadingString('SOFA heading')
-    nominal_account_gsheet['Category'] = NominalAccountCategoryString('Category')
-    nominal_account_gsheet['Sub-category'] = NominalAccountSubCategoryString('Sub-category')
-    nominal_account_mapping = Mapping(nominal_account_gsheet, NominalAccount.constructor_parameters)
+    nominal_account_gsheet['SOFA heading'] = StringField('SOFA heading')
+    nominal_account_gsheet['Category'] = StringField('Category')
+    nominal_account_gsheet['Sub-category'] = StringField('Sub-category')
+    field_casts = {
+        'SOFA heading': conform_sofa_heading,
+        'Category': conform_category,
+        'Sub-category': conform_sub_category,
+    }
+    nominal_account_mapping = Mapping(nominal_account_gsheet, NominalAccount.constructor_parameters, field_casts=field_casts)
     nominal_accounts = extract_from_detailed_ledger(
         'RCB Nominal Accounts',
         'A1',

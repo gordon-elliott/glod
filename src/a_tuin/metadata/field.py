@@ -83,11 +83,6 @@ class Field(object):
             raise RequiredValueMissing(self)
         return value
 
-    def conform_value(self, value):
-        """ Convert value on on extraction by FieldGroup
-        """
-        return value
-
     def create_property_on_class(self, cls, internal_name):
         """ Automatically create a property for this field on a class
 
@@ -242,8 +237,6 @@ class DateField(Field):
         value_type = type(value)
         if value_type == self._type:
             return value
-        elif value_type == str:
-            return date.fromtimestamp(datetime.strptime(value, self._strfmt).timestamp())
         elif value_type == float:
             return date.fromtimestamp(value)
         elif value_type == int:

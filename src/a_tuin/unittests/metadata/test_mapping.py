@@ -136,6 +136,29 @@ class TestMapping(TestCase):
                     dest_field_group.as_dict(destination_instance)
                 )
 
+    @patch('a_tuin.metadata.field.Field.type_cast')
+    def test_cast_from_field_errors(self, mock_type_cast):
+        exception_text = 'mock exception'
+
+        def exception_in_type_cast(value):
+            raise ValueError(exception_text)
+
+        mock_type_cast.side_effect = exception_in_type_cast
+
+        for (_, source_field_group, source_constructor), (_, dest_field_group, destination_constructor) in \
+                field_group_combinations():
+
+            with self.subTest('{}, {}'.format(type(source_field_group), type(dest_field_group))):
+
+                source_instance = source_constructor(INITIAL_VALUES)
+                mapping = Mapping(source_field_group, dest_field_group)
+                with self.assertRaises(FieldErrors) as field_err:
+                    _ = mapping.cast_from(source_instance)
+
+                for fae in field_err.exception._field_errors:
+                    self.assertIn(fae.field, source_field_group)
+                    self.assertEqual(exception_text, str(fae.original_exception))
+
     def test_valid_type_cast(self):
         source_fields, destination_fields = tuple(zip(*FIELD_COMBINATIONS))
         source_fields = tuple(set(source_fields))

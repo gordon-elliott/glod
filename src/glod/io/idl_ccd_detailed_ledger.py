@@ -20,6 +20,8 @@ from glod.io.nominal_account import nominal_accounts_from_gsheet
 from glod.io.subject import subjects_from_gsheet
 from glod.io.parishioner import parishioners_from_gsheet
 
+# import StatementItem in order to have truncate work
+import glod.db.statement_item
 
 LOG = logging.getLogger(__file__)
 
@@ -46,4 +48,6 @@ def do_idl():
         subjects_from_gsheet(session, extract_from_detailed_ledger)
         parishioners_from_gsheet(session, extract_from_detailed_ledger)
 
-do_idl()
+
+if __name__ == '__main__':
+    do_idl()

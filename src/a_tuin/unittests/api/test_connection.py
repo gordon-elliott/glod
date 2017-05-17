@@ -63,6 +63,7 @@ class TestConnection(GraphQLSchemaTestCase):
                         ('name', 'String'),
                         ('isRunning', 'Boolean'),
                         ('status', 'AClassStatus'),
+                        ('date', 'DateTime'),
                     ),
                     tuple(
                         (arg['name'], arg['type']['name'])
@@ -88,7 +89,7 @@ class TestConnection(GraphQLSchemaTestCase):
                 edge_tested = True
             if reported_type['name'] == 'AClassNode':
                 self.assertEqual(
-                    ('id', 'refNo', 'name', 'isRunning', 'status', 'refers'),
+                    ('id', 'refNo', 'name', 'isRunning', 'status', 'date', 'refers'),
                     tuple(field['name'] for field in reported_type['fields'])
                 )
                 aclass_tested = True

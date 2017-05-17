@@ -15,14 +15,14 @@ class ArgsFieldGroup(FieldGroup):
         self._args = TupleFieldGroup(fields)
         self._kwargs = DictFieldGroup(fields)
 
-    def get_value(self, instance, field):
+    def _get_value(self, instance, field):
         args, kwargs = instance
 
         try:
-            value = self._args.get_value(args, field)
+            value = self._args._get_value(args, field)
         except IndexError:
             try:
-                value = self._kwargs.get_value(kwargs, field)
+                value = self._kwargs._get_value(kwargs, field)
             except KeyError:
                 value = None
 

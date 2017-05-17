@@ -5,9 +5,12 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 import graphene
 
+from datetime import date, datetime
+from unittest.mock import Mock, patch
+
 from a_tuin.api.mutations import get_create_mutation, get_update_mutation
 from a_tuin.unittests.api.graphql_schema_test_case import GraphQLSchemaTestCase
-from a_tuin.unittests.api.fixtures.models import AClass
+from a_tuin.unittests.api.fixtures.models import AClass, AClassStatus
 from a_tuin.unittests.api.fixtures.leaves import aclass_fields, AClassLeaf
 
 
@@ -68,3 +71,82 @@ class TestMutation(GraphQLSchemaTestCase):
         self.assertTrue(mutatation_tested)
         self.assertTrue(create_tested)
         self.assertTrue(update_tested)
+
+    def test_create(self):
+
+        mock_session = Mock()
+        context = {'request': {'session': mock_session}}
+
+        mock_info = Mock()
+        mock_info.field_name = 'AClassLeaf'
+
+        ref_no = '7000'
+        name = 'a name'
+        is_running = 'True'
+        status = 1
+        date_string = '2019-03-19'
+        date_value = date.fromtimestamp(datetime.strptime(date_string, '%Y-%m-%d').timestamp())
+
+        input_dict = dict(
+            ref_no=ref_no,
+            name=name,
+            is_running=is_running,
+            status=status,
+            date=date_value,
+            clientMutationId=Mock(),
+        )
+
+        leaf = CreateAClassLeaf.mutate_and_get_payload(input_dict, context, mock_info)
+
+        self.assertEqual('AClassCreateLeafPayload', type(leaf).__name__)
+
+        instance = mock_session.add.call_args[0][0]
+        self.assertEqual(AClass, type(instance))
+
+        self.assertEqual(int(ref_no), instance.ref_no)
+        self.assertEqual(name, instance.name)
+        self.assertEqual(True, instance.is_running)
+        self.assertEqual(AClassStatus.Open, instance.status)
+        self.assertEqual(date_value, instance.date)
+
+    @patch('a_tuin.api.mutations.graphene.Node.get_node_from_global_id')
+    def test_update(self, mock_get_from_id):
+
+        initial_name = 'some name'
+        id_ = 9989
+        mock_get_from_id.return_value = mock_instance = AClass(name=initial_name, is_running=False)
+
+        mock_session = Mock()
+        context = {'request': {'session': mock_session}}
+
+        mock_info = Mock()
+        mock_info.field_name = 'AClassLeaf'
+
+        ref_no = '7000'
+        is_running = 'True'
+        status = 1
+        date_string = '2019-03-19'
+        date_value = date.fromtimestamp(datetime.strptime(date_string, '%Y-%m-%d').timestamp())
+
+        input_dict = dict(
+            ref_no=ref_no,
+            is_running=is_running,
+            status=status,
+            date=date_value,
+            clientMutationId=Mock(),
+            id=id_,
+        )
+
+        leaf = UpdateAClassLeaf.mutate_and_get_payload(input_dict, context, mock_info)
+
+        self.assertEqual('AClassUpdateLeafPayload', type(leaf).__name__)
+        mock_get_from_id.assert_called_once_with(id_, context, mock_info)
+
+        instance = leaf.aClass
+        self.assertEqual(mock_instance, instance)
+
+        self.assertEqual(int(ref_no), instance.ref_no)
+        self.assertEqual(initial_name, instance.name)
+        self.assertEqual(True, instance.is_running)
+        self.assertEqual(AClassStatus.Open, instance.status)
+        self.assertEqual(date_value, instance.date)

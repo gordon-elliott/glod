@@ -63,7 +63,7 @@ class TestFieldList(TestCase):
             for field in field_group:
                 self.assertEqual(
                     INITIAL_VALUES[field.name],
-                    field_group.get_value(constructor(INITIAL_VALUES), field)
+                    field_group._get_value(constructor(INITIAL_VALUES), field)
                 )
 
     def test_as_dict(self):
@@ -91,14 +91,14 @@ class TestFieldList(TestCase):
             for field in field_group:
                 self.assertEqual(
                     INITIAL_VALUES[field.name],
-                    field_group.get_value(instance, field)
+                    field_group._get_value(instance, field)
                 )
 
                 field_group.set_value(instance, field, updates[field.name])
 
                 self.assertEqual(
                     updates[field.name],
-                    field_group.get_value(instance, field)
+                    field_group._get_value(instance, field)
                 )
 
     def test_set_update_none(self):
@@ -120,7 +120,7 @@ class TestFieldList(TestCase):
         field_group.set_value(instance, field, None)
         self.assertEqual(
             default_fixture,
-            field_group.get_value(instance, field)
+            field_group._get_value(instance, field)
         )
 
     def test_instances_differ_no_differences(self):

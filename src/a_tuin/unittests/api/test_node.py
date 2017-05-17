@@ -26,7 +26,7 @@ class TestNode(GraphQLSchemaTestCase):
         for reported_type in self.get_types(schema):
             if reported_type['name'] == 'AClassNode':
                 self.assertEqual(
-                    ('id', 'refNo', 'name', 'isRunning', 'status', 'refers'),
+                    ('id', 'refNo', 'name', 'isRunning', 'status', 'date', 'refers'),
                     tuple(field['name'] for field in reported_type['fields'])
                 )
                 aclass_tested = True

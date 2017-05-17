@@ -19,7 +19,8 @@ class StatementItem(ObjectFieldGroupBase):
     public_interface = (
         (
             ObjectReferenceField('account'),
-            DateField('date', strfmt='%d/%m/%Y', use_custom_properties=True),
+            # TODO: allow properties named differently to internal/db fields
+            DateField('date'),
             StringField('details'),
             StringField('currency'),
             DecimalField('debit', use_custom_properties=True),
@@ -32,14 +33,6 @@ class StatementItem(ObjectFieldGroupBase):
     def __init__(self, *args, **kwargs):
         self._detail_override = None
         self._designated_balance = None
-
-    @property
-    def book_date(self):
-        return self._date
-
-    @book_date.setter
-    def book_date(self, value):
-        self._date = value
 
     @property
     def debit(self):
