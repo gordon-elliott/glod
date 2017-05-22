@@ -4,6 +4,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """
 
 from csv import reader
+from datetime import datetime, date
 
 from a_tuin.metadata import StringField, UnusedField, ListFieldGroup, Mapping
 
@@ -20,6 +21,10 @@ statement_item_csv_fields = ListFieldGroup(
         StringField('balance'),
     )
 )
+
+
+def cast_dmy_date_from_string(value, _):
+    return date.fromtimestamp(datetime.strptime(value, '%d/%m/%Y').timestamp())
 
 
 class StatementLoader(object):
@@ -40,7 +45,8 @@ class StatementLoader(object):
                     csv_fields,
                     item_instance_class.constructor_parameters
                 )
-            )
+            ),
+            field_casts=dict(date=cast_dmy_date_from_string)
         )
 
     def _account_header(self, line):
