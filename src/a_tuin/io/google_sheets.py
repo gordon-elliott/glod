@@ -2,10 +2,15 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 """ 
 """
+import logging
 
 from gspread import authorize
 from gspread.utils import a1_to_rowcol
 from oauth2client.service_account import ServiceAccountCredentials
+
+
+LOG = logging.getLogger(__name__)
+ROWS_PER_FETCH = 500
 
 
 def configure_client(credentials_path):
@@ -20,6 +25,23 @@ def configure_client(credentials_path):
 def is_formula(cell):
     input_value = cell.input_value
     return input_value and input_value[0] == '='
+
+
+def _sheet_rows(worksheet, num_columns, first_row, first_column):
+    for first_row_in_range in range(first_row, worksheet.row_count, ROWS_PER_FETCH):
+        previous_column = 0
+        last_row_in_range = min(first_row_in_range + ROWS_PER_FETCH - 1, worksheet.row_count)
+        row = []
+        LOG.info('Fetching worksheet rows %d to %d' % (first_row_in_range, last_row_in_range))
+        for cell in worksheet.range(first_row_in_range, first_column, last_row_in_range, first_column + num_columns):
+            if cell.col < previous_column:
+                yield row
+                row = []
+            row.append(cell)
+            previous_column = cell.col
+
+        if row:
+            yield row
 
 
 def extract_table(spreadsheet, worksheet_title, starting_cell, column_names):
@@ -37,13 +59,13 @@ def extract_table(spreadsheet, worksheet_title, starting_cell, column_names):
 
     assert tuple(header[:len(column_names)]) == column_names, 'Header does not match desired columns'
 
-    for row in range(header_row + 1, worksheet.row_count):
-        row_cells = worksheet.range(row, first_column, row, first_column + len(column_names))
-        values = tuple(cell.input_value for cell in row_cells if not is_formula(cell))
+    LOG.info('Reading %r from %s' % (column_names, worksheet_title))
+
+    first_row = header_row + 1
+    for row_cells in _sheet_rows(worksheet, len(column_names), first_row, first_column):
+        values = tuple(cell.value for cell in row_cells)
         if any(values):
             yield values
         else:
             # stop when we reach a blank line
             break
-
-

@@ -75,6 +75,8 @@ class FieldGroup(object):
                     yield field, self._get_value(instance, field), per_field_map.get(field)
                 except FieldAssignmentError as field_error:
                     errors.append(field_error)
+                except Exception as ex:
+                    errors.append(FieldAssignmentError(field, ex))
 
     def _get_field_index(self, field):
         for i, item in enumerate(self._fields):
@@ -88,11 +90,10 @@ class FieldGroup(object):
             for field in self._fields:
                 try:
                     cast_values.append((field.name, field.type_cast(input_dict[field.name])))
+                except FieldAssignmentError as fae:
+                    errors.append(fae)
                 except Exception as ex:
-                    if isinstance(ex, FieldAssignmentError):
-                        errors.append(ex)
-                    else:
-                        errors.append(FieldAssignmentError(field, ex))
+                    errors.append(FieldAssignmentError(field, ex))
 
         return OrderedDict(cast_values)
 
@@ -173,11 +174,10 @@ class ListFieldGroup(MutableSequenceFieldGroup, SequenceFieldGroup):
             value = field.prepare_value(value)
             index, _ = self._get_field_index(field)
             return self._mutator(instance, index, value)
+        except FieldAssignmentError:
+            raise
         except Exception as ex:
-            if isinstance(ex, FieldAssignmentError):
-                raise
-            else:
-                raise FieldAssignmentError(field, ex)
+            raise FieldAssignmentError(field, ex)
 
     def _mutator(self, instance, key, value):
         return setitem(instance, key, value)
@@ -205,11 +205,10 @@ class DictFieldGroup(MutableSequenceFieldGroup):
         try:
             value = field.prepare_value(value)
             return self._mutator(instance, field.name, value)
+        except FieldAssignmentError:
+            raise
         except Exception as ex:
-            if isinstance(ex, FieldAssignmentError):
-                raise
-            else:
-                raise FieldAssignmentError(field, ex)
+            raise FieldAssignmentError(field, ex)
 
     def _mutator(self, instance, key, value):
         return setitem(instance, key, value)
@@ -230,11 +229,10 @@ class ObjectFieldGroup(MutableSequenceFieldGroup):
         try:
             value = field.prepare_value(value)
             return self._mutator(instance, field.name, value)
+        except FieldAssignmentError:
+            raise
         except Exception as ex:
-            if isinstance(ex, FieldAssignmentError):
-                raise
-            else:
-                raise FieldAssignmentError(field, ex)
+            raise FieldAssignmentError(field, ex)
 
     def _mutator(self, instance, key, value):
         return setattr(instance, key, value)

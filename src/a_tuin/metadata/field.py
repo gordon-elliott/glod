@@ -206,7 +206,7 @@ class DecimalField(Field):
             try:
                 return self._type(value)
             except InvalidOperation as invop:
-                LOG.exception(invop)
+                LOG.exception('Invalid operation converting {}'.format(value), invop)
                 raise
 
 class DateTimeField(Field):

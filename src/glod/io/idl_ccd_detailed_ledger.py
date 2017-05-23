@@ -19,9 +19,8 @@ from glod.io.fund import funds_from_gsheet
 from glod.io.nominal_account import nominal_accounts_from_gsheet
 from glod.io.subject import subjects_from_gsheet
 from glod.io.parishioner import parishioners_from_gsheet
+from glod.io.statement_item import statement_item_from_gsheet
 
-# import StatementItem in order to have truncate work
-import glod.db.statement_item
 
 LOG = logging.getLogger(__file__)
 
@@ -41,12 +40,16 @@ def do_idl():
 
     truncate_all(engine, configuration.db.default_database_name)
 
-    with session_scope() as session:
-        accounts_from_gsheet(session, extract_from_detailed_ledger)
-        funds_from_gsheet(session, extract_from_detailed_ledger)
-        nominal_accounts_from_gsheet(session, extract_from_detailed_ledger)
-        subjects_from_gsheet(session, extract_from_detailed_ledger)
-        parishioners_from_gsheet(session, extract_from_detailed_ledger)
+    try:
+        with session_scope() as session:
+            accounts_from_gsheet(session, extract_from_detailed_ledger)
+            funds_from_gsheet(session, extract_from_detailed_ledger)
+            nominal_accounts_from_gsheet(session, extract_from_detailed_ledger)
+            subjects_from_gsheet(session, extract_from_detailed_ledger)
+            parishioners_from_gsheet(session, extract_from_detailed_ledger)
+            statement_item_from_gsheet(session, extract_from_detailed_ledger)
+    except Exception as ex:
+        LOG.exception(ex)
 
 
 if __name__ == '__main__':

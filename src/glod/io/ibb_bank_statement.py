@@ -4,9 +4,10 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """
 
 from csv import reader
-from datetime import datetime, date
 
-from a_tuin.metadata import StringField, UnusedField, ListFieldGroup, Mapping
+from a_tuin.metadata import StringField, UnusedField, DenormalisedField, ListFieldGroup, Mapping
+from glod.io.statement_item import cast_dmy_date_from_string
+
 
 statement_item_csv_fields = ListFieldGroup(
     (
@@ -19,12 +20,10 @@ statement_item_csv_fields = ListFieldGroup(
         StringField('debit'),
         StringField('credit'),
         StringField('balance'),
+        # detail override does not appear in the iBB extract
+        DenormalisedField('detail_override', lambda value: None)
     )
 )
-
-
-def cast_dmy_date_from_string(value, _):
-    return date.fromtimestamp(datetime.strptime(value, '%d/%m/%Y').timestamp())
 
 
 class StatementLoader(object):
