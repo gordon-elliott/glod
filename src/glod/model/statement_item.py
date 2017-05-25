@@ -17,17 +17,15 @@ from a_tuin.metadata import (
 class StatementItem(ObjectFieldGroupBase):
 
     public_interface = (
-        (
-            ObjectReferenceField('account'),
-            # TODO: allow properties named differently to internal/db fields
-            DateField('date'),
-            StringField('details'),
-            StringField('currency'),
-            DecimalField('debit', use_custom_properties=True),
-            DecimalField('credit', use_custom_properties=True),
-            DecimalField('balance'),
-            StringField('detail_override'),
-        )
+        ObjectReferenceField('account'),
+        # TODO: allow properties named differently to internal/db fields
+        DateField('date'),
+        StringField('details'),
+        StringField('currency'),
+        DecimalField('debit', use_custom_properties=True),
+        DecimalField('credit', use_custom_properties=True),
+        DecimalField('balance'),
+        StringField('detail_override'),
     )
 
     # metaclass takes care of dealing with the args

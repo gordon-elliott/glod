@@ -55,11 +55,9 @@ class NominalAccountSubCategoryField(IntEnumField):
 class NominalAccount(ObjectFieldGroupBase):
 
     public_interface = (
-        (
-            StringField('code', is_mutable=False),
-            StringField('description'),
-            NominalAccountSOFAHeadingField('SOFA_heading'),
-            NominalAccountCategoryField('category'),
-            NominalAccountSubCategoryField('sub_category'),
-        )
+        StringField('code', is_mutable=False),
+        StringField('description'),
+        NominalAccountSOFAHeadingField('SOFA_heading'),
+        NominalAccountCategoryField('category'),
+        NominalAccountSubCategoryField('sub_category'),
     )

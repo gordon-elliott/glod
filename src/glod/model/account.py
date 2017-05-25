@@ -21,15 +21,13 @@ class AccountStatusField(IntEnumField):
 class Account(ObjectFieldGroupBase):
 
     public_interface = (
-        (
-            IntField('reference_no', is_mutable=False),
-            StringField('purpose'),
-            AccountStatusField('status'),
-            StringField('name'),
-            StringField('institution'),
-            StringField('sort_code'),
-            StringField('account_no'),
-            StringField('BIC'),
-            StringField('IBAN'),
-        )
+        IntField('reference_no', is_mutable=False),
+        StringField('purpose'),
+        AccountStatusField('status'),
+        StringField('name'),
+        StringField('institution'),
+        StringField('sort_code'),
+        StringField('account_no'),
+        StringField('BIC'),
+        StringField('IBAN'),
     )

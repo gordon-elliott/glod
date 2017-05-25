@@ -24,10 +24,8 @@ class FundTypeField(IntEnumField):
 class Fund(ObjectFieldGroupBase):
 
     public_interface = (
-        (
-            StringField('name'),
-            FundTypeField('type'),
-            BooleanField('is_parish_fund'),
-            ObjectReferenceField('account'),
-        )
+        StringField('name'),
+        FundTypeField('type'),
+        BooleanField('is_parish_fund'),
+        ObjectReferenceField('account'),
     )

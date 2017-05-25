@@ -43,10 +43,8 @@ class AClassCollection(Collection):
 
 class AReferringClass(ObjectFieldGroupBase):
     public_interface = (
-        (
-            StringField('name'),
-            ObjectReferenceField('aclass'),
-        )
+        StringField('name'),
+        ObjectReferenceField('aclass'),
     )
 
 
