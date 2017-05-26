@@ -12,6 +12,8 @@ from glod.model.counterparty import Counterparty
 from glod.model.parishioner import Parishioner
 from glod.model.envelope import Envelope
 from glod.model.pps import PPS
+from glod.model.subject import Subject
+from glod.model.transaction import Transaction
 
 
 statement_item__account = Reference(StatementItem, 'account', Account)
@@ -20,6 +22,9 @@ counterparty__parishioner = Reference(Counterparty, 'parishioner', Parishioner)
 envelope__counterparty = Reference(Envelope, 'counterparty', Counterparty)
 envelope__parishioner = Reference(Envelope, 'parishioner', Parishioner)
 pps__parishioner = Reference(PPS, 'parishioner', Parishioner)
+transaction__counterparty = Reference(Transaction, 'counterparty', Counterparty)
+transaction__subject = Reference(Transaction, 'subject', Subject)
+transaction__fund = Reference(Transaction, 'fund', Fund)
 
 
 REFERENCES = (
@@ -29,6 +34,9 @@ REFERENCES = (
     envelope__counterparty,
     envelope__parishioner,
     pps__parishioner,
+    transaction__counterparty,
+    transaction__subject,
+    transaction__fund,
 )
 
 

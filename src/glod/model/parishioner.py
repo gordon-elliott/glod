@@ -34,7 +34,10 @@ class Parishioner(ObjectFieldGroupBase):
 
     @property
     def name(self):
-        return (self._title, self._first_name, self._surname).join(' ')
+        if self._spouse:
+            return '{}, {} & {}'.format(self._surname, self._first_name, self._spouse)
+        else:
+            return '{}, {}'.format(self._surname, self._first_name)
 
 
 class ParishionerCollection(Collection):

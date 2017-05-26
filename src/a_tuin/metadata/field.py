@@ -146,6 +146,12 @@ class StringField(Field):
         return super().type_cast(value)
 
 
+class DescriptionField(StringField):
+    """ Mapped to longer field in a_tuin.db.mapper
+    """
+    pass
+
+
 class BooleanField(Field):
     def __init__(self, name, is_mutable=True, required=False, default=None, description=None, validation=None, use_custom_properties=False):
         super().__init__(name, bool, is_mutable, required, default, description, validation)
@@ -160,6 +166,8 @@ class IntField(Field):
             return datetime.toordinal(value)
         elif type(value) == date:
             return date.toordinal(value)
+        elif value == '':
+            return None
         else:
             return super().type_cast(value)
 

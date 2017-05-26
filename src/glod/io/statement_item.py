@@ -1,3 +1,5 @@
+from glod.io.casts import strip_commas
+
 __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 """ 
@@ -40,10 +42,6 @@ def statement_item_csv(statement_items, csv_file):
         )
 
     return csv_file
-
-
-def strip_commas(value, _):
-    return value.replace(',', '') if value else None
 
 
 def ignore_na(value, _):

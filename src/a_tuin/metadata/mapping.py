@@ -63,13 +63,19 @@ class Mapping(object):
 
     def _iterate_instance(self, source):
         source_field_to_destination_field = dict(self._field_mappings)
-        for source_field, value, destination_field in self._source_entity.iterate_instance(
-            source, source_field_to_destination_field
-        ):
-            if destination_field is not None:
-                if self._field_casts and source_field.name in self._field_casts:
-                    value = self._field_casts[source_field.name](value, destination_field)
-                yield source_field, value, destination_field
+        with field_errors_check() as errors:
+            for source_field, value, destination_field in self._source_entity.iterate_instance(
+                source, source_field_to_destination_field
+            ):
+                try:
+                    if destination_field is not None:
+                        if self._field_casts and source_field.name in self._field_casts:
+                            value = self._field_casts[source_field.name](value, destination_field)
+                        yield source_field, value, destination_field
+                except FieldAssignmentError as field_error:
+                    errors.append(field_error)
+                except Exception as ex:
+                    errors.append(FieldAssignmentError(source_field, ex))
 
     def update_in_place(self, source, destination):
         with field_errors_check() as errors:

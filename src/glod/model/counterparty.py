@@ -46,6 +46,10 @@ class Counterparty(ObjectFieldGroupBase):
     def name(self):
         return self._name_override if self._name_override else self._parishioner.name
 
+    @property
+    def lookup_name(self):
+        return self.name.lower()
+
 
 class CounterpartyCollection(Collection):
     pass

@@ -21,6 +21,12 @@ from glod.model.nominal_account import (
     NominalAccountSubCategory,
 )
 from glod.model.counterparty import StandingOrderDonorField, StandingOrderDonor
+from glod.model.transaction import (
+    PaymentMethod,
+    PaymentMethodField,
+    IncomeExpenditure,
+    IncomeExpenditureField,
+)
 
 DB_COLUMN_TYPE_MAP[AccountStatusField] = Enum(AccountStatus)
 
@@ -31,3 +37,6 @@ DB_COLUMN_TYPE_MAP[NominalAccountCategoryField] = Enum(NominalAccountCategory)
 DB_COLUMN_TYPE_MAP[NominalAccountSubCategoryField] = Enum(NominalAccountSubCategory)
 
 DB_COLUMN_TYPE_MAP[StandingOrderDonorField] = Enum(StandingOrderDonor)
+
+DB_COLUMN_TYPE_MAP[PaymentMethodField] = Enum(PaymentMethod)
+DB_COLUMN_TYPE_MAP[IncomeExpenditureField] = Enum(IncomeExpenditure)
