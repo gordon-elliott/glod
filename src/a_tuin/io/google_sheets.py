@@ -31,9 +31,12 @@ def _sheet_rows(worksheet, num_columns, first_row, first_column):
     for first_row_in_range in range(first_row, worksheet.row_count, ROWS_PER_FETCH):
         previous_column = 0
         last_row_in_range = min(first_row_in_range + ROWS_PER_FETCH - 1, worksheet.row_count)
+        last_column_in_range = first_column + num_columns - 1
+        LOG.info('Fetching worksheet columns %d to %d, rows %d to %d' % (
+            first_column, last_column_in_range, first_row_in_range, last_row_in_range
+        ))
         row = []
-        LOG.info('Fetching worksheet rows %d to %d' % (first_row_in_range, last_row_in_range))
-        for cell in worksheet.range(first_row_in_range, first_column, last_row_in_range, first_column + num_columns):
+        for cell in worksheet.range(first_row_in_range, first_column, last_row_in_range, last_column_in_range):
             if cell.col < previous_column:
                 yield row
                 row = []

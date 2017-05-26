@@ -48,10 +48,10 @@ class FieldErrors(Exception):
 
 
 @contextmanager
-def field_errors_check(exception_class=FieldErrors):
+def field_errors_check():
     errors = []
 
     yield errors
 
     if errors:
-        raise exception_class(errors)
+        raise FieldErrors(errors)

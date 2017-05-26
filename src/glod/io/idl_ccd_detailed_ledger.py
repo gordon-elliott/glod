@@ -22,6 +22,7 @@ from glod.io.parishioner import parishioners_from_gsheet
 from glod.io.statement_item import statement_item_from_gsheet
 from glod.io.counterparty import counterparty_from_gsheet
 from glod.io.envelope import envelopes_from_gsheet
+from glod.io.pps import ppses_from_gsheet
 
 
 LOG = logging.getLogger(__file__)
@@ -51,6 +52,7 @@ def do_idl():
             parishioners_from_gsheet(session, extract_from_detailed_ledger)
             counterparty_from_gsheet(session, extract_from_detailed_ledger)
             envelopes_from_gsheet(session, extract_from_detailed_ledger)
+            ppses_from_gsheet(session, extract_from_detailed_ledger)
             statement_item_from_gsheet(session, extract_from_detailed_ledger)
     except Exception as ex:
         LOG.exception(ex)

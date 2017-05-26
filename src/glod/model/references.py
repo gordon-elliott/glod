@@ -11,6 +11,7 @@ from glod.model.fund import Fund
 from glod.model.counterparty import Counterparty
 from glod.model.parishioner import Parishioner
 from glod.model.envelope import Envelope
+from glod.model.pps import PPS
 
 
 statement_item__account = Reference(StatementItem, 'account', Account)
@@ -18,6 +19,8 @@ fund__account = Reference(Fund, 'account', Account)
 counterparty__parishioner = Reference(Counterparty, 'parishioner', Parishioner)
 envelope__counterparty = Reference(Envelope, 'counterparty', Counterparty)
 envelope__parishioner = Reference(Envelope, 'parishioner', Parishioner)
+pps__parishioner = Reference(PPS, 'parishioner', Parishioner)
+
 
 REFERENCES = (
     statement_item__account,
@@ -25,6 +28,7 @@ REFERENCES = (
     counterparty__parishioner,
     envelope__counterparty,
     envelope__parishioner,
+    pps__parishioner,
 )
 
 
