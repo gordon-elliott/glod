@@ -11,7 +11,6 @@ from a_tuin.metadata import (
 
 from glod.db.nominal_account import (
     NominalAccount,
-    NominalAccountCollection,
     NominalAccountSOFAHeading,
     NominalAccountCategory,
     NominalAccountSubCategory,

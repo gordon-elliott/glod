@@ -5,8 +5,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from a_tuin.db import RelationMap, TableMap, PagedQuery, InstanceQuery
 
-from glod.model.envelope import Envelope
-from glod.model.envelope_collection import EnvelopeCollection
+from glod.model.envelope import Envelope, EnvelopeCollection
 from glod.model.references import envelope__counterparty, envelope__parishioner
 
 from glod.db.db_column_type_map import DB_COLUMN_TYPE_MAP

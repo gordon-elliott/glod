@@ -7,7 +7,7 @@ from a_tuin.io.gsheet_integration import get_gsheet_fields, load_class
 from a_tuin.metadata import StringField, Mapping
 
 from glod.db.fund import FundType, Fund
-from glod.db.account import AccountQuery, AccountCollection
+from glod.db.account import AccountQuery
 
 
 FUND_TYPE_MAP = {
@@ -26,14 +26,6 @@ def conform_yes_no(value, _):
 
 
 def funds_from_gsheet(session, extract_from_detailed_ledger):
-    account_collection = AccountCollection(list(AccountQuery(session).collection()))
-
-    def conform_account(value, _):
-        if not value:
-            return None
-        else:
-            accounts = account_collection.lookup(int(value), '_reference_no')
-            return next(accounts)
 
     fund_gsheet = get_gsheet_fields(
         Fund,
@@ -45,7 +37,7 @@ def funds_from_gsheet(session, extract_from_detailed_ledger):
     field_casts = {
         'type': conform_fund_type,
         'parish fund': conform_yes_no,
-        'bank account id': conform_account
+        'bank account id': AccountQuery(session).instance_finder('reference_no', int)
     }
     fund_mapping = Mapping(fund_gsheet, Fund.constructor_parameters, field_casts=field_casts)
     funds = extract_from_detailed_ledger(

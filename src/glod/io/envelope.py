@@ -18,8 +18,8 @@ def envelopes_from_gsheet(session, extract_from_detailed_ledger):
         {'counterparty': 'counterpartyid', 'parishioner': 'parishionerid'}
     )
     field_casts = {
-        'counterpartyid': CounterpartyQuery(session).instance_finder('reference_no'),
-        'parishionerid': ParishionerQuery(session).instance_finder('reference_no'),
+        'counterpartyid': CounterpartyQuery(session).instance_finder('reference_no', int),
+        'parishionerid': ParishionerQuery(session).instance_finder('reference_no', int),
     }
     envelope_mapping = Mapping(envelope_gsheet, Envelope.constructor_parameters, field_casts=field_casts)
     envelopes = extract_from_detailed_ledger(

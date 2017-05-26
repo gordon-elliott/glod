@@ -15,7 +15,6 @@ from a_tuin.metadata import (
 
 from glod.db.account import Account, AccountStatus, AccountCollection
 
-
 ACCOUNT_STATUS_MAP = {
     'in use': AccountStatus.Active,
     'ready': AccountStatus.Active,

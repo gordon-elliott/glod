@@ -5,7 +5,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from enum import IntEnum
 
-from a_tuin.metadata import IntEnumField, StringField, ObjectFieldGroupBase
+from a_tuin.metadata import IntEnumField, StringField, ObjectFieldGroupBase, Collection
 
 
 class NominalAccountSOFAHeading(IntEnum):
@@ -61,3 +61,7 @@ class NominalAccount(ObjectFieldGroupBase):
         NominalAccountCategoryField('category'),
         NominalAccountSubCategoryField('sub_category'),
     )
+
+
+class NominalAccountCollection(Collection):
+    pass

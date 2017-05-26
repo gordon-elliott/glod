@@ -49,9 +49,9 @@ def do_idl():
             nominal_accounts_from_gsheet(session, extract_from_detailed_ledger)
             subjects_from_gsheet(session, extract_from_detailed_ledger)
             parishioners_from_gsheet(session, extract_from_detailed_ledger)
-            statement_item_from_gsheet(session, extract_from_detailed_ledger)
             counterparty_from_gsheet(session, extract_from_detailed_ledger)
             envelopes_from_gsheet(session, extract_from_detailed_ledger)
+            statement_item_from_gsheet(session, extract_from_detailed_ledger)
     except Exception as ex:
         LOG.exception(ex)
 

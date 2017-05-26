@@ -3,7 +3,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """
 """
 
-from a_tuin.metadata import IntField, StringField, ObjectFieldGroupBase
+from a_tuin.metadata import IntField, StringField, ObjectFieldGroupBase, Collection
 
 
 class Parishioner(ObjectFieldGroupBase):
@@ -35,3 +35,7 @@ class Parishioner(ObjectFieldGroupBase):
     @property
     def name(self):
         return (self._title, self._first_name, self._surname).join(' ')
+
+
+class ParishionerCollection(Collection):
+    pass

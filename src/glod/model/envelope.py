@@ -7,6 +7,7 @@ from a_tuin.metadata import (
     ObjectFieldGroupBase,
     IntField,
     ObjectReferenceField,
+    Collection,
 )
 
 
@@ -18,3 +19,7 @@ class Envelope(ObjectFieldGroupBase):
         ObjectReferenceField('parishioner'),
         IntField('envelope_number'),
     )
+
+
+class EnvelopeCollection(Collection):
+    pass

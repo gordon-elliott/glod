@@ -5,8 +5,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from a_tuin.db import TableMap, PagedQuery, InstanceQuery
 
-from glod.model.parishioner import Parishioner
-from glod.model.parishioner_collection import ParishionerCollection
+from glod.model.parishioner import Parishioner, ParishionerCollection
 
 from glod.db.db_column_type_map import DB_COLUMN_TYPE_MAP
 

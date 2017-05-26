@@ -11,6 +11,7 @@ from a_tuin.metadata import (
     IntEnumField,
     BooleanField,
     ObjectFieldGroupBase,
+    Collection,
 )
 
 
@@ -44,3 +45,7 @@ class Counterparty(ObjectFieldGroupBase):
     @property
     def name(self):
         return self._name_override if self._name_override else self._parishioner.name
+
+
+class CounterpartyCollection(Collection):
+    pass

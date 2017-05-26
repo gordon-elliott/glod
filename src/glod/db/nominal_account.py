@@ -10,8 +10,8 @@ from glod.model.nominal_account  import (
     NominalAccountSOFAHeading,
     NominalAccountCategory,
     NominalAccountSubCategory,
+    NominalAccountCollection,
 )
-from glod.model.nominal_account_collection import NominalAccountCollection
 
 from glod.db.db_column_type_map import DB_COLUMN_TYPE_MAP
 

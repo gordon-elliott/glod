@@ -74,7 +74,7 @@ def counterparty_from_gsheet(session, extract_from_detailed_ledger):
     ))
 
     field_casts = {
-        'parishoner id': ParishionerQuery(session).instance_finder('reference_no'),
+        'parishoner id': ParishionerQuery(session).instance_finder('reference_no', int),
         'standing order donor': cast_standing_order_donor,
         'SO card?': cast_yes_no,
     }

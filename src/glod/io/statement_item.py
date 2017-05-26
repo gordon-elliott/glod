@@ -9,7 +9,7 @@ from datetime import date, datetime
 from a_tuin.metadata import StringField, DenormalisedField, DictFieldGroup, Mapping
 from a_tuin.io.gsheet_integration import get_gsheet_fields, load_class
 from glod.db.statement_item import StatementItem
-from glod.db.account import AccountQuery, AccountCollection
+from glod.db.account import AccountQuery
 
 
 def statement_item_csv(statement_items, csv_file):
@@ -58,18 +58,10 @@ def cast_dmy_date_from_string(value, _):
 
 
 def statement_item_from_gsheet(session, extract_from_detailed_ledger):
-    account_collection = AccountCollection(list(AccountQuery(session).collection()))
-
-    def lookup_account(value, _):
-        if not value:
-            return None
-        else:
-            accounts = account_collection.lookup(value, 'account_no')
-            return next(accounts)
 
     statement_item_gsheet = get_gsheet_fields(StatementItem, None)
     field_casts = {
-        'account': lookup_account,
+        'account': AccountQuery(session).instance_finder('account_no', None),
         'date': cast_dmy_date_from_string,
         'debit': strip_commas,
         'credit': strip_commas,

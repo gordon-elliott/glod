@@ -5,7 +5,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from enum import IntEnum
 
-from a_tuin.metadata import IntField, IntEnumField, StringField, ObjectFieldGroupBase
+from a_tuin.metadata import IntField, IntEnumField, StringField, ObjectFieldGroupBase, Collection
 
 
 class AccountStatus(IntEnum):
@@ -31,3 +31,7 @@ class Account(ObjectFieldGroupBase):
         StringField('BIC'),
         StringField('IBAN'),
     )
+
+
+class AccountCollection(Collection):
+    pass

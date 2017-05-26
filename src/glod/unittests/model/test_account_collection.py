@@ -5,8 +5,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from unittest import TestCase
 
-from glod.model.account import Account, AccountStatus
-from glod.model.account_collection import AccountCollection
+from glod.model.account import Account, AccountStatus, AccountCollection
 
 
 class TestAccountCollection(TestCase):

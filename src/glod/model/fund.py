@@ -6,7 +6,12 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 from enum import IntEnum
 
 from a_tuin.metadata import (
-    ObjectReferenceField, IntEnumField, StringField, BooleanField, ObjectFieldGroupBase
+    ObjectReferenceField,
+    IntEnumField,
+    StringField,
+    BooleanField,
+    ObjectFieldGroupBase,
+    Collection,
 )
 
 
@@ -29,3 +34,7 @@ class Fund(ObjectFieldGroupBase):
         BooleanField('is_parish_fund'),
         ObjectReferenceField('account'),
     )
+
+
+class FundCollection(Collection):
+    pass

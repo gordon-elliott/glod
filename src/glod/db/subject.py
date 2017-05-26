@@ -5,8 +5,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from a_tuin.db import TableMap, PagedQuery, InstanceQuery
 
-from glod.model.subject import Subject
-from glod.model.subject_collection import SubjectCollection
+from glod.model.subject import Subject, SubjectCollection
 
 from glod.db.db_column_type_map import DB_COLUMN_TYPE_MAP
 
