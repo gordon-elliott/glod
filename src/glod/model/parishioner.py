@@ -31,3 +31,7 @@ class Parishioner(ObjectFieldGroupBase):
         StringField('giving'),
         StringField('email'),
     )
+
+    @property
+    def name(self):
+        return (self._title, self._first_name, self._surname).join(' ')

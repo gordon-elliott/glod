@@ -20,6 +20,8 @@ from glod.io.nominal_account import nominal_accounts_from_gsheet
 from glod.io.subject import subjects_from_gsheet
 from glod.io.parishioner import parishioners_from_gsheet
 from glod.io.statement_item import statement_item_from_gsheet
+from glod.io.counterparty import counterparty_from_gsheet
+from glod.io.envelope import envelopes_from_gsheet
 
 
 LOG = logging.getLogger(__file__)
@@ -48,6 +50,8 @@ def do_idl():
             subjects_from_gsheet(session, extract_from_detailed_ledger)
             parishioners_from_gsheet(session, extract_from_detailed_ledger)
             statement_item_from_gsheet(session, extract_from_detailed_ledger)
+            counterparty_from_gsheet(session, extract_from_detailed_ledger)
+            envelopes_from_gsheet(session, extract_from_detailed_ledger)
     except Exception as ex:
         LOG.exception(ex)
 

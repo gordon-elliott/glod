@@ -115,3 +115,18 @@ class PagedQuery(Query):
 
     def __iter__(self):
         return iter(self.collection())
+
+    def instance_finder(self, lookup_fieldname, value_cast=None):
+        value_cast = int if value_cast is None else value_cast
+
+        # use list() to instantiate the collection rather than query each time
+        collection = self._model_collection(list(self.collection()))
+
+        def lookup_instance(value, _):
+            if not value:
+                return None
+            else:
+                instances = collection.lookup(value_cast(value), lookup_fieldname)
+                return next(instances)
+
+        return lookup_instance

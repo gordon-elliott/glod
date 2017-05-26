@@ -3,6 +3,8 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """
 """
 import logging
+import os
+
 from unittest import TestCase
 from uuid import uuid1
 
@@ -28,6 +30,7 @@ class DBSessionTestCase(TestCase):
         connection_string = configuration.db.connection_template.format(TEST_DB_NAME)
 
         cls.engine = create_engine(connection_string, echo=False)   # to avoid duplicate log messages
+
         if not database_exists(cls.engine.url):
             LOG.info('Creating test DB %s' % TEST_DB_NAME)
             create_database(cls.engine.url)
@@ -35,16 +38,16 @@ class DBSessionTestCase(TestCase):
             metadata.create_all(cls.engine)
 
             # Make sure old test dbs are cleaned up
-            with open(DB_NAME_FILE, 'r') as db_name_file:
+            if os.path.exists(DB_NAME_FILE):
+                with open(DB_NAME_FILE, 'r') as db_name_file:
 
-                for old_db_name in db_name_file:
-                    LOG.info('Dropping old test database {}'.format(old_db_name))
-                    drop_database(
-                        configuration.db.connection_template.format(old_db_name)
-                    )
+                    for old_db_name in db_name_file:
+                        LOG.info('Dropping old test database {}'.format(old_db_name))
+                        drop_database(
+                            configuration.db.connection_template.format(old_db_name)
+                        )
 
             with open(DB_NAME_FILE, 'w') as db_name_file:
-
                 db_name_file.write('{}\n'.format(TEST_DB_NAME))
 
     @classmethod
