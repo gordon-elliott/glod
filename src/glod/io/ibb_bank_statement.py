@@ -29,6 +29,7 @@ statement_item_csv_fields = ListFieldGroup(
 class StatementLoader(object):
     def __init__(self, item_instance_class, account_collection):
         self._item_instance_class = item_instance_class
+        # TODO use lookup_map
         self._account_collection = account_collection
 
         csv_fields = (

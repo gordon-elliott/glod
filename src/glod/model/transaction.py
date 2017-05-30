@@ -3,8 +3,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """ 
 """
 
-# id	reference	year	month	day	counterparty name	payment method	description	amount	subject	income/expenditure	FY	fund
-
+from datetime import date
 from enum import IntEnum
 
 from a_tuin.metadata import (
@@ -71,6 +70,15 @@ class Transaction(ObjectFieldGroupBase):
         ObjectReferenceField('fund'),
     )
 
+    def __str__(self):
+        return '{0.__class__.__name__}({0._reference_no}, {0._public_code}, {0.book_date}, {0._counterparty})'.format(self)
+
+    @property
+    def book_date(self):
+        if all((self._year, self._month, self._day)):
+            return date(self._year, self._month, self._day)
+        else:
+            None
 
 class TransactionCollection(Collection):
     pass

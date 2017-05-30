@@ -32,6 +32,9 @@ class Account(ObjectFieldGroupBase):
         StringField('IBAN'),
     )
 
+    def __str__(self):
+        return '{0.__class__.__name__}({0._reference_no}, {0._account_no})'.format(self)
+
 
 class AccountCollection(Collection):
     pass

@@ -42,6 +42,9 @@ class Counterparty(ObjectFieldGroupBase):
         StringField('notes'),
     )
 
+    def __str__(self):
+        return '{0.__class__.__name__}({0._reference_no}, {0.name}, {0._bank_text})'.format(self)
+
     @property
     def name(self):
         return self._name_override if self._name_override else self._parishioner.name

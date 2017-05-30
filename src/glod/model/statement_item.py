@@ -2,6 +2,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 """
 """
+import re
 
 from decimal import Decimal
 
@@ -14,11 +15,20 @@ from a_tuin.metadata import (
 )
 
 
+TRUNCATE_ON = (
+    ' IE1',
+    ' GTS',
+    ' CT0',
+    ' RT0',
+)
+TRUNCATE_ON_PATTERN = r'^(.*)(({}).*)$'.format('|'.join(TRUNCATE_ON))
+
+
 class StatementItem(ObjectFieldGroupBase):
 
     public_interface = (
         ObjectReferenceField('account'),
-        # TODO: allow properties named differently to internal/db fields
+        # TODO: allow properties to be named differently to internal/db fields
         DateField('date'),
         StringField('details'),
         StringField('currency'),
@@ -31,6 +41,9 @@ class StatementItem(ObjectFieldGroupBase):
     # metaclass takes care of dealing with the args
     def __init__(self, *args, **kwargs):
         self._designated_balance = None
+
+    def __str__(self):
+        return '{0.__class__.__name__}({0._account}, {0._date}, {0.trimmed_details})'.format(self)
 
     @property
     def debit(self):
@@ -53,5 +66,45 @@ class StatementItem(ObjectFieldGroupBase):
         return self.credit - self.debit
 
     @property
+    def year(self):
+        return self._date.year
+
+    @property
     def month(self):
         return self._date.month
+
+    @property
+    def day(self):
+        return self._date.day
+
+    @property
+    def unified_details(self):
+        return self._detail_override if self._detail_override else self._details
+
+    @property
+    def public_code(self):
+        details = self.unified_details
+        # lodgments
+        if details.startswith('LODGMENT'):
+            return details.replace('LODGMENT', '').strip()
+        # direct payments out and in
+        elif details.startswith('D0') or details.startswith('E0'):
+            return details[0:6]
+        # cheque numbers
+        elif re.search(r'^\d{6}$', details):
+            return details
+        else:
+            return None
+
+    @property
+    def trimmed_details(self):
+        """ Drop any text after the specified strings
+
+        :return:
+        """
+        return re.sub(
+            TRUNCATE_ON_PATTERN,
+            '\g<1>',
+            self.unified_details
+        )
+

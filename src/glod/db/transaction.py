@@ -36,6 +36,7 @@ TableMap(
     ),
 )
 
+
 class TransactionInstanceQuery(InstanceQuery):
     def __init__(self, session):
         super().__init__(Transaction, TransactionCollection, session)

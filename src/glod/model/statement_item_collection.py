@@ -39,3 +39,23 @@ class StatementItemCollection(Collection):
         for item in item_list:
             if item.month in desired_months:
                 yield item
+
+    def map_to_counterparty(self, counterparties_by_bank_text, no_counterparty_found):
+        statement_item_to_counterparty = {}
+        for statement_item in self:
+            details = statement_item.trimmed_details
+
+            if details in counterparties_by_bank_text:
+                statement_item_to_counterparty[statement_item] = counterparties_by_bank_text[details]
+            else:
+                matched = False
+                for bank_text, counterparty in counterparties_by_bank_text.items():
+                    if details.startswith(bank_text):
+                        statement_item_to_counterparty[statement_item] = counterparty
+                        matched = True
+                        break
+
+                if not matched:
+                    no_counterparty_found.append(statement_item)
+
+        return statement_item_to_counterparty
