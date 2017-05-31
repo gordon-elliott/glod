@@ -2,14 +2,16 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 """ 
 """
+import logging
 
 from functools import partial
 from datetime import datetime, date
 from decimal import Decimal, InvalidOperation
 
+from a_tuin.metadata.exceptions import RequiredValueMissing
 
-class RequiredValueMissing(Exception):
-    pass
+
+LOG = logging.getLogger(__name__)
 
 
 # wrap built in functions in order that a partial can be created for each of them
@@ -61,7 +63,7 @@ class Field(object):
             try:
                 return self._type(value)
             except TypeError as err:
-                print(err)
+                LOG.warning(err)
                 raise
 
     def is_filled(self, value):
@@ -78,12 +80,7 @@ class Field(object):
         value = self.type_cast(value)
         value = self.use_default(value)
         if not self.is_filled(value):
-            raise RequiredValueMissing()
-        return value
-
-    def conform_value(self, value):
-        """ Convert value on on extraction by FieldGroup
-        """
+            raise RequiredValueMissing(self)
         return value
 
     def create_property_on_class(self, cls, internal_name):
@@ -149,6 +146,12 @@ class StringField(Field):
         return super().type_cast(value)
 
 
+class DescriptionField(StringField):
+    """ Mapped to longer field in a_tuin.db.mapper
+    """
+    pass
+
+
 class BooleanField(Field):
     def __init__(self, name, is_mutable=True, required=False, default=None, description=None, validation=None, use_custom_properties=False):
         super().__init__(name, bool, is_mutable, required, default, description, validation)
@@ -163,6 +166,8 @@ class IntField(Field):
             return datetime.toordinal(value)
         elif type(value) == date:
             return date.toordinal(value)
+        elif value == '':
+            return None
         else:
             return super().type_cast(value)
 
@@ -209,7 +214,7 @@ class DecimalField(Field):
             try:
                 return self._type(value)
             except InvalidOperation as invop:
-                print(invop)
+                LOG.exception('Invalid operation converting {}'.format(value), invop)
                 raise
 
 class DateTimeField(Field):
@@ -240,8 +245,6 @@ class DateField(Field):
         value_type = type(value)
         if value_type == self._type:
             return value
-        elif value_type == str:
-            return date.fromtimestamp(datetime.strptime(value, self._strfmt).timestamp())
         elif value_type == float:
             return date.fromtimestamp(value)
         elif value_type == int:

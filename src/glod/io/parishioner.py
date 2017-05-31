@@ -8,7 +8,7 @@ from a_tuin.metadata import (
     Mapping,
 )
 
-from glod.db.parishioner import Parishioner, ParishionerCollection
+from glod.db.parishioner import Parishioner
 
 
 def parishioners_from_gsheet(session, extract_from_detailed_ledger):

@@ -3,6 +3,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """ 
 """
 from collections import OrderedDict
+from a_tuin.metadata.exceptions import FieldAssignmentError, field_errors_check
 from a_tuin.metadata.field import INVALID_FIELD_COMBINATIONS
 
 
@@ -12,7 +13,7 @@ class IncompatibleFieldTypes(Exception):
 
 class Mapping(object):
 
-    def __init__(self, source_entity, destination_entity, field_mappings=None):
+    def __init__(self, source_entity, destination_entity, field_mappings=None, field_casts=None):
         self._source_entity = source_entity
         self._destination_entity = destination_entity
 
@@ -26,6 +27,7 @@ class Mapping(object):
             raise IncompatibleFieldTypes()
 
         self._field_mappings = field_mappings
+        self._field_casts = field_casts
 
     def __iter__(self):
         self._current_field_index = 0
@@ -59,19 +61,33 @@ class Mapping(object):
                 return dest
         return None
 
-    def update_in_place(self, source, destination):
-        # TODO implement allow_partial and tests for same
-        for source_field, destination_field in self._field_mappings:
-            value = self._source_entity.get_value(source, source_field)
-            self._destination_entity.set_value(destination, destination_field, value)
-
-    def cast_from(self, source):
+    def _iterate_instance(self, source):
         source_field_to_destination_field = dict(self._field_mappings)
-        input_dict = OrderedDict(
-            (destination_field.name, value)
+        with field_errors_check() as errors:
             for source_field, value, destination_field in self._source_entity.iterate_instance(
                 source, source_field_to_destination_field
-            )
-            if destination_field is not None
+            ):
+                try:
+                    if destination_field is not None:
+                        if self._field_casts and source_field.name in self._field_casts:
+                            value = self._field_casts[source_field.name](value, destination_field)
+                        yield source_field, value, destination_field
+                except FieldAssignmentError as field_error:
+                    errors.append(field_error)
+                except Exception as ex:
+                    errors.append(FieldAssignmentError(source_field, ex))
+
+    def update_in_place(self, source, destination):
+        with field_errors_check() as errors:
+            for source_field, value, destination_field in self._iterate_instance(source):
+                try:
+                    self._destination_entity.set_value(destination, destination_field, value)
+                except FieldAssignmentError as field_error:
+                    errors.append(field_error)
+
+    def cast_from(self, source):
+        input_dict = OrderedDict(
+            (destination_field.name, value)
+            for source_field, value, destination_field in self._iterate_instance(source)
         )
         return self._destination_entity.fill_instance_from_dict(input_dict)

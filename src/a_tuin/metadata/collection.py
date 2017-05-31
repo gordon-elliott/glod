@@ -3,7 +3,12 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """ Facade for a collection of model instances
 """
 
+import logging
+
 from functools import wraps
+
+
+LOG = logging.getLogger(__name__)
 
 
 def chainable(generator_method):
@@ -59,8 +64,49 @@ class Collection(object):
             self._filter_applied = True
             raise
 
-    def lookup(self, id_to_match, field):
+    def lookup(self, id_to_match, fieldname):
         for item in self:
-            if getattr(item, field) == id_to_match:
+            if getattr(item, fieldname) == id_to_match:
                 yield item
 
+    def lookup_map(self, fieldname):
+        lookup_dict = {}
+        duplicates = set()
+        for item in self:
+            key = getattr(item, fieldname)
+            if key is not None:
+                if key in lookup_dict:
+                    # remove ambiguous key and first mapping
+                    del lookup_dict[key]
+                    duplicates.add(key)
+                else:
+                    lookup_dict[key] = item
+
+        if duplicates:
+            LOG.warning('Duplicates excluded from {} lookup map {}'.format(fieldname, duplicates))
+
+        return lookup_dict
+
+    @chainable
+    def not_null(self, items, fieldname):
+        for item in items:
+            if getattr(item, fieldname) is not None:
+                yield item
+
+    @chainable
+    def is_null(self, items, fieldname):
+        for item in items:
+            if getattr(item, fieldname) is None:
+                yield item
+
+    @chainable
+    def is_empty(self, items, fieldname):
+        for item in items:
+            if len(getattr(item, fieldname)) == 0:
+                yield item
+
+    @chainable
+    def filter(self, items, item_expression):
+        for item in items:
+            if item_expression(item):
+                yield item

@@ -2,11 +2,16 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 """ 
 """
+import logging
 
 from collections import OrderedDict
 from operator import getitem, setitem
 
+from a_tuin.metadata.exceptions import FieldAssignmentError, FieldErrors, field_errors_check
 from a_tuin.metadata.field_transformations import copy_field
+
+
+LOG = logging.getLogger(__name__)
 
 
 class FieldGroup(object):
@@ -57,21 +62,21 @@ class FieldGroup(object):
             ]
         )
 
-    def _get_values_in_order(self, input_dict):
-        return [
-            field.type_cast(input_dict[field.name])
-            for field in self._fields
-        ]
-
     def fill_instance_from_dict(self, input_dict):
         raise NotImplementedError
 
-    def update_instance_from_dict(self, instance, input_dict, ignore_failed_updates=True):
+    def update_instance_from_dict(self, instance, input_dict):
         raise NotImplementedError
 
     def iterate_instance(self, instance, per_field_map):
-        for field in self._fields:
-            yield field, self.get_value(instance, field), per_field_map.get(field)
+        with field_errors_check() as errors:
+            for field in self._fields:
+                try:
+                    yield field, self._get_value(instance, field), per_field_map.get(field)
+                except FieldAssignmentError as field_error:
+                    errors.append(field_error)
+                except Exception as ex:
+                    errors.append(FieldAssignmentError(field, ex))
 
     def _get_field_index(self, field):
         for i, item in enumerate(self._fields):
@@ -80,26 +85,37 @@ class FieldGroup(object):
         return None, None
 
     def _type_cast(self, input_dict):
-        return {
-            field.name: field.type_cast(input_dict[field.name])
-            for field in self._fields
-        }
+        cast_values = []
+        with field_errors_check() as errors:
+            for field in self._fields:
+                try:
+                    cast_values.append((field.name, field.type_cast(input_dict[field.name])))
+                except FieldAssignmentError as fae:
+                    errors.append(fae)
+                except Exception as ex:
+                    errors.append(FieldAssignmentError(field, ex))
 
-    def get_value(self, instance, field):
+        return OrderedDict(cast_values)
+
+    def _get_value(self, instance, field):
         raise NotImplementedError
-
-    def as_dict(self, instance):
-        return {
-            field.name: self.get_value(instance, field)
-            for field in self._fields
-        }
 
     def _accessor(self, instance, key):
         raise NotImplementedError
 
+    #
+    # Used in unittests
+    #
+
+    def as_dict(self, instance):
+        return {
+            field.name: self._get_value(instance, field)
+            for field in self._fields
+        }
+
     def instances_differ(self, instance, other):
         return any(
-            self.get_value(instance, field) != self.get_value(other, field)
+            self._get_value(instance, field) != self._get_value(other, field)
             for field in self._fields
         )
 
@@ -107,16 +123,15 @@ class FieldGroup(object):
 class SequenceFieldGroup(FieldGroup):
 
     def fill_instance_from_dict(self, input_dict):
-        values_in_order = self._get_values_in_order(input_dict)
-        return self._container_type(values_in_order)
+        values_in_order = self._type_cast(input_dict)
+        return self._container_type(values_in_order.values())
 
     def _accessor(self, instance, key):
         return getitem(instance, key)
 
-    def get_value(self, instance, field):
+    def _get_value(self, instance, field):
         index, _ = self._get_field_index(field)
-        value = self._accessor(instance, index)
-        return field.conform_value(value)
+        return self._accessor(instance, index)
 
 
 class TupleFieldGroup(SequenceFieldGroup):
@@ -127,14 +142,17 @@ class TupleFieldGroup(SequenceFieldGroup):
 
 class MutableSequenceFieldGroup(FieldGroup):
 
-    def update_instance_from_dict(self, instance, input_dict, ignore_failed_updates=True):
-        for field_name, value in input_dict.items():
-            try:
+    def update_instance_from_dict(self, instance, input_dict):
+        with field_errors_check() as errors:
+            for field_name, value in input_dict.items():
                 field = self[field_name]
-                self.set_value(instance, field, value)
-            except (KeyError, AttributeError):
-                if not ignore_failed_updates:
-                    raise
+                try:
+                    self.set_value(instance, field, value)
+                except FieldAssignmentError as fae:
+                    if isinstance(fae.original_exception, AttributeError):
+                        LOG.warning('Unable to assign {} to {}'.format(value, field_name))
+                    else:
+                        errors[field] = fae
 
     def set_value(self, instance, field, value):
         raise NotImplementedError
@@ -152,9 +170,14 @@ class ListFieldGroup(MutableSequenceFieldGroup, SequenceFieldGroup):
         super().__init__(fields, list)
 
     def set_value(self, instance, field, value):
-        value = field.prepare_value(value)
-        index, _ = self._get_field_index(field)
-        return self._mutator(instance, index, value)
+        try:
+            value = field.prepare_value(value)
+            index, _ = self._get_field_index(field)
+            return self._mutator(instance, index, value)
+        except FieldAssignmentError:
+            raise
+        except Exception as ex:
+            raise FieldAssignmentError(field, ex)
 
     def _mutator(self, instance, key, value):
         return setitem(instance, key, value)
@@ -172,16 +195,20 @@ class DictFieldGroup(MutableSequenceFieldGroup):
     def fill_instance_from_dict(self, input_dict):
         return self._container_type(self._type_cast(input_dict))
 
-    def get_value(self, instance, field):
-        value = self._accessor(instance, field.name)
-        return field.conform_value(value)
+    def _get_value(self, instance, field):
+        return self._accessor(instance, field.name)
 
     def _accessor(self, instance, key):
         return getitem(instance, key)
 
     def set_value(self, instance, field, value):
-        value = field.prepare_value(value)
-        return self._mutator(instance, field.name, value)
+        try:
+            value = field.prepare_value(value)
+            return self._mutator(instance, field.name, value)
+        except FieldAssignmentError:
+            raise
+        except Exception as ex:
+            raise FieldAssignmentError(field, ex)
 
     def _mutator(self, instance, key, value):
         return setitem(instance, key, value)
@@ -192,16 +219,20 @@ class ObjectFieldGroup(MutableSequenceFieldGroup):
     def fill_instance_from_dict(self, input_dict):
         return self._container_type(**self._type_cast(input_dict))
 
-    def get_value(self, instance, field):
-        value = self._accessor(instance, field.name)
-        return field.conform_value(value)
+    def _get_value(self, instance, field):
+        return self._accessor(instance, field.name)
 
     def _accessor(self, instance, key):
         return getattr(instance, key)
 
     def set_value(self, instance, field, value):
-        value = field.prepare_value(value)
-        return self._mutator(instance, field.name, value)
+        try:
+            value = field.prepare_value(value)
+            return self._mutator(instance, field.name, value)
+        except FieldAssignmentError:
+            raise
+        except Exception as ex:
+            raise FieldAssignmentError(field, ex)
 
     def _mutator(self, instance, key, value):
         return setattr(instance, key, value)
@@ -213,37 +244,41 @@ class PartialDictFieldGroup(DictFieldGroup):
         super().__init__(fields, OrderedDict)
 
     def iterate_instance(self, instance, per_field_map):
-        for fieldname, value in instance.items():
-            field = self[fieldname]
-            yield field, field.conform_value(value), per_field_map.get(field)
-
-    def _get_values_in_order(self, input_dict):
-        return [
-            field.type_cast(input_dict[field.name])
-            for field in self._fields
-            if field.name in input_dict
-        ]
+        with field_errors_check() as errors:
+            for fieldname, value in instance.items():
+                field = self[fieldname]
+                try:
+                    yield field, value, per_field_map.get(field)
+                except FieldAssignmentError as fae:
+                    errors[field] = fae
 
     def _type_cast(self, input_dict):
         field_and_value = (
             (fieldname, self[fieldname], value)
             for fieldname, value in input_dict.items()
         )
-        return OrderedDict(
-            (fieldname, field.type_cast(value))
-            for fieldname, field, value in field_and_value
-        )
+
+        key_values = []
+
+        with field_errors_check() as errors:
+            for fieldname, field, value in field_and_value:
+                try:
+                    key_values.append((fieldname, field.type_cast(value)))
+                except FieldAssignmentError as fae:
+                    errors[field] = fae
+
+        return OrderedDict(key_values)
 
     def as_dict(self, instance):
         return OrderedDict(
-            (field.name, self.get_value(instance, field))
+            (field.name, self._get_value(instance, field))
             for field in self._fields
             if field.name in instance
         )
 
     def instances_differ(self, instance, other):
         return any(
-            self.get_value(instance, field) != self.get_value(other, field)
+            self._get_value(instance, field) != self._get_value(other, field)
             for field in self._fields
             if field.name in instance and field.name in other
         )

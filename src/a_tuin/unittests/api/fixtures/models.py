@@ -9,6 +9,7 @@ from a_tuin.metadata import (
     Collection,
     ObjectFieldGroupBase,
     StringField,
+    DateField,
     IntField,
     BooleanField,
     IntEnumField,
@@ -31,7 +32,8 @@ class AClass(ObjectFieldGroupBase):
         IntField('ref_no'),
         StringField('name'),
         BooleanField('is_running'),
-        AClassStatusField('status')
+        AClassStatusField('status'),
+        DateField('date'),
     )
 
 
@@ -41,10 +43,8 @@ class AClassCollection(Collection):
 
 class AReferringClass(ObjectFieldGroupBase):
     public_interface = (
-        (
-            StringField('name'),
-            ObjectReferenceField('aclass'),
-        )
+        StringField('name'),
+        ObjectReferenceField('aclass'),
     )
 
 

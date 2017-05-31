@@ -50,7 +50,6 @@ class TestFieldTypeCast(TestCase):
             )),
             (DateField, (
                 (1488558823.09768, date(2017, 3, 3)),
-                ('2017-07-07', date(2017, 7, 7)),
                 (736517, date(2017, 7, 7)),
                 (datetime(2017, 7, 7, 23, 58, 56), date(2017, 7, 7)),
             )),
@@ -60,14 +59,8 @@ class TestFieldTypeCast(TestCase):
         for destination_field_type, cast_fixtures in self.fixtures:
             field = destination_field_type('fixture field')
             for input_value, expected in cast_fixtures:
-                self.assertEqual(expected, field.type_cast(input_value), '{}'.format(destination_field_type))
-
-    def test_datefield_format(self):
-        datefield = DateField('m/d/Y', strfmt='%d/%m/%Y')
-        self.assertEqual(
-            date(2017, 11, 30),
-            datefield.type_cast('30/11/2017')
-        )
+                with self.subTest('Unable to cast {} to {} using {}'.format(input_value, expected, destination_field_type)):
+                    self.assertEqual(expected, field.type_cast(input_value), '{}'.format(destination_field_type))
 
     def test_date_to_string_with_format(self):
         stringfield = StringField('fixture', strfmt='%d/%m/%Y')

@@ -7,6 +7,7 @@ from unittest import TestCase
 
 import graphene
 from graphene import Node
+from graphene.types.datetime import DateTime
 
 from a_tuin.api.fields import get_local_fields
 from a_tuin.unittests.api.graphql_schema_test_case import GraphQLSchemaTestCase
@@ -22,6 +23,7 @@ class TestFields(TestCase):
                 ('ref_no', graphene.Int),
                 ('name', graphene.String),
                 ('is_running', graphene.Boolean),
+                ('date', DateTime),
             )
         )
 
@@ -56,7 +58,7 @@ class TestLeafNodes(GraphQLSchemaTestCase):
         for reported_type in self.get_types(schema):
             if reported_type['name'] == 'AClassLeaf':
                 self.assertEqual(
-                    ('id', 'refNo', 'name', 'isRunning', 'status'),
+                    ('id', 'refNo', 'name', 'isRunning', 'status', 'date'),
                     tuple(field['name'] for field in reported_type['fields'])
                 )
                 aclassleaf_tested = True

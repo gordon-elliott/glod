@@ -15,11 +15,13 @@ from a_tuin.metadata import (
     BooleanField,
     IntField,
     StringField,
+    DescriptionField,
     DateField,
     DecimalField,
 )
 
 REGULAR_STRING = String(64)
+DESCRIPTION = String(1024)
 CURRENCY = Numeric(scale=2)
 
 DB_COLUMN_TYPE_MAP = {
@@ -27,6 +29,7 @@ DB_COLUMN_TYPE_MAP = {
     BooleanField: Boolean,
     IntField: Integer,
     StringField: REGULAR_STRING,
+    DescriptionField: DESCRIPTION,
     DateField: Date,
     DecimalField: CURRENCY,
 }

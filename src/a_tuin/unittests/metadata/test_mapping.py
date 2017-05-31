@@ -6,11 +6,13 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 from collections import OrderedDict
 from decimal import Decimal
 from unittest import TestCase
+from unittest.mock import patch
 
 from a_tuin.metadata import prefix_name_with_underscore
 from a_tuin.metadata.field import DateTimeField, DateField, DecimalField
 from a_tuin.metadata.field_group import ListFieldGroup, PartialDictFieldGroup
 from a_tuin.metadata.mapping import Mapping, IncompatibleFieldTypes
+from a_tuin.metadata.exceptions import FieldErrors
 from a_tuin.unittests.metadata.fixture_field_group import (
     FIELD_COMBINATIONS,
     FIELDS,
@@ -90,6 +92,35 @@ class TestMapping(TestCase):
                     dest_field_group.as_dict(destination_instance)
                 )
 
+    @patch('a_tuin.metadata.field.Field.use_default')
+    def test_update_in_place_field_errors(self, mock_use_default):
+
+        exception_text = 'mock exception'
+
+        def exception_in_use_default(value):
+            raise ValueError(exception_text)
+
+        mock_use_default.side_effect = exception_in_use_default
+
+        for (_, source_field_group, source_constructor), (_, dest_field_group, destination_constructor) in \
+                inplace_field_group_combinations():
+
+            with self.subTest('{}, {}'.format(type(source_field_group), type(dest_field_group))):
+
+                # need to construct fixtures here as product() shares lists between
+                # generated combinations thus test iterations were not independent
+                source_instance = source_constructor(INITIAL_VALUES)
+                destination_instance = destination_constructor(INITIAL_VALUES)
+
+                mapping = Mapping(source_field_group, dest_field_group)
+
+                with self.assertRaises(FieldErrors) as field_err:
+                    mapping.update_in_place(source_instance, destination_instance)
+
+                for fae in field_err.exception._field_errors:
+                    self.assertIn(fae.field, source_field_group)
+                    self.assertEqual(exception_text, str(fae.original_exception))
+
     def test_cast_from(self):
         for (_, source_field_group, source_constructor), (_, dest_field_group, destination_constructor) in \
                 field_group_combinations():
@@ -104,6 +135,29 @@ class TestMapping(TestCase):
                     INITIAL_VALUES,
                     dest_field_group.as_dict(destination_instance)
                 )
+
+    @patch('a_tuin.metadata.field.Field.type_cast')
+    def test_cast_from_field_errors(self, mock_type_cast):
+        exception_text = 'mock exception'
+
+        def exception_in_type_cast(value):
+            raise ValueError(exception_text)
+
+        mock_type_cast.side_effect = exception_in_type_cast
+
+        for (_, source_field_group, source_constructor), (_, dest_field_group, destination_constructor) in \
+                field_group_combinations():
+
+            with self.subTest('{}, {}'.format(type(source_field_group), type(dest_field_group))):
+
+                source_instance = source_constructor(INITIAL_VALUES)
+                mapping = Mapping(source_field_group, dest_field_group)
+                with self.assertRaises(FieldErrors) as field_err:
+                    _ = mapping.cast_from(source_instance)
+
+                for fae in field_err.exception._field_errors:
+                    self.assertIn(fae.field, source_field_group)
+                    self.assertEqual(exception_text, str(fae.original_exception))
 
     def test_valid_type_cast(self):
         source_fields, destination_fields = tuple(zip(*FIELD_COMBINATIONS))

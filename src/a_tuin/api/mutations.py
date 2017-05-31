@@ -6,7 +6,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 import graphene
 from graphene import ClientIDMutation
 
-from a_tuin.api import with_session
+from a_tuin.api import with_session, handle_field_errors
 from glod.model.references import references_from
 
 
@@ -53,15 +53,19 @@ def get_create_mutation(model_class, input_fields, leaf_class):
     :return: Mutation
     """
     entity_name = model_class.__name__
-    field_name = entity_name.lower()
+    field_name = entity_name[0].lower() + entity_name[1:]
 
     modified_field_list = _replace_references_with_ids(model_class, input_fields)
 
     class CreateLeaf(ClientIDMutation):
 
         @classmethod
+        @handle_field_errors
         @with_session
         def mutate_and_get_payload(cls, input_dict, context, info, session):
+            # extract the 'clientMutationId'
+            # TODO work out what to do with this?
+            client_id = input_dict.pop('clientMutationId')
             # use ids in payload to lookup related entities
             _replace_object_ids_with_references(model_class, input_dict, context, info)
             # construct new instance from input
@@ -98,7 +102,7 @@ def get_update_mutation(model_class, input_fields, leaf_class):
     :return: Mutation
     """
     entity_name = model_class.__name__
-    field_name = entity_name.lower()
+    field_name = entity_name[0].lower() + entity_name[1:]
 
     modified_field_list = _replace_references_with_ids(model_class, input_fields)
     # include internal id with other fields
@@ -107,7 +111,11 @@ def get_update_mutation(model_class, input_fields, leaf_class):
     class UpdateLeaf(ClientIDMutation):
 
         @classmethod
+        @handle_field_errors
         def mutate_and_get_payload(cls, input_dict, context, info):
+            # extract the 'clientMutationId'
+            # TODO work out what to do with this?
+            client_id = input_dict.pop('clientMutationId')
             # get the id
             id_ = input_dict.pop(ID_FIELD_NAME)
             # lookup the entity

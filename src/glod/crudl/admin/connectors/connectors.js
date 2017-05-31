@@ -3,6 +3,7 @@ import { funds, fund } from './funds'
 import { nominalAccounts, nominalAccount } from './nominalAccounts'
 import { parishioners, parishioner } from './parishioners'
 import { subjects, subject } from './subjects'
+import { statementItems, statementItem} from './statementItems'
 
 module.exports = {
 
@@ -21,6 +22,9 @@ module.exports = {
 
     subjects: subjects,
     subject: subject,
+
+    statementItems: statementItems,
+    statementItem: statementItem,
 
     // AUTHENTICATION
     login: {

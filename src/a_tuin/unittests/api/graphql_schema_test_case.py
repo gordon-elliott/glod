@@ -13,7 +13,7 @@ class GraphQLSchemaTestCase(TestCase):
     def get_types(self, schema):
         result = schema.execute(SCHEMA_QUERY)
 
-        assert result.errors == []
+        assert result.errors == None
 
         reported_schema = result.data['__schema']
         return reported_schema['types']

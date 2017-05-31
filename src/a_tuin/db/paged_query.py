@@ -4,6 +4,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """
 
 from sqlalchemy import func, asc, desc
+from sqlalchemy.orm import joinedload
 
 from a_tuin.db.query import Query
 
@@ -29,6 +30,7 @@ class PagedQuery(Query):
         self._sort_criteria = None
         self._offset = None
         self._limit = None
+        self._options = None
 
     def offset(self, offset):
         self._offset = offset
@@ -36,6 +38,10 @@ class PagedQuery(Query):
 
     def limit(self, num_items):
         self._limit = num_items
+        return self
+
+    def joined_load(self, entity):
+        self._options = joinedload(entity)
         return self
 
     def criteria_from_dict(self, filters):
@@ -64,6 +70,9 @@ class PagedQuery(Query):
 
     def _prepare_query(self):
         query = self._session.query(self._model_class)
+
+        if self._options:
+            query = query.options(self._options)
 
         if self._filter_criteria:
             query = query.filter(*self._filter_criteria)
@@ -115,3 +124,18 @@ class PagedQuery(Query):
 
     def __iter__(self):
         return iter(self.collection())
+
+    def instance_finder(self, lookup_fieldname, value_cast):
+
+        # use list() to instantiate the collection rather than query each time
+        collection = self._model_collection(list(self.collection()))
+
+        def lookup_instance(value, _):
+            if not value:
+                return None
+            else:
+                correct_type_value = value_cast(value) if value_cast else value
+                instances = collection.lookup(correct_type_value, lookup_fieldname)
+                return next(instances)
+
+        return lookup_instance

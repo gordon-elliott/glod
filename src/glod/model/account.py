@@ -5,7 +5,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from enum import IntEnum
 
-from a_tuin.metadata import IntField, IntEnumField, StringField, ObjectFieldGroupBase
+from a_tuin.metadata import IntField, IntEnumField, StringField, ObjectFieldGroupBase, Collection
 
 
 class AccountStatus(IntEnum):
@@ -21,15 +21,20 @@ class AccountStatusField(IntEnumField):
 class Account(ObjectFieldGroupBase):
 
     public_interface = (
-        (
-            IntField('reference_no', is_mutable=False),
-            StringField('purpose'),
-            AccountStatusField('status'),
-            StringField('name'),
-            StringField('institution'),
-            StringField('sort_code'),
-            StringField('account_no'),
-            StringField('BIC'),
-            StringField('IBAN'),
-        )
+        IntField('reference_no', is_mutable=False),
+        StringField('purpose'),
+        AccountStatusField('status'),
+        StringField('name'),
+        StringField('institution'),
+        StringField('sort_code'),
+        StringField('account_no'),
+        StringField('BIC'),
+        StringField('IBAN'),
     )
+
+    def __str__(self):
+        return '{0.__class__.__name__}({0._reference_no}, {0._account_no})'.format(self)
+
+
+class AccountCollection(Collection):
+    pass

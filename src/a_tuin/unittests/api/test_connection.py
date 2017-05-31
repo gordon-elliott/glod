@@ -43,7 +43,7 @@ class TestConnection(GraphQLSchemaTestCase):
             if reported_type['name'] == 'RootQueryType':
                 self.assertEqual(
                     (
-                        ('filters', 'AClassFilterInput'),
+                        ('filters', 'AClassNodeFilterInput'),
                         ('orderBy', 'String'),
                         ('before', 'String'),
                         ('after', 'String'),
@@ -56,13 +56,14 @@ class TestConnection(GraphQLSchemaTestCase):
                     )
                 )
                 root_tested = True
-            if reported_type['name'] == 'AClassFilterInput':
+            if reported_type['name'] == 'AClassNodeFilterInput':
                 self.assertEqual(
                     (
                         ('refNo', 'Int'),
                         ('name', 'String'),
                         ('isRunning', 'Boolean'),
                         ('status', 'AClassStatus'),
+                        ('date', 'DateTime'),
                     ),
                     tuple(
                         (arg['name'], arg['type']['name'])
@@ -88,7 +89,7 @@ class TestConnection(GraphQLSchemaTestCase):
                 edge_tested = True
             if reported_type['name'] == 'AClassNode':
                 self.assertEqual(
-                    ('id', 'refNo', 'name', 'isRunning', 'status', 'refers'),
+                    ('id', 'refNo', 'name', 'isRunning', 'status', 'date', 'refers'),
                     tuple(field['name'] for field in reported_type['fields'])
                 )
                 aclass_tested = True

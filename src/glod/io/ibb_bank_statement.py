@@ -5,7 +5,9 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from csv import reader
 
-from a_tuin.metadata import StringField, UnusedField, ListFieldGroup, Mapping
+from a_tuin.metadata import StringField, UnusedField, DenormalisedField, ListFieldGroup, Mapping
+from glod.io.statement_item import cast_dmy_date_from_string
+
 
 statement_item_csv_fields = ListFieldGroup(
     (
@@ -18,6 +20,8 @@ statement_item_csv_fields = ListFieldGroup(
         StringField('debit'),
         StringField('credit'),
         StringField('balance'),
+        # detail override does not appear in the iBB extract
+        DenormalisedField('detail_override', lambda value: None)
     )
 )
 
@@ -25,6 +29,7 @@ statement_item_csv_fields = ListFieldGroup(
 class StatementLoader(object):
     def __init__(self, item_instance_class, account_collection):
         self._item_instance_class = item_instance_class
+        # TODO use lookup_map
         self._account_collection = account_collection
 
         csv_fields = (
@@ -40,7 +45,8 @@ class StatementLoader(object):
                     csv_fields,
                     item_instance_class.constructor_parameters
                 )
-            )
+            ),
+            field_casts=dict(date=cast_dmy_date_from_string)
         )
 
     def _account_header(self, line):

@@ -41,17 +41,18 @@ class TestStatementCSV(TestCase):
         ]
 
         actual = statement_item_csv(statement_items, StringIO()).getvalue()
-        expected = """account	date	details	currency	debit	credit	balance\r
-{0}	{1}	details fixture 0	{2}	{3}		{4}\r
-{0}	{1}	details fixture 1	{2}	{3}		{4}\r
-{0}	{1}	details fixture 2	{2}	{3}		{4}\r
-{0}	{1}	details fixture 3	{2}	{3}		{4}\r
+        expected = """account	date	details	currency	debit	credit	balance	detail_override\r
+{0}	{1}	details fixture 0	{2}	{3}		{4}	{5}\r
+{0}	{1}	details fixture 1	{2}	{3}		{4}	{5}\r
+{0}	{1}	details fixture 2	{2}	{3}		{4}	{5}\r
+{0}	{1}	details fixture 3	{2}	{3}		{4}	{5}\r
 """.format(
             account_no,
             date_fixture.strftime('%d/%m/%Y'),
             currency,
             debit,
-            balance
+            balance,
+            ''
         )
 
         self.maxDiff = None
