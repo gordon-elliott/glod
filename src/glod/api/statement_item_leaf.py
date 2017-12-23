@@ -12,9 +12,8 @@ from glod.db.statement_item import StatementItem, StatementItemInstanceQuery
 statement_item_fields = get_local_fields(StatementItem)
 
 
-class StatementItemLeaf(graphene.ObjectType):
+class StatementItemLeaf(graphene.ObjectType, interfaces=(Node,)):
     class Meta:
-        interfaces = (Node,)
         local_fields = statement_item_fields
 
     @classmethod

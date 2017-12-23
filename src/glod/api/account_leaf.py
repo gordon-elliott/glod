@@ -12,9 +12,8 @@ from glod.db.account import Account, AccountInstanceQuery
 account_fields = get_local_fields(Account)
 
 
-class AccountLeaf(graphene.ObjectType):
+class AccountLeaf(graphene.ObjectType, interfaces=(Node,)):
     class Meta:
-        interfaces = (Node,)
         local_fields = account_fields
 
     @classmethod

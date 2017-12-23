@@ -100,6 +100,10 @@ class TestConnection(GraphQLSchemaTestCase):
         self.assertTrue(edge_tested)
         self.assertTrue(aclass_tested)
 
+    class InfoFixture(object):
+        def __init__(self, context):
+            self.context = context
+
     def _apply_filter_with_mocks(self, num_instances, offset, limit, filters, order_by):
         expected_instances = [Mock() for _ in range(num_instances)]
         # mock entities with row numbers
@@ -138,8 +142,10 @@ class TestConnection(GraphQLSchemaTestCase):
         if order_by:
             args['orderBy'] = order_by
 
+        info = TestConnection.InfoFixture(context)
+
         instances = aclass_connection_field.resolver(
-            None, args, context, None
+            None, info, args
         )
 
         return context, expected_instances, instances, mock_query, mock_session

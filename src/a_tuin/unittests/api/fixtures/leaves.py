@@ -4,10 +4,10 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """
 
 import graphene
-from graphene import Node
 
 from a_tuin.api.types import OBJECT_REFERENCE_MAP
-from a_tuin.api import get_local_fields
+from a_tuin.api.leaf import leaf_class_interfaces
+
 from a_tuin.unittests.api.fixtures.models import (
     AClass,
     AReferringClass,
@@ -19,13 +19,10 @@ from a_tuin.unittests.api.fixtures.mapping import (
 )
 
 
-aclass_fields = get_local_fields(AClass)
-
-
 class AClassLeaf(graphene.ObjectType):
+
     class Meta:
-        interfaces = (Node,)
-        local_fields = aclass_fields
+        interfaces = leaf_class_interfaces(AClass)
 
     @classmethod
     @with_session
@@ -35,13 +32,9 @@ class AClassLeaf(graphene.ObjectType):
 OBJECT_REFERENCE_MAP['aclass'] = AClassLeaf
 
 
-areferringclass_fields = get_local_fields(AReferringClass)
-
-
 class AReferringClassLeaf(graphene.ObjectType):
     class Meta:
-        interfaces = (Node,)
-        local_fields = areferringclass_fields
+        interfaces = leaf_class_interfaces(AReferringClass)
 
     @classmethod
     @with_session

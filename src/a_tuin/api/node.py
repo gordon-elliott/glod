@@ -3,7 +3,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """ 
 """
 
-from graphene import Node
+from graphene import Node, Interface
 
 
 def node_class(entity_name, leaf_class, node_fields):
@@ -17,11 +17,12 @@ def node_class(entity_name, leaf_class, node_fields):
         (leaf_class,),
         # equivalent to
         # class Meta:
-        #   interfaces = (Node,)
-        #   local_fields = node_fields
+        #   interfaces = (Node, type('NodeFields', (Interface,), node_fields))
         {'Meta': type('Meta', (object,), {
-            'interfaces': (Node,),
-            'local_fields': node_fields
+            'interfaces': (
+                Node,
+                type('{}NodeFields'.format(entity_name), (Interface,), node_fields)
+            ),
         })}
     )
     return node_class

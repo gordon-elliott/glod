@@ -8,12 +8,14 @@ import graphene
 from datetime import date, datetime
 from unittest.mock import Mock, patch
 
+from a_tuin.api import get_local_fields
 from a_tuin.api.mutations import get_create_mutation, get_update_mutation
 from a_tuin.unittests.api.graphql_schema_test_case import GraphQLSchemaTestCase
 from a_tuin.unittests.api.fixtures.models import AClass, AClassStatus
-from a_tuin.unittests.api.fixtures.leaves import aclass_fields, AClassLeaf
+from a_tuin.unittests.api.fixtures.leaves import AClassLeaf
 
 
+aclass_fields = get_local_fields(AClass)
 CreateAClassLeaf = get_create_mutation(AClass, aclass_fields, AClassLeaf)
 UpdateAClassLeaf = get_update_mutation(AClass, aclass_fields, AClassLeaf)
 
@@ -79,6 +81,7 @@ class TestMutation(GraphQLSchemaTestCase):
 
         mock_info = Mock()
         mock_info.field_name = 'AClassLeaf'
+        mock_info.context = context
 
         ref_no = '7000'
         name = 'a name'
@@ -96,9 +99,9 @@ class TestMutation(GraphQLSchemaTestCase):
             clientMutationId=Mock(),
         )
 
-        leaf = CreateAClassLeaf.mutate_and_get_payload(input_dict, context, mock_info)
+        leaf = CreateAClassLeaf.mutate_and_get_payload('root_fixture', mock_info, **input_dict)
 
-        self.assertEqual('AClassCreateLeafPayload', type(leaf).__name__)
+        self.assertEqual('AClassCreateLeaf', type(leaf).__name__)
 
         instance = mock_session.add.call_args[0][0]
         self.assertEqual(AClass, type(instance))
@@ -121,6 +124,7 @@ class TestMutation(GraphQLSchemaTestCase):
 
         mock_info = Mock()
         mock_info.field_name = 'AClassLeaf'
+        mock_info.context = context
 
         ref_no = '7000'
         is_running = 'True'
@@ -137,9 +141,9 @@ class TestMutation(GraphQLSchemaTestCase):
             id=id_,
         )
 
-        leaf = UpdateAClassLeaf.mutate_and_get_payload(input_dict, context, mock_info)
+        leaf = UpdateAClassLeaf.mutate_and_get_payload('root_fixture', mock_info, **input_dict)
 
-        self.assertEqual('AClassUpdateLeafPayload', type(leaf).__name__)
+        self.assertEqual('AClassUpdateLeaf', type(leaf).__name__)
         mock_get_from_id.assert_called_once_with(id_, context, mock_info)
 
         instance = leaf.aClass

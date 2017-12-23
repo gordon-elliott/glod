@@ -12,9 +12,8 @@ from glod.db.subject import Subject, SubjectInstanceQuery
 subject_fields = get_local_fields(Subject)
 
 
-class SubjectLeaf(graphene.ObjectType):
+class SubjectLeaf(graphene.ObjectType, interfaces=(Node,)):
     class Meta:
-        interfaces = (Node,)
         local_fields = subject_fields
 
     @classmethod
