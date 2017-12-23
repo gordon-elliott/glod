@@ -12,9 +12,8 @@ from glod.db.fund import Fund, FundInstanceQuery
 fund_fields = get_local_fields(Fund)
 
 
-class FundLeaf(graphene.ObjectType):
+class FundLeaf(graphene.ObjectType, interfaces=(Node,)):
     class Meta:
-        interfaces = (Node,)
         local_fields = fund_fields
 
     @classmethod

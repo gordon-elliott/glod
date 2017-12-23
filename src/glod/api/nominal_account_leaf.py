@@ -12,9 +12,8 @@ from glod.db.nominal_account import NominalAccount, NominalAccountInstanceQuery
 nominal_account_fields = get_local_fields(NominalAccount)
 
 
-class NominalAccountLeaf(graphene.ObjectType):
+class NominalAccountLeaf(graphene.ObjectType, interfaces=(Node,)):
     class Meta:
-        interfaces = (Node,)
         local_fields = nominal_account_fields
 
     @classmethod

@@ -12,9 +12,8 @@ from glod.db.parishioner import Parishioner, ParishionerInstanceQuery
 parishioner_fields = get_local_fields(Parishioner)
 
 
-class ParishionerLeaf(graphene.ObjectType):
+class ParishionerLeaf(graphene.ObjectType, interfaces=(Node,)):
     class Meta:
-        interfaces = (Node,)
         local_fields = parishioner_fields
 
     @classmethod

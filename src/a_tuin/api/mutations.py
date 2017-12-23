@@ -6,7 +6,8 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 import graphene
 from graphene import ClientIDMutation
 
-from a_tuin.api import with_session, handle_field_errors
+from a_tuin.constants import SESSION
+from a_tuin.api import handle_field_errors
 from glod.model.references import references_from
 
 
@@ -61,8 +62,9 @@ def get_create_mutation(model_class, input_fields, leaf_class):
 
         @classmethod
         @handle_field_errors
-        @with_session
-        def mutate_and_get_payload(cls, input_dict, context, info, session):
+        def mutate_and_get_payload(cls, root, info, **input_dict):
+            context = info.context
+            session = context['request'][SESSION]
             # extract the 'clientMutationId'
             # TODO work out what to do with this?
             client_id = input_dict.pop('clientMutationId')
@@ -112,7 +114,8 @@ def get_update_mutation(model_class, input_fields, leaf_class):
 
         @classmethod
         @handle_field_errors
-        def mutate_and_get_payload(cls, input_dict, context, info):
+        def mutate_and_get_payload(cls, root, info, **input_dict):
+            context = info.context
             # extract the 'clientMutationId'
             # TODO work out what to do with this?
             client_id = input_dict.pop('clientMutationId')
