@@ -20,6 +20,7 @@ def parishioners_from_gsheet(session, extract_from_detailed_ledger):
             'first name': 'FIRST_NAME',
             'title': 'TITLE',
             'spouse': 'SPOUSE',
+            'status': 'STATUS',
             'address1': 'ADDRESS1',
             'address2': 'ADDRESS2',
             'address3': 'ADDRESS3',
@@ -42,6 +43,6 @@ def parishioners_from_gsheet(session, extract_from_detailed_ledger):
     parishioners = extract_from_detailed_ledger(
         'parishioners',
         'A1',
-        ('ID', 'SURNAME', 'FIRST_NAME', 'TITLE', 'SPOUSE', 'ADDRESS1', 'ADDRESS2', 'ADDRESS3', 'County', 'EIRCODE', 'CHILD_1', 'DOB1', 'CHILD_2', 'DOB2', 'CHILD_3', 'DOB3', 'child 4', 'DOB 4', 'TELEPHONE', 'GIVING', 'email')
+        ('ID', 'SURNAME', 'FIRST_NAME', 'TITLE', 'SPOUSE', 'STATUS', 'ADDRESS1', 'ADDRESS2', 'ADDRESS3', 'County', 'EIRCODE', 'TELEPHONE', 'CHILD_1', 'DOB1', 'CHILD_2', 'DOB2', 'CHILD_3', 'DOB3', 'child 4', 'DOB 4', 'GIVING', 'email')
     )
     load_class(session, parishioners, parishioner_mapping, Parishioner)

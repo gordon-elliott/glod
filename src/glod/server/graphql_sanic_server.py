@@ -7,8 +7,7 @@ import pkg_resources
 
 from sanic import Sanic
 from sanic.response import text, json
-from sanic.exceptions import SanicException, RequestTimeout, ServerError
-from sanic_graphql import GraphQLView
+from sanic.exceptions import RequestTimeout, ServerError
 from sanic_jinja2 import SanicJinja2, PackageLoader
 
 from a_tuin.constants import SESSION, EXCEPTIONS_TRAPPED
@@ -17,6 +16,7 @@ from a_tuin.db.session_scope import Session
 from glod.db.engine import engine
 from glod.configuration import configuration
 from glod.api.schema import schema
+from glod.server.graphql_compatibility_wrapper import GraphQLCompatibilityWrapper
 
 
 LOG = logging.getLogger(__file__)
@@ -86,8 +86,8 @@ async def login(request):
     return json({'token': '--tkn-', 'user': 'Gordon Elliott', 'username': 'ge'})
 
 
-app.add_route(GraphQLView.as_view(schema=schema, graphiql=False), '/graphql')
-app.add_route(GraphQLView.as_view(schema=schema, graphiql=True), '/graphiql')
+app.add_route(GraphQLCompatibilityWrapper.as_view(schema=schema, graphiql=False), '/graphql')
+app.add_route(GraphQLCompatibilityWrapper.as_view(schema=schema, graphiql=True), '/graphiql')
 
 
 if __name__ == '__main__':

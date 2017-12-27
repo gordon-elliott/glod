@@ -4,20 +4,17 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """
 
 import graphene
-from graphene.relay import Node
 
-from a_tuin.api import get_local_fields, with_session, OBJECT_REFERENCE_MAP
+from a_tuin.api import id_with_session, OBJECT_REFERENCE_MAP, leaf_class_interfaces
 from glod.db.parishioner import Parishioner, ParishionerInstanceQuery
 
-parishioner_fields = get_local_fields(Parishioner)
 
-
-class ParishionerLeaf(graphene.ObjectType, interfaces=(Node,)):
+class ParishionerLeaf(graphene.ObjectType):
     class Meta:
-        local_fields = parishioner_fields
+        interfaces = leaf_class_interfaces(Parishioner)
 
     @classmethod
-    @with_session
+    @id_with_session
     def get_node(cls, id_, context, info, session):
         return ParishionerInstanceQuery(session).instance(id_)
 

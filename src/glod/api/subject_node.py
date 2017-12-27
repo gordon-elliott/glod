@@ -7,11 +7,14 @@ from a_tuin.api import (
     node_class,
     node_connection_field,
     get_update_mutation,
-    get_create_mutation
+    get_create_mutation,
+    get_local_fields
 )
-from glod.api.subject_leaf import SubjectLeaf, subject_fields
+from glod.api.subject_leaf import SubjectLeaf
 from glod.db.subject import Subject, SubjectQuery
 
+
+subject_fields = get_local_fields(Subject)
 
 SubjectNode = node_class(Subject.__name__, SubjectLeaf, subject_fields)
 

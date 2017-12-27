@@ -3,8 +3,10 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """ 
 """
 from collections import OrderedDict
-from a_tuin.metadata.exceptions import FieldAssignmentError, field_errors_check
+
+from a_tuin.metadata.exceptions import FieldAssignmentError, field_errors_check, DATA_LOAD_ERRORS
 from a_tuin.metadata.field import INVALID_FIELD_COMBINATIONS
+from a_tuin.db.exceptions import NotFound
 
 
 class IncompatibleFieldTypes(Exception):
@@ -74,7 +76,9 @@ class Mapping(object):
                         yield source_field, value, destination_field
                 except FieldAssignmentError as field_error:
                     errors.append(field_error)
-                except Exception as ex:
+                except NotFound as nf:
+                    errors.append(FieldAssignmentError(source_field, nf))
+                except DATA_LOAD_ERRORS as ex:
                     errors.append(FieldAssignmentError(source_field, ex))
 
     def update_in_place(self, source, destination):

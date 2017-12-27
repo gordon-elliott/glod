@@ -35,6 +35,7 @@ def counterparty_from_gsheet(session, extract_from_detailed_ledger):
     gs_field_sustentation = StringField('sustentation')
     gs_field_method = StringField('method')
     gs_field_so_card = StringField('SO card?')
+    gs_field_by_email = StringField('by email')
     gs_field_notes = StringField('notes')
 
     counterparty_gsheet = ListFieldGroup(
@@ -54,6 +55,7 @@ def counterparty_from_gsheet(session, extract_from_detailed_ledger):
             UnusedField('foreign list'),
             gs_field_method,
             gs_field_so_card,
+            gs_field_by_email,
             gs_field_notes,
         )
     )
@@ -68,6 +70,7 @@ def counterparty_from_gsheet(session, extract_from_detailed_ledger):
             gs_field_sustentation,
             gs_field_method,
             gs_field_so_card,
+            gs_field_by_email,
             gs_field_notes,
         ),
         Counterparty.constructor_parameters
@@ -77,12 +80,13 @@ def counterparty_from_gsheet(session, extract_from_detailed_ledger):
         'parishoner id': ParishionerQuery(session).instance_finder('reference_no', int),
         'standing order donor': cast_standing_order_donor,
         'SO card?': cast_yes_no,
+        'by email': cast_yes_no,
     }
 
     counterparty_mapping = Mapping(counterparty_gsheet, Counterparty.constructor_parameters, field_mappings, field_casts)
     counterparties = extract_from_detailed_ledger(
         'counterparties',
         'A1',
-        ('id', 'bank text', 'parishoner id', 'fwe number', 'name override', 'name', 'reverse lookup parishoner id', 'reverse lookup cp id', 'standing order donor', 'is 2015 SO donor', 'sustentation', 'free will envelope', 'foreign list', 'method', 'SO card?', 'notes')
+        ('id', 'bank text', 'parishoner id', 'fwe number', 'name override', 'name', 'reverse lookup parishoner id', 'reverse lookup cp id', 'standing order donor', 'is 2015 SO donor', 'sustentation', 'free will envelope', 'foreign list', 'method', 'SO card?', 'by email', 'notes')
     )
     load_class(session, counterparties, counterparty_mapping, Counterparty)

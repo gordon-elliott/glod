@@ -7,12 +7,14 @@ from a_tuin.api import (
     node_class,
     node_connection_field,
     get_update_mutation,
-    get_create_mutation
+    get_create_mutation,
+    get_local_fields
 )
-
-from glod.api.statement_item_leaf import StatementItemLeaf, statement_item_fields
+from glod.api.statement_item_leaf import StatementItemLeaf
 from glod.db.statement_item import StatementItem, StatementItemQuery
 
+
+statement_item_fields = get_local_fields(StatementItem)
 
 StatementItemNode = node_class(StatementItem.__name__, StatementItemLeaf, statement_item_fields)
 
