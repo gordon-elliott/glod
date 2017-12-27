@@ -145,7 +145,7 @@ class TestConnection(GraphQLSchemaTestCase):
         info = TestConnection.InfoFixture(context)
 
         instances = aclass_connection_field.resolver(
-            None, info, args
+            None, info, **args
         )
 
         return context, expected_instances, instances, mock_query, mock_session

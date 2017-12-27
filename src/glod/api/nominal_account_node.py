@@ -7,11 +7,14 @@ from a_tuin.api import (
     node_class,
     node_connection_field,
     get_update_mutation,
-    get_create_mutation
+    get_create_mutation,
+    get_local_fields
 )
-from glod.api.nominal_account_leaf import NominalAccountLeaf, nominal_account_fields
+from glod.api.nominal_account_leaf import NominalAccountLeaf
 from glod.db.nominal_account import NominalAccount, NominalAccountQuery
 
+
+nominal_account_fields = get_local_fields(NominalAccount)
 
 NominalAccountNode = node_class(NominalAccount.__name__, NominalAccountLeaf, nominal_account_fields)
 

@@ -7,11 +7,14 @@ from a_tuin.api import (
     node_class,
     node_connection_field,
     get_update_mutation,
-    get_create_mutation
+    get_create_mutation,
+    get_local_fields
 )
-from glod.api.parishioner_leaf import ParishionerLeaf, parishioner_fields
+from glod.api.parishioner_leaf import ParishionerLeaf
 from glod.db.parishioner import Parishioner, ParishionerQuery
 
+
+parishioner_fields = get_local_fields(Parishioner)
 
 ParishionerNode = node_class(Parishioner.__name__, ParishionerLeaf, parishioner_fields)
 

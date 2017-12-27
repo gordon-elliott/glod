@@ -9,14 +9,17 @@ from a_tuin.api import (
     node_class,
     node_connection_field,
     get_update_mutation,
-    get_create_mutation
+    get_create_mutation,
+    get_local_fields
 )
-from glod.api.account_leaf import AccountLeaf, account_fields
+from glod.api.account_leaf import AccountLeaf
 from glod.api.fund_node import FundLeaf
 from glod.db.account import Account, AccountQuery
 
 
+account_fields = get_local_fields(Account)
 account_node_fields = account_fields.copy()
+
 # TODO can we derive this from the model references?
 account_node_fields['funds'] = graphene.Field(
     graphene.List(FundLeaf, description='Funds for this account.')

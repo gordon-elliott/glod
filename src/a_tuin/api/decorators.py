@@ -12,10 +12,19 @@ LOG = logging.getLogger(__name__)
 
 
 def with_session(fn):
-    def wrapped_with_session(self, info, kwargs):
+    def wrapped_with_session(self, info, **kwargs):
         context = info.context
         session = context['request'][SESSION]
         return fn(self, kwargs, context, info, session)
+
+    return wrapped_with_session
+
+
+def id_with_session(fn):
+    def wrapped_with_session(self, info, _id):
+        context = info.context
+        session = context['request'][SESSION]
+        return fn(self, _id, context, info, session)
 
     return wrapped_with_session
 

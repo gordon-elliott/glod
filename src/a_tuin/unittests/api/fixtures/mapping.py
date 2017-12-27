@@ -25,8 +25,9 @@ MOCK_SESSION = Mock()
 
 
 def with_session(fn):
-    def wrapped_with_session(self, args, context, info):
-        return fn(self, args, context, info, MOCK_SESSION)
+    def wrapped_with_session(self, info, **kwargs):
+        context = info.context
+        return fn(self, kwargs, context, info, MOCK_SESSION)
 
     return wrapped_with_session
 

@@ -6,6 +6,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 from sqlalchemy import func, asc, desc
 from sqlalchemy.orm import joinedload
 
+from a_tuin.db.exceptions import NotFound
 from a_tuin.db.query import Query
 
 
@@ -136,6 +137,9 @@ class PagedQuery(Query):
             else:
                 correct_type_value = value_cast(value) if value_cast else value
                 instances = collection.lookup(correct_type_value, lookup_fieldname)
-                return next(instances)
+                try:
+                    return next(instances)
+                except StopIteration:
+                    raise NotFound("{} in {}".format(value, lookup_fieldname))
 
         return lookup_instance

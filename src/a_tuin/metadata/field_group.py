@@ -7,7 +7,7 @@ import logging
 from collections import OrderedDict
 from operator import getitem, setitem
 
-from a_tuin.metadata.exceptions import FieldAssignmentError, FieldErrors, field_errors_check
+from a_tuin.metadata.exceptions import FieldAssignmentError, field_errors_check, DATA_LOAD_ERRORS
 from a_tuin.metadata.field_transformations import copy_field
 
 
@@ -92,7 +92,7 @@ class FieldGroup(object):
                     cast_values.append((field.name, field.type_cast(input_dict[field.name])))
                 except FieldAssignmentError as fae:
                     errors.append(fae)
-                except Exception as ex:
+                except DATA_LOAD_ERRORS as ex:
                     errors.append(FieldAssignmentError(field, ex))
 
         return OrderedDict(cast_values)

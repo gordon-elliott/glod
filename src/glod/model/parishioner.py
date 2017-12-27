@@ -14,6 +14,7 @@ class Parishioner(ObjectFieldGroupBase):
         StringField('first_name'),
         StringField('title'),
         StringField('spouse'),
+        StringField('status'),
         StringField('address1'),
         StringField('address2'),
         StringField('address3'),

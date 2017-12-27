@@ -39,6 +39,7 @@ class Counterparty(ObjectFieldGroupBase):
         StringField('sustentation'),    # TODO enum?
         StringField('method'),          # TODO enum?
         BooleanField('has_SO_card'),
+        BooleanField('by_email'),
         StringField('notes'),
     )
 

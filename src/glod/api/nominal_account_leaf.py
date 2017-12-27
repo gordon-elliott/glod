@@ -4,20 +4,17 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """
 
 import graphene
-from graphene.relay import Node
 
-from a_tuin.api import get_local_fields, with_session, OBJECT_REFERENCE_MAP
+from a_tuin.api import id_with_session, OBJECT_REFERENCE_MAP, leaf_class_interfaces
 from glod.db.nominal_account import NominalAccount, NominalAccountInstanceQuery
 
-nominal_account_fields = get_local_fields(NominalAccount)
 
-
-class NominalAccountLeaf(graphene.ObjectType, interfaces=(Node,)):
+class NominalAccountLeaf(graphene.ObjectType):
     class Meta:
-        local_fields = nominal_account_fields
+        interfaces = leaf_class_interfaces(NominalAccount)
 
     @classmethod
-    @with_session
+    @id_with_session
     def get_node(cls, id_, context, info, session):
         return NominalAccountInstanceQuery(session).instance(id_)
 
