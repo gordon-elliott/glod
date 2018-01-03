@@ -20,6 +20,7 @@ class Parishioner(ObjectFieldGroupBase):
         StringField('address3'),
         StringField('county'),
         StringField('eircode'),
+        StringField('telephone'),
         StringField('child1'),
         StringField('dob1'),
         StringField('child2'),
@@ -28,7 +29,6 @@ class Parishioner(ObjectFieldGroupBase):
         StringField('dob3'),
         StringField('child4'),
         StringField('dob4'),
-        StringField('telephone'),
         StringField('giving'),
         StringField('email'),
     )

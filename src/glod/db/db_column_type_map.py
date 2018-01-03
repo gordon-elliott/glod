@@ -20,6 +20,14 @@ from glod.model.nominal_account import (
     NominalAccountSubCategoryField,
     NominalAccountSubCategory,
 )
+from glod.model.organisation import (
+    OrganisationStatus,
+    OrganisationStatusField,
+    OrganisationType,
+    OrganisationTypeField
+)
+from glod.model.person import PersonStatus, PersonStatusField
+from glod.model.organisation_address import OrganisationAddressStatus, OrganisationAddressStatusField
 from glod.model.counterparty import StandingOrderDonorField, StandingOrderDonor
 from glod.model.transaction import (
     PaymentMethod,
@@ -35,6 +43,13 @@ DB_COLUMN_TYPE_MAP[FundTypeField] = Enum(FundType)
 DB_COLUMN_TYPE_MAP[NominalAccountSOFAHeadingField] = Enum(NominalAccountSOFAHeading)
 DB_COLUMN_TYPE_MAP[NominalAccountCategoryField] = Enum(NominalAccountCategory)
 DB_COLUMN_TYPE_MAP[NominalAccountSubCategoryField] = Enum(NominalAccountSubCategory)
+
+DB_COLUMN_TYPE_MAP[OrganisationStatusField] = Enum(OrganisationStatus)
+DB_COLUMN_TYPE_MAP[OrganisationTypeField] = Enum(OrganisationType)
+
+DB_COLUMN_TYPE_MAP[OrganisationAddressStatusField] = Enum(OrganisationAddressStatus)
+
+DB_COLUMN_TYPE_MAP[PersonStatusField] = Enum(PersonStatus)
 
 DB_COLUMN_TYPE_MAP[StandingOrderDonorField] = Enum(StandingOrderDonor)
 
