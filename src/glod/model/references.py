@@ -15,6 +15,10 @@ from glod.model.pps import PPS
 from glod.model.subject import Subject
 from glod.model.transaction import Transaction
 from glod.model.transaction_check import TransactionCheck
+from glod.model.address import Address
+from glod.model.organisation import Organisation
+from glod.model.organisation_address import OrganisationAddress
+from glod.model.person import Person
 
 
 statement_item__account = Reference(StatementItem, 'account', Account)
@@ -28,6 +32,9 @@ transaction__subject = Reference(Transaction, 'subject', Subject)
 transaction__fund = Reference(Transaction, 'fund', Fund)
 transaction_check__transaction = Reference(TransactionCheck, 'transaction', Transaction)
 transaction_check__statement_item = Reference(TransactionCheck, 'statement_item', StatementItem)
+organisation_address__address = Reference(OrganisationAddress, 'address', Address)
+organisation_address__organisation = Reference(OrganisationAddress, 'organisation', Organisation)
+person__organisation = Reference(Person, 'organisation', Organisation)
 
 
 REFERENCES = (
@@ -42,6 +49,9 @@ REFERENCES = (
     transaction__fund,
     transaction_check__transaction,
     transaction_check__statement_item,
+    organisation_address__address,
+    organisation_address__organisation,
+    person__organisation,
 )
 
 

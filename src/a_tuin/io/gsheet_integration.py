@@ -19,10 +19,13 @@ def get_gsheet_fields(model_class, renamed_fields):
     return gsheet_fields
 
 
-def load_class(session, gsheet_rows, gsheet_to_constructor, model_class):
-    model_instances = (
+def model_instances(gsheet_rows, gsheet_to_constructor, model_class):
+    return (
         model_class(**gsheet_to_constructor.cast_from(row))
         for row in gsheet_rows
     )
 
-    session.add_all(model_instances)
+
+def load_class(session, gsheet_rows, gsheet_to_constructor, model_class):
+    instances = model_instances(gsheet_rows, gsheet_to_constructor, model_class)
+    session.add_all(instances)

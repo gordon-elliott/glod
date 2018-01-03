@@ -3,12 +3,11 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """ 
 """
 
-from a_tuin.io.gsheet_integration import get_gsheet_fields, load_class
-from a_tuin.metadata import (
-    Mapping,
-)
+from a_tuin.io.gsheet_integration import get_gsheet_fields, model_instances
+from a_tuin.metadata import Mapping
 
 from glod.db.parishioner import Parishioner
+from glod.io.organisation import reorganise_parishioners
 
 
 def parishioners_from_gsheet(session, extract_from_detailed_ledger):
@@ -26,6 +25,7 @@ def parishioners_from_gsheet(session, extract_from_detailed_ledger):
             'address3': 'ADDRESS3',
             'county': 'County',
             'eircode': 'EIRCODE',
+            'telephone': 'TELEPHONE',
             'child1': 'CHILD_1',
             'dob1': 'DOB1',
             'child2': 'CHILD_2',
@@ -34,15 +34,17 @@ def parishioners_from_gsheet(session, extract_from_detailed_ledger):
             'dob3': 'DOB3',
             'child4': 'child 4',
             'dob4': 'DOB 4',
-            'telephone': 'TELEPHONE',
             'giving': 'GIVING',
             'email': 'email',
         }
     )
     parishioner_mapping = Mapping(parishioner_gsheet, Parishioner.constructor_parameters)
-    parishioners = extract_from_detailed_ledger(
+    parishioner_rows = extract_from_detailed_ledger(
         'parishioners',
         'A1',
         ('ID', 'SURNAME', 'FIRST_NAME', 'TITLE', 'SPOUSE', 'STATUS', 'ADDRESS1', 'ADDRESS2', 'ADDRESS3', 'County', 'EIRCODE', 'TELEPHONE', 'CHILD_1', 'DOB1', 'CHILD_2', 'DOB2', 'CHILD_3', 'DOB3', 'child 4', 'DOB 4', 'GIVING', 'email')
     )
-    load_class(session, parishioners, parishioner_mapping, Parishioner)
+    parishioners = list(model_instances(parishioner_rows, parishioner_mapping, Parishioner))
+    session.add_all(parishioners)
+
+    reorganise_parishioners(session, parishioners)
