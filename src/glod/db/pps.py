@@ -6,7 +6,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 from a_tuin.db import RelationMap, TableMap, PagedQuery, InstanceQuery
 
 from glod.model.pps import PPS, PPSCollection
-from glod.model.references import pps__parishioner
+from glod.model.references import pps__person
 
 from glod.db.db_column_type_map import DB_COLUMN_TYPE_MAP
 
@@ -16,8 +16,8 @@ TableMap(
     'pps',
     DB_COLUMN_TYPE_MAP,
     RelationMap(
-        pps__parishioner,
-        'parishioner._id',
+        pps__person,
+        'person._id',
         backref='pps_nos',
         lazy='joined'
     ),

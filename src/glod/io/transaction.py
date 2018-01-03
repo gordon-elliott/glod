@@ -3,8 +3,8 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """ 
 """
 
-from a_tuin.io.gsheet_integration import get_gsheet_fields, load_class
-from a_tuin.metadata import StringField, Mapping
+from a_tuin.io.gsheet_integration import load_class
+from a_tuin.metadata import StringField, Mapping, UnusedField, ListFieldGroup
 
 from glod.db.transaction import PaymentMethod, IncomeExpenditure, Transaction
 from glod.db.counterparty import CounterpartyQuery
@@ -54,29 +54,76 @@ def cast_lower(value):
 
 def transactions_from_gsheet(session, extract_from_detailed_ledger):
 
-    transaction_gsheet = get_gsheet_fields(
-        Transaction,
-        {
-            'reference no': 'id',
-            'public code': 'reference',
-            'counterparty': 'counterparty name',
-            'income expenditure': 'income/expenditure'
-        }
+    gs_field_reference_no = StringField('id')
+    gs_field_public_code = StringField('reference')
+    gs_field_year = StringField('year')
+    gs_field_month = StringField('month')
+    gs_field_day = StringField('day')
+    gs_field_counterparty = StringField('counterparty_id')
+    gs_field_payment_method = StringField('payment_method')
+    gs_field_description = StringField('description')
+    gs_field_amount = StringField('amount')
+    gs_field_subject = StringField('subject')
+    gs_field_income_expenditure = StringField('income_expenditure')
+    gs_field_FY = StringField('FY')
+    gs_field_fund = StringField('fund')
+
+    transaction_gsheet = ListFieldGroup(
+        (
+            gs_field_reference_no,
+            gs_field_public_code,
+            gs_field_year,
+            gs_field_month,
+            gs_field_day,
+            UnusedField('counterparty name'),
+            gs_field_payment_method,
+            gs_field_description,
+            gs_field_amount,
+            gs_field_subject,
+            gs_field_income_expenditure,
+            gs_field_FY,
+            gs_field_fund,
+            UnusedField('sign'),
+            UnusedField('net'),
+            UnusedField('from bank statement'),
+            UnusedField('reconciles'),
+            UnusedField('bank stmt year'),
+            UnusedField('year reconciles?'),
+            UnusedField('monthText'),
+            UnusedField('quarter'),
+            UnusedField('subjectSummary'),
+            UnusedField('bank account'),
+            UnusedField('fund type'),
+            gs_field_counterparty,
+        )
     )
-    transaction_gsheet['counterparty name'] = StringField('counterparty name')
-    transaction_gsheet['payment method'] = StringField('payment method')
-    transaction_gsheet['subject'] = StringField('subject')
-    transaction_gsheet['income/expenditure'] = StringField('income/expenditure')
-    transaction_gsheet['fund'] = StringField('fund')
     field_casts = {
-        'counterparty name': CounterpartyQuery(session).instance_finder('lookup_name', cast_lower),
-        'payment method': cast_payment_method,
+        'counterparty_id': CounterpartyQuery(session).instance_finder('reference_no', int),
+        'payment_method': cast_payment_method,
         'amount': strip_commas,
         'subject': SubjectQuery(session).instance_finder('name', None),
-        'income/expenditure': cast_income_expenditure,
+        'income_expenditure': cast_income_expenditure,
         'fund': FundQuery(session).instance_finder('name', None),
     }
-    transaction_mapping = Mapping(transaction_gsheet, Transaction.constructor_parameters, field_casts=field_casts)
+    field_mappings = tuple(zip(
+        (
+            gs_field_reference_no,
+            gs_field_public_code,
+            gs_field_year,
+            gs_field_month,
+            gs_field_day,
+            gs_field_counterparty,
+            gs_field_payment_method,
+            gs_field_description,
+            gs_field_amount,
+            gs_field_subject,
+            gs_field_income_expenditure,
+            gs_field_FY,
+            gs_field_fund,
+        ),
+        Transaction.constructor_parameters
+    ))
+    transaction_mapping = Mapping(transaction_gsheet, Transaction.constructor_parameters, field_mappings, field_casts)
     transactions = extract_from_detailed_ledger(
         'transactions',
         'A1',
@@ -93,7 +140,19 @@ def transactions_from_gsheet(session, extract_from_detailed_ledger):
             'subject',
             'income/expenditure',
             'FY',
-            'fund'
+            'fund',
+            'sign',
+            'net',
+            'from bank statement',
+            'reconciles',
+            'bank stmt year',
+            'year reconciles?',
+            'monthText',
+            'quarter',
+            'subjectSummary',
+            'bank account',
+            'fund type',
+            'counterparty_id'
         )
     )
     load_class(session, transactions, transaction_mapping, Transaction)

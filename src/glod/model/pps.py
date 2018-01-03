@@ -15,7 +15,7 @@ from a_tuin.metadata import (
 class PPS(ObjectFieldGroupBase):
 
     public_interface = (
-        ObjectReferenceField('parishioner'),
+        ObjectReferenceField('person'),
         StringField('pps'),
     )
 

@@ -9,7 +9,6 @@ from glod.model.account import Account
 from glod.model.statement_item import StatementItem
 from glod.model.fund import Fund
 from glod.model.counterparty import Counterparty
-from glod.model.parishioner import Parishioner
 from glod.model.envelope import Envelope
 from glod.model.pps import PPS
 from glod.model.subject import Subject
@@ -23,10 +22,10 @@ from glod.model.person import Person
 
 statement_item__account = Reference(StatementItem, 'account', Account)
 fund__account = Reference(Fund, 'account', Account)
-counterparty__parishioner = Reference(Counterparty, 'parishioner', Parishioner)
+counterparty__person = Reference(Counterparty, 'person', Person)
 envelope__counterparty = Reference(Envelope, 'counterparty', Counterparty)
-envelope__parishioner = Reference(Envelope, 'parishioner', Parishioner)
-pps__parishioner = Reference(PPS, 'parishioner', Parishioner)
+envelope__person = Reference(Envelope, 'person', Person)
+pps__person = Reference(PPS, 'person', Person)
 transaction__counterparty = Reference(Transaction, 'counterparty', Counterparty)
 transaction__subject = Reference(Transaction, 'subject', Subject)
 transaction__fund = Reference(Transaction, 'fund', Fund)
@@ -40,10 +39,10 @@ person__organisation = Reference(Person, 'organisation', Organisation)
 REFERENCES = (
     statement_item__account,
     fund__account,
-    counterparty__parishioner,
+    counterparty__person,
     envelope__counterparty,
-    envelope__parishioner,
-    pps__parishioner,
+    envelope__person,
+    pps__person,
     transaction__counterparty,
     transaction__subject,
     transaction__fund,

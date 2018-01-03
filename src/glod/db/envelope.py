@@ -6,7 +6,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 from a_tuin.db import RelationMap, TableMap, PagedQuery, InstanceQuery
 
 from glod.model.envelope import Envelope, EnvelopeCollection
-from glod.model.references import envelope__counterparty, envelope__parishioner
+from glod.model.references import envelope__counterparty, envelope__person
 
 from glod.db.db_column_type_map import DB_COLUMN_TYPE_MAP
 
@@ -22,8 +22,8 @@ TableMap(
         lazy='joined'
     ),
     RelationMap(
-        envelope__parishioner,
-        'parishioner._id',
+        envelope__person,
+        'person._id',
         backref='envelopes',
         lazy='joined'
     ),

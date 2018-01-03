@@ -33,7 +33,7 @@ class Counterparty(ObjectFieldGroupBase):
     public_interface = (
         IntField('reference_no'),
         StringField('bank_text'),
-        ObjectReferenceField('parishioner'),
+        ObjectReferenceField('person'),
         StringField('name_override'),
         StandingOrderDonorField('standing_order_donor'),
         StringField('sustentation'),    # TODO enum?
@@ -48,7 +48,7 @@ class Counterparty(ObjectFieldGroupBase):
 
     @property
     def name(self):
-        return self._name_override if self._name_override else self._parishioner.name
+        return self._name_override if self._name_override else self._person.name
 
     @property
     def lookup_name(self):
