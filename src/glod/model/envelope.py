@@ -16,7 +16,7 @@ class Envelope(ObjectFieldGroupBase):
     public_interface = (
         IntField('year'),
         ObjectReferenceField('counterparty'),
-        ObjectReferenceField('parishioner'),
+        ObjectReferenceField('person'),
         IntField('envelope_number'),
     )
 

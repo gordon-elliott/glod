@@ -5,7 +5,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 from a_tuin.metadata import IntField, StringField, UnusedField, ListFieldGroup, Mapping
 from a_tuin.io.gsheet_integration import load_class
 from glod.db.counterparty import Counterparty, StandingOrderDonor
-from glod.db.parishioner import ParishionerQuery
+from glod.db.person import PersonQuery
 
 
 STANDING_ORDER_DONOR_MAP = {
@@ -29,7 +29,7 @@ def counterparty_from_gsheet(session, extract_from_detailed_ledger):
 
     gs_field_id = IntField('id')
     gs_field_bank_text = StringField('bank text')
-    gs_field_parishioner = IntField('parishoner id')
+    gs_field_person = IntField('parishoner id')
     gs_field_name_override = StringField('name override')
     gs_field_standing_order_donor = StringField('standing order donor')
     gs_field_sustentation = StringField('sustentation')
@@ -42,7 +42,7 @@ def counterparty_from_gsheet(session, extract_from_detailed_ledger):
         (
             gs_field_id,
             gs_field_bank_text,
-            gs_field_parishioner,
+            gs_field_person,
             UnusedField('fwe number'),
             gs_field_name_override,
             UnusedField('name'),
@@ -64,7 +64,7 @@ def counterparty_from_gsheet(session, extract_from_detailed_ledger):
         (
             gs_field_id,
             gs_field_bank_text,
-            gs_field_parishioner,
+            gs_field_person,
             gs_field_name_override,
             gs_field_standing_order_donor,
             gs_field_sustentation,
@@ -77,7 +77,7 @@ def counterparty_from_gsheet(session, extract_from_detailed_ledger):
     ))
 
     field_casts = {
-        'parishoner id': ParishionerQuery(session).instance_finder('reference_no', int),
+        'parishoner id': PersonQuery(session).instance_finder('parishioner_reference_no', int),
         'standing order donor': cast_standing_order_donor,
         'SO card?': cast_yes_no,
         'by email': cast_yes_no,
