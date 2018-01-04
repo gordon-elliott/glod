@@ -9,10 +9,10 @@ import graphene
 from graphene import Node
 from graphene.types.datetime import DateTime
 
-from a_tuin.api.fields import get_local_fields
+from a_tuin.api.fields import get_local_fields, FieldNameReserved
 from a_tuin.unittests.api.graphql_schema_test_case import GraphQLSchemaTestCase
 from a_tuin.unittests.api.fixtures.leaves import AClassLeaf, AReferringClassLeaf
-from a_tuin.unittests.api.fixtures.models import AClass, AClassStatus
+from a_tuin.unittests.api.fixtures.models import AClass, AClassStatus, ATypedClass
 
 
 class TestFields(TestCase):
@@ -37,6 +37,9 @@ class TestFields(TestCase):
         self.assertEqual(expected, actual)
         self.assertEqual(AClassStatus, enum_field.type._meta.enum)
 
+    def test_exception_on_reserved(self):
+        with self.assertRaises(FieldNameReserved):
+            get_local_fields(ATypedClass)
 
 
 class RootQueryType(graphene.ObjectType):

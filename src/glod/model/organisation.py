@@ -9,7 +9,7 @@ from enum import IntEnum
 from a_tuin.metadata import StringField, ObjectFieldGroupBase, Collection, IntEnumField, IntField
 
 
-class OrganisationType(IntEnum):
+class OrganisationCategory(IntEnum):
     Household = 1
     NonLocalHousehold = 2
     Company = 3
@@ -17,9 +17,9 @@ class OrganisationType(IntEnum):
     Government = 5
 
 
-class OrganisationTypeField(IntEnumField):
+class OrganisationCategoryField(IntEnumField):
     def __init__(self, name, is_mutable=True, required=False, default=None, description=None, validation=None):
-        super().__init__(name, OrganisationType, is_mutable, required, default, description, validation)
+        super().__init__(name, OrganisationCategory, is_mutable, required, default, description, validation)
 
 
 class OrganisationStatus(IntEnum):
@@ -37,7 +37,7 @@ class Organisation(ObjectFieldGroupBase):
     public_interface = (
         IntField('reference_no', required=True, is_mutable=False),
         StringField('name', required=True),
-        OrganisationTypeField('type', required=True),
+        OrganisationCategoryField('category', required=True),
         OrganisationStatusField('status', required=True, default=OrganisationStatus.Active),
     )
 

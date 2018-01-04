@@ -7,11 +7,9 @@ import logging
 
 from datetime import datetime, date, timedelta
 
-from glod.model.organisation import OrganisationType, OrganisationStatus
-
 from glod.db.address import Address
 from glod.db.person import Person
-from glod.db.organisation import Organisation
+from glod.db.organisation import Organisation, OrganisationCategory, OrganisationStatus
 from glod.db.organisation_address import OrganisationAddress
 
 
@@ -89,14 +87,14 @@ def _reorganise_parishioner(parishioner):
     parishioner_status = parishioner.status.lower()
     if parishioner_status == 'foreign list':
         organisation_status = OrganisationStatus.Active
-        organisation_type = OrganisationType.NonLocalHousehold
+        organisation_category = OrganisationCategory.NonLocalHousehold
     else:
         organisation_status = OrganisationStatus.Active if parishioner_status == 'active' else OrganisationStatus.Inactive
-        organisation_type = OrganisationType.Household
+        organisation_category = OrganisationCategory.Household
     household = Organisation(
         parishioner.reference_no,
         parishioner.surname,
-        organisation_type,
+        organisation_category,
         organisation_status,
     )
     landline, main_mobile, other_mobile = _parse_phone_numbers(parishioner)

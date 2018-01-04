@@ -50,3 +50,14 @@ class AReferringClass(ObjectFieldGroupBase):
 
 class AReferringClassCollection(Collection):
     pass
+
+
+class ATypedClass(ObjectFieldGroupBase):
+    public_interface = (
+        StringField('name'),
+        IntField('type'),
+    )
+
+
+class ATypedClassCollection(Collection):
+    pass
