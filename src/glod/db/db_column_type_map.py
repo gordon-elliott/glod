@@ -11,7 +11,7 @@ from sqlalchemy import (
 from a_tuin.db.mapper import DB_COLUMN_TYPE_MAP
 
 from glod.model.account import AccountStatusField, AccountStatus
-from glod.model.fund import FundTypeField, FundType
+from glod.model.fund import FundRestrictionField, FundRestriction
 from glod.model.nominal_account import (
     NominalAccountSOFAHeadingField,
     NominalAccountSOFAHeading,
@@ -23,8 +23,8 @@ from glod.model.nominal_account import (
 from glod.model.organisation import (
     OrganisationStatus,
     OrganisationStatusField,
-    OrganisationType,
-    OrganisationTypeField
+    OrganisationCategory,
+    OrganisationCategoryField
 )
 from glod.model.person import PersonStatus, PersonStatusField
 from glod.model.organisation_address import OrganisationAddressStatus, OrganisationAddressStatusField
@@ -38,14 +38,14 @@ from glod.model.transaction import (
 
 DB_COLUMN_TYPE_MAP[AccountStatusField] = Enum(AccountStatus)
 
-DB_COLUMN_TYPE_MAP[FundTypeField] = Enum(FundType)
+DB_COLUMN_TYPE_MAP[FundRestrictionField] = Enum(FundRestriction)
 
 DB_COLUMN_TYPE_MAP[NominalAccountSOFAHeadingField] = Enum(NominalAccountSOFAHeading)
 DB_COLUMN_TYPE_MAP[NominalAccountCategoryField] = Enum(NominalAccountCategory)
 DB_COLUMN_TYPE_MAP[NominalAccountSubCategoryField] = Enum(NominalAccountSubCategory)
 
 DB_COLUMN_TYPE_MAP[OrganisationStatusField] = Enum(OrganisationStatus)
-DB_COLUMN_TYPE_MAP[OrganisationTypeField] = Enum(OrganisationType)
+DB_COLUMN_TYPE_MAP[OrganisationCategoryField] = Enum(OrganisationCategory)
 
 DB_COLUMN_TYPE_MAP[OrganisationAddressStatusField] = Enum(OrganisationAddressStatus)
 

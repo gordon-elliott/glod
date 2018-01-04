@@ -5,7 +5,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from a_tuin.db import TableMap, RelationMap, PagedQuery, InstanceQuery
 
-from glod.model.fund import Fund, FundType, FundCollection
+from glod.model.fund import Fund, FundRestriction, FundCollection
 from glod.model.references import fund__account
 
 from glod.db.db_column_type_map import DB_COLUMN_TYPE_MAP

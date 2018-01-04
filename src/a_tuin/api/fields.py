@@ -11,6 +11,18 @@ from functools import partial, lru_cache
 from a_tuin.api.types import GRAPHENE_FIELD_TYPE_MAP, OBJECT_REFERENCE_MAP
 
 
+RESERVED_FIELD_NAMES = ('type',)
+
+
+class FieldNameReserved(Exception):
+    pass
+
+
+def _check_field_name_is_not_reserved(field):
+    if field.name.lower() in RESERVED_FIELD_NAMES:
+        raise FieldNameReserved("Unable to map field. '{}' is a reserved name.".format(field.name))
+
+
 @lru_cache()
 def _get_enum_type(field):
     """ Create a graphene Enum from the Python enum
@@ -29,6 +41,7 @@ def _map_mounted_field(fields):
     :yield: tuple of field name an mounted graphene field
     """
     for field in fields:
+        _check_field_name_is_not_reserved(field)
         graphene_field_type = GRAPHENE_FIELD_TYPE_MAP.get(type(field))
         if graphene_field_type is None:
             if hasattr(field, 'enum_class'):
@@ -49,6 +62,7 @@ def _map_argument(fields):
     :yield: tuple of field name an mounted graphene argument
     """
     for field in fields:
+        _check_field_name_is_not_reserved(field)
         graphene_field_type = GRAPHENE_FIELD_TYPE_MAP.get(type(field))
         if graphene_field_type is None:
             if hasattr(field, 'enum_class'):
