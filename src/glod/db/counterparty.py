@@ -19,7 +19,7 @@ TableMap(
         counterparty__person,
         'person._id',
         backref='counterparties',
-        lazy='joined'
+        lazy='selectin'
     ),
 )
 

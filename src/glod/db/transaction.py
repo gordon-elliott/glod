@@ -10,7 +10,6 @@ from glod.model.references import transaction__counterparty, transaction__subjec
 
 from glod.db.db_column_type_map import DB_COLUMN_TYPE_MAP
 
-# TODO upgrade to SQLA 1.2 when it's available and use lazy=selectin
 
 TableMap(
     Transaction,
@@ -20,19 +19,19 @@ TableMap(
         transaction__counterparty,
         'counterparty._id',
         backref='transactions',
-        lazy='joined'
+        lazy='selectin'
     ),
     RelationMap(
         transaction__subject,
         'subject._id',
         backref='transactions',
-        lazy='select'
+        lazy='joined'
     ),
     RelationMap(
         transaction__fund,
         'fund._id',
         backref='transactions',
-        lazy='select'
+        lazy='joined'
     ),
 )
 
