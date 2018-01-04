@@ -10,7 +10,6 @@ from glod.model.references import organisation_address__address, organisation_ad
 
 from glod.db.db_column_type_map import DB_COLUMN_TYPE_MAP
 
-# TODO upgrade to SQLA 1.2 when it's available and use lazy=selectin
 
 TableMap(
     OrganisationAddress,
@@ -20,7 +19,7 @@ TableMap(
         organisation_address__address,
         'address._id',
         backref='organisation_addresses',
-        lazy='select'
+        lazy='selectin'
     ),
     RelationMap(
         organisation_address__organisation,
