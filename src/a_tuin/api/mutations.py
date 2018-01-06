@@ -8,8 +8,7 @@ from graphene import ClientIDMutation
 
 from a_tuin.constants import SESSION
 from a_tuin.api import handle_field_errors
-from glod.model.references import references_from
-
+from a_tuin.metadata.reference import references_from
 
 ID_FIELD_NAME = 'id'
 

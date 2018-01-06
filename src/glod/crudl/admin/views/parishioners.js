@@ -1,15 +1,15 @@
 import { formatDate } from '../utils'
 import React from 'react'
 
+import { parishioners } from '../connectors/parishioners'
+import {funds} from "../connectors/funds";
+
 //-------------------------------------------------------------------
-var listView = {
+const listView = {
     path: 'parishioners',
     title: 'Parishioners',
     actions: {
-        list: function (req) {
-            let parishioners = crudl.connectors.parishioners.read(req)
-            return parishioners
-        }
+        list: function (req) { return parishioners.read(req) }
     },
 }
 
@@ -237,13 +237,14 @@ listView.filters = {
 }
 
 //-------------------------------------------------------------------
-var changeView = {
+const changeView = {
     path: 'parishioners/:id',
     title: 'Parishioners',
     tabtitle: 'Main',
     actions: {
-        get: function (req) { return crudl.connectors.parishioner(crudl.path.id).read(req) },
-        save: function (req) { return crudl.connectors.parishioner(crudl.path.id).update(req) },
+        get: req => parishioners(crudl.path.id).read(req),
+        delete: req => parishioners.delete(req), // the request contains the id already
+        save: req => parishioners.update(req), // the request contains the id already
     },
     validate: function (values) {
         if (!values.surname || values.surname == "") {
@@ -416,13 +417,13 @@ changeView.fieldsets = [
 ]
 
 //-------------------------------------------------------------------
-var addView = {
+const addView = {
     path: 'parishioners/new',
     title: 'New Parishioner',
     fieldsets: changeView.fieldsets,
     validate: changeView.validate,
     actions: {
-        add: function (req) { return crudl.connectors.parishioners.create(req) },
+        add: function (req) { return parishioners.create(req) },
     },
 }
 

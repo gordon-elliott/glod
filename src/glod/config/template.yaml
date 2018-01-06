@@ -37,3 +37,9 @@ logging:
 google_sheets:
   credentials_file:
   idl_sheet_id:
+
+crudl:
+  admin:
+    use_modified_since: False
+    crudl_js: http://cdn.crudl.io/static/releases/0.3.0/crudl.js
+    crudl_css: http://cdn.crudl.io/static/releases/0.3.0/crudl-ui/css/crudl-ui.css

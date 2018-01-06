@@ -24,5 +24,13 @@ nominal_accounts_connection_field = node_connection_field(
     NominalAccountNode,
     description='List of all nominal accounts'
 )
+
+nominal_accounts_options_field = node_connection_field(
+    NominalAccount,
+    NominalAccountQuery,
+    NominalAccountLeaf,
+    description='List of all nominal accounts for Select fields'
+)
+
 CreateNominalAccountLeaf = get_create_mutation(NominalAccount, nominal_account_fields, NominalAccountLeaf)
 UpdateNominalAccountLeaf = get_update_mutation(NominalAccount, nominal_account_fields, NominalAccountLeaf)

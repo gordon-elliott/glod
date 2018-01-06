@@ -24,5 +24,13 @@ persons_connection_field = node_connection_field(
     PersonNode,
     description="List of all people"
 )
+
+persons_options_field = node_connection_field(
+    Person,
+    PersonQuery,
+    PersonLeaf,
+    description="List of all people for Select fields"
+)
+
 CreatePersonLeaf = get_create_mutation(Person, person_fields, PersonLeaf)
 UpdatePersonLeaf = get_update_mutation(Person, person_fields, PersonLeaf)

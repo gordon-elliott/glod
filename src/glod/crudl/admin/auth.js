@@ -2,8 +2,8 @@
 //-------------------------------------------------------------------
 var login = {
     actions: {
-        // login: function (req) { return {'token': '-tokn-', 'user': 'Gordon', 'username': 'ge'} },
-        login: function (req) { return crudl.connectors.login.read(req) },
+        login: function (req) { return {'token': '-tokn-', 'user': 'Gordon', 'username': 'ge'} },
+        // login: function (req) { return crudl.connectors.login.read(req) },
     },
 }
 

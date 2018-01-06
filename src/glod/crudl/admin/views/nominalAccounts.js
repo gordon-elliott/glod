@@ -1,15 +1,15 @@
 import { optionsFromMap } from '../utils'
 import React from 'react'
 
+import { nominalAccounts } from '../connectors/nominalAccounts'
+import {funds} from "../connectors/funds";
 
-var listView = {
+
+const listView = {
     path: 'nominalAccounts',
     title: 'Nominal Accounts',
     actions: {
-        list: function (req) {
-            let nominalAccounts = crudl.connectors.nominalAccounts.read(req)
-            return nominalAccounts
-        }
+        list: function (req) { return nominalAccounts.read(req) }
     },
 }
 
@@ -99,37 +99,32 @@ listView.filters = {
             name: 'SOFAHeading',
             label: 'SOFA Heading',
             field: 'Select',
-            props: {
-                options: SOFAHeadingOptions
-            },
+            options: SOFAHeadingOptions,
         },
         {
             name: 'category',
             label: 'Category',
             field: 'Select',
-            props: {
-                options: categoryOptions
-            },
+            options: categoryOptions,
         },
         {
             name: 'subCategory',
             label: 'Sub-category',
             field: 'Select',
-            props: {
-                options: subCategoryOptions
-            },
+            options: subCategoryOptions,
         },
     ]
 }
 
 //-------------------------------------------------------------------
-var changeView = {
+const changeView = {
     path: 'nominalAccounts/:id',
     title: 'Account',
     tabtitle: 'Main',
     actions: {
-        get: function (req) { return crudl.connectors.nominalAccount(crudl.path.id).read(req) },
-        save: function (req) { return crudl.connectors.nominalAccount(crudl.path.id).update(req) },
+        get: req => nominalAccounts(crudl.path.id).read(req),
+        delete: req => nominalAccounts.delete(req), // the request contains the id already
+        save: req => nominalAccounts.update(req), // the request contains the id already
     },
     validate: function (values) {
         if (!values.code || values.code == "") {
@@ -166,25 +161,19 @@ changeView.fieldsets = [
                 name: 'SOFAHeading',
                 label: 'SOFA Heading',
                 field: 'Select',
-                props: {
-                    options: SOFAHeadingOptions
-                },
+                options: SOFAHeadingOptions
             },
             {
                 name: 'category',
                 label: 'Category',
                 field: 'Select',
-                props: {
-                    options: categoryOptions
-                },
+                options: categoryOptions
             },
             {
                 name: 'subCategory',
                 label: 'Sub-category',
                 field: 'Select',
-                props: {
-                    options: subCategoryOptions
-                },
+                options: subCategoryOptions
             },
         ],
     },
@@ -209,13 +198,13 @@ changeView.fieldsets = [
 ]
 
 //-------------------------------------------------------------------
-var addView = {
+const addView = {
     path: 'nominalAccounts/new',
     title: 'New Nominal Account',
     fieldsets: changeView.fieldsets,
     validate: changeView.validate,
     actions: {
-        add: function (req) { return crudl.connectors.nominalAccounts.create(req) },
+        add: function (req) { return nominalAccounts.create(req) },
     },
 }
 

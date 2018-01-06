@@ -24,5 +24,13 @@ addresss_connection_field = node_connection_field(
     AddressNode,
     description="List of all addresss"
 )
+
+addresss_options_field = node_connection_field(
+    Address,
+    AddressQuery,
+    AddressLeaf,
+    description="List of all addresss for Select fields"
+)
+
 CreateAddressLeaf = get_create_mutation(Address, address_fields, AddressLeaf)
 UpdateAddressLeaf = get_update_mutation(Address, address_fields, AddressLeaf)
