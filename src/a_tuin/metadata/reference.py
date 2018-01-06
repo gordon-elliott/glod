@@ -3,6 +3,10 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """ 
 """
 
+
+REFERENCES = []
+
+
 class Reference(object):
 
     def __init__(self, source_class, source_field_public_name, target_class):
@@ -26,3 +30,19 @@ class Reference(object):
     @property
     def target_model_class(self):
         return self._target_class
+
+
+def references_from(model_class):
+    return (
+        reference
+        for reference in REFERENCES
+        if reference.source_model_class == model_class
+    )
+
+
+def references_from_field(model_class, source_field_public_name):
+    return (
+        reference
+        for reference in references_from(model_class)
+        if reference.source_field_public_name == source_field_public_name
+    )

@@ -3,7 +3,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """ 
 """
 
-from a_tuin.metadata.reference import Reference
+from a_tuin.metadata.reference import Reference, REFERENCES
 
 from glod.model.account import Account
 from glod.model.statement_item import StatementItem
@@ -36,7 +36,7 @@ organisation_address__organisation = Reference(OrganisationAddress, 'organisatio
 person__organisation = Reference(Person, 'organisation', Organisation)
 
 
-REFERENCES = (
+REFERENCES.extend((
     statement_item__account,
     fund__account,
     counterparty__person,
@@ -51,12 +51,4 @@ REFERENCES = (
     organisation_address__address,
     organisation_address__organisation,
     person__organisation,
-)
-
-
-def references_from(model_class):
-    return (
-        reference
-        for reference in REFERENCES
-        if reference.source_model_class == model_class
-    )
+))

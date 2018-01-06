@@ -24,5 +24,13 @@ statement_items_connection_field = node_connection_field(
     StatementItemNode,
     description='List of all statement_items'
 )
+
+statement_items_options_field = node_connection_field(
+    StatementItem,
+    StatementItemQuery,
+    StatementItemLeaf,
+    description='List of all statement_items for Select fields'
+)
+
 CreateStatementItemLeaf = get_create_mutation(StatementItem, statement_item_fields, StatementItemLeaf)
 UpdateStatementItemLeaf = get_update_mutation(StatementItem, statement_item_fields, StatementItemLeaf)

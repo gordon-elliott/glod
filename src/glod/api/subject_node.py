@@ -24,5 +24,13 @@ subjects_connection_field = node_connection_field(
     SubjectNode,
     description="List of all subjects"
 )
+
+subjects_options_field = node_connection_field(
+    Subject,
+    SubjectQuery,
+    SubjectLeaf,
+    description="List of all subjects for Select fields"
+)
+
 CreateSubjectLeaf = get_create_mutation(Subject, subject_fields, SubjectLeaf)
 UpdateSubjectLeaf = get_update_mutation(Subject, subject_fields, SubjectLeaf)

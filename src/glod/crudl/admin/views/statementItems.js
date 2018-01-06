@@ -1,15 +1,16 @@
-import { optionsFromMap } from '../utils'
+import {optionsFromMap, select} from '../utils'
 import React from 'react'
 
+import { statementItems } from '../connectors/statementItems'
+import { accountOptions } from '../connectors/accounts'
+import {funds} from "../connectors/funds";
+
 //-------------------------------------------------------------------
-var listView = {
+const listView = {
     path: 'statementItems',
     title: 'Statement Items',
     actions: {
-        list: function (req) {
-            let statementItems = crudl.connectors.statementItems.read(req)
-            return statementItems
-        }
+        list: function (req) { return statementItems.read(req) }
     },
 }
 
@@ -17,7 +18,7 @@ var listView = {
 listView.fields = [
     {
         name: 'account',
-        key: 'account.name',
+        getValue: select('account.name'),
         label: 'Account',
         sortable: true,
         sorted: 'ascending',
@@ -63,7 +64,7 @@ listView.filters = {
             name: 'account',
             label: 'Account',
             field: 'Select',
-            props: () => crudl.connectors.accountsOptions.read(crudl.req()).then(res => res.data),
+            props: () => accountOptions.read(crudl.req()).then(res => res.data),
         },
         {
             name: 'date',
@@ -90,13 +91,14 @@ listView.filters = {
 }
 
 //-------------------------------------------------------------------
-var changeView = {
+const changeView = {
     path: 'statementItems/:id',
     title: 'Statement Item',
     tabtitle: 'Main',
     actions: {
-        get: function (req) { return crudl.connectors.statementItem(crudl.path.id).read(req) },
-        save: function (req) { return crudl.connectors.statementItem(crudl.path.id).update(req) },
+        get: req => statementItems(crudl.path.id).read(req),
+        delete: req => statementItems.delete(req), // the request contains the id already
+        save: req => statementItems.update(req), // the request contains the id already
     },
     validate: function (values) {
         if (!values.account || values.account == "") {
@@ -121,12 +123,12 @@ changeView.fieldsets = [
             },
             {
                 name: 'account',
-                key: 'account.id',
+                getValue: select('account.id'),
                 label: 'Account',
                 field: 'Select',
-                props: () => crudl.connectors.accountsOptions.read(crudl.req()).then(res => ({
+                lazy: () => accountOptions.read(crudl.req()).then(res => ({
                     helpText: 'Select an account',
-                    ...res.data
+                    ...res
                 })),
                 required: true,
             },
@@ -187,13 +189,13 @@ changeView.fieldsets = [
 ]
 
 //-------------------------------------------------------------------
-var addView = {
+const addView = {
     path: 'statementItems/new',
     title: 'New Statement Item',
     fieldsets: changeView.fieldsets,
     validate: changeView.validate,
     actions: {
-        add: function (req) { return crudl.connectors.statementItems.create(req) },
+        add: function (req) { return statementItems.create(req) },
     },
 }
 

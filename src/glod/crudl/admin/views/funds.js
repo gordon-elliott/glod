@@ -1,15 +1,15 @@
-import { optionsFromMap } from '../utils'
+import { optionsFromMap, select } from '../utils'
 import React from 'react'
 
+import { funds } from '../connectors/funds'
+import { accountOptions } from '../connectors/accounts'
+
 //-------------------------------------------------------------------
-var listView = {
+const listView = {
     path: 'funds',
     title: 'Funds',
     actions: {
-        list: function (req) {
-            let funds = crudl.connectors.funds.read(req)
-            return funds
-        }
+        list: function (req) { return funds.read(req) }
     },
 }
 
@@ -18,10 +18,10 @@ const fundMap = {
     Restricted: 'Restricted',
     Endowment: 'Endowment',
 }
-let fundOptions = optionsFromMap(fundMap)
+let fundRestrictions = optionsFromMap(fundMap)
 
 
-// id, name, type, isParishFund, account
+// id, name, restriction, isParishFund, account
 listView.fields = [
     {
         name: 'name',
@@ -32,8 +32,8 @@ listView.fields = [
         sortpriority: '1',
     },
     {
-        name: 'type',
-        label: 'Type',
+        name: 'restriction',
+        label: 'Restriction',
         sortable: true,
         render: value => fundMap[value],
     },
@@ -44,13 +44,19 @@ listView.fields = [
     },
     {
         name: 'account',
-        key: 'account.name',
+        getValue: select('account.name'),
         label: 'Account',
         sortable: true,
     },
 ]
 
 listView.filters = {
+    denormalize: function (frontEnd) {
+        if (frontEnd.hasOwnProperty('isParishFund')) {
+            frontEnd.isParishFund = frontEnd.isParishFund === 'true';
+        }
+        return frontEnd;
+    },
     fields: [
         {
             name: 'name',
@@ -58,42 +64,42 @@ listView.filters = {
             field: 'Search',
         },
         {
-            name: 'type',
-            label: 'Type',
+            name: 'restriction',
+            label: 'Restriction',
             field: 'Select',
-            props: {
-                options: fundOptions
-            }
+            options: fundRestrictions
         },
         {
             name: 'isParishFund',
             label: 'Is Parish Fund?',
             field: 'Select',
-            props: {
-                options: [
-                    {value: 'true', label: 'True'},
-                    {value: 'false', label: 'False'}
-                ],
-                helpText: 'Note: We use Select in order to distinguish false and none.'
-            }
+            options: [
+                {value: 'true', label: 'True'},
+                {value: 'false', label: 'False'}
+            ],
+            helpText: 'Note: We use Select in order to distinguish false and none.'
         },
         {
             name: 'account',
             label: 'Account',
             field: 'Select',
-            props: () => crudl.connectors.accountsOptions.read(crudl.req()).then(res => res.data),
+            lazy: () => accountOptions.read(crudl.req()).then(res => ({
+                helpText: 'Select an account',
+                ...res
+            })),
         },
     ]
 }
 
 //-------------------------------------------------------------------
-var changeView = {
+const changeView = {
     path: 'funds/:id',
     title: 'Fund',
     tabtitle: 'Main',
     actions: {
-        get: function (req) { return crudl.connectors.fund(crudl.path.id).read(req) },
-        save: function (req) { return crudl.connectors.fund(crudl.path.id).update(req) },
+        get: req => funds(crudl.path.id).read(req),
+        delete: req => funds.delete(req), // the request contains the id already
+        save: req => funds.update(req), // the request contains the id already
     },
     validate: function (values) {
         if (!values.name || values.name == "") {
@@ -122,13 +128,11 @@ changeView.fieldsets = [
                 field: 'String',
             },
             {
-                name: 'type',
-                label: 'Type',
+                name: 'restriction',
+                label: 'Restriction',
                 field: 'Select',
                 required: true,
-                props: {
-                    options: fundOptions
-                },
+                options: fundRestrictions
             },
             {
                 name: 'isParishFund',
@@ -137,13 +141,13 @@ changeView.fieldsets = [
             },
             {
                 name: 'account',
-                key: 'account.id',
+                getValue: select('account.id'),
                 label: 'Account',
                 field: 'Select',
-                props: () => crudl.connectors.accountsOptions.read(crudl.req()).then(res => ({
+                lazy: () => accountOptions.read(crudl.req()).then(res => ({
                     helpText: 'Select an account',
-                    ...res.data
-                }))
+                    ...res
+                })),
             },
         ],
     },
@@ -174,7 +178,7 @@ var addView = {
     fieldsets: changeView.fieldsets,
     validate: changeView.validate,
     actions: {
-        add: function (req) { return crudl.connectors.funds.create(req) },
+        add: function (req) { return funds.create(req) },
     },
 }
 

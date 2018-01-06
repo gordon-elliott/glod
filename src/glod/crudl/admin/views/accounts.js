@@ -1,17 +1,16 @@
-import { formatDate } from '../utils'
 import React from 'react'
 
+import { accounts } from '../connectors/accounts'
+import {funds} from "../connectors/funds";
+
 //-------------------------------------------------------------------
-var listView = {
+const listView = {
     path: 'accounts',
     title: 'Accounts',
     actions: {
-        list: function (req) {
-            let accounts = crudl.connectors.accounts.read(req)
-            return accounts
-        }
+        list: function (req) { return accounts.read(req) },
     },
-}
+};
 
 // id, referenceNo, purpose, status, name, institution, sortCode, accountNo, BIC, IBAN
 listView.fields = [
@@ -72,12 +71,10 @@ listView.filters = {
             name: 'status',
             label: 'Status',
             field: 'Select',
-            props: {
-                options: [
-                    {value: 'Active', label: 'Active'},
-                    {value: 'Closed', label: 'Closed'}
-                ]
-            },
+            options: [
+                {value: 'Active', label: 'Active'},
+                {value: 'Closed', label: 'Closed'}
+            ],
         },
         {
             name: 'name',
@@ -103,17 +100,18 @@ listView.filters = {
 }
 
 //-------------------------------------------------------------------
-var changeView = {
+const changeView = {
     path: 'accounts/:id',
     title: 'Account',
     tabtitle: 'Main',
     actions: {
-        get: function (req) { return crudl.connectors.account(crudl.path.id).read(req) },
-        save: function (req) { return crudl.connectors.account(crudl.path.id).update(req) },
+        get: req => accounts(crudl.path.id).read(req),
+        delete: req => accounts.delete(req), // the request contains the id already
+        save: req => accounts.update(req), // the request contains the id already
     },
     validate: function (values) {
         if (!values.name || values.name == "") {
-            return { _error: '`Name` is required.' }
+            return {_error: '`Name` is required.'}
         }
     },
     denormalize: function (data) {
@@ -123,7 +121,7 @@ var changeView = {
         delete(data.createdate)
         return data
     },
-}
+};
 
 changeView.fieldsets = [
     {
@@ -150,12 +148,10 @@ changeView.fieldsets = [
                 required: true,
                 initialValue: 'Active',
                 /* set options manually */
-                props: {
-                    options: [
-                        {value: 'Active', label: 'Active'},
-                        {value: 'Closed', label: 'Closed'}
-                    ]
-                },
+                options: [
+                    {value: 'Active', label: 'Active'},
+                    {value: 'Closed', label: 'Closed'}
+                ],
             },
             {
                 name: 'name',
@@ -211,15 +207,15 @@ changeView.fieldsets = [
 ]
 
 //-------------------------------------------------------------------
-var addView = {
+const addView = {
     path: 'accounts/new',
     title: 'New Account',
     fieldsets: changeView.fieldsets,
     validate: changeView.validate,
     actions: {
-        add: function (req) { return crudl.connectors.accounts.create(req) },
+        add: function (req) { return accounts.create(req) },
     },
-}
+};
 
 //-------------------------------------------------------------------
 module.exports = {

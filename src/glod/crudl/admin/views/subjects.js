@@ -1,14 +1,14 @@
 import React from 'react'
 
+import { subjects } from '../connectors/subjects'
+import {funds} from "../connectors/funds";
+
 //-------------------------------------------------------------------
-var listView = {
+const listView = {
     path: 'subjects',
     title: 'Subjects',
     actions: {
-        list: function (req) {
-            let subjects = crudl.connectors.subjects.read(req)
-            return subjects
-        }
+        list: function (req) { return subjects.read(req) }
     },
 }
 
@@ -55,13 +55,14 @@ listView.filters = {
 }
 
 //-------------------------------------------------------------------
-var changeView = {
+const changeView = {
     path: 'subjects/:id',
     title: 'Subject',
     tabtitle: 'Main',
     actions: {
-        get: function (req) { return crudl.connectors.subject(crudl.path.id).read(req) },
-        save: function (req) { return crudl.connectors.subject(crudl.path.id).update(req) },
+        get: req => subjects(crudl.path.id).read(req),
+        delete: req => subjects.delete(req), // the request contains the id already
+        save: req => subjects.update(req), // the request contains the id already
     },
     validate: function (values) {
         if (!values.name || values.name == "") {
@@ -122,13 +123,13 @@ changeView.fieldsets = [
 ]
 
 //-------------------------------------------------------------------
-var addView = {
+const addView = {
     path: 'subjects/new',
     title: 'New Subject',
     fieldsets: changeView.fieldsets,
     validate: changeView.validate,
     actions: {
-        add: function (req) { return crudl.connectors.subjects.create(req) },
+        add: function (req) { return subjects.create(req) },
     },
 }
 

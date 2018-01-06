@@ -24,5 +24,13 @@ ppss_connection_field = node_connection_field(
     PPSNode,
     description="List of all PPSes"
 )
+
+ppss_options_field = node_connection_field(
+    PPS,
+    PPSQuery,
+    PPSLeaf,
+    description="List of all PPSes for Select fields"
+)
+
 CreatePPSLeaf = get_create_mutation(PPS, pps_fields, PPSLeaf)
 UpdatePPSLeaf = get_update_mutation(PPS, pps_fields, PPSLeaf)

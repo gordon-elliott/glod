@@ -36,5 +36,13 @@ organisations_connection_field = node_connection_field(
     OrganisationNode,
     description="List of all organisations"
 )
+
+organisations_options_field = node_connection_field(
+    Organisation,
+    OrganisationQuery,
+    OrganisationLeaf,
+    description="List of all organisations for Select fields"
+)
+
 CreateOrganisationLeaf = get_create_mutation(Organisation, organisation_fields, OrganisationLeaf)
 UpdateOrganisationLeaf = get_update_mutation(Organisation, organisation_fields, OrganisationLeaf)

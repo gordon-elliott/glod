@@ -24,5 +24,13 @@ parishioners_connection_field = node_connection_field(
     ParishionerNode,
     description="List of all parishioners"
 )
+
+parishioners_options_field = node_connection_field(
+    Parishioner,
+    ParishionerQuery,
+    ParishionerLeaf,
+    description="List of all parishioners for select fields"
+)
+
 CreateParishionerLeaf = get_create_mutation(Parishioner, parishioner_fields, ParishionerLeaf)
 UpdateParishionerLeaf = get_update_mutation(Parishioner, parishioner_fields, ParishionerLeaf)

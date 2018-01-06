@@ -24,5 +24,13 @@ funds_connection_field = node_connection_field(
     FundNode,
     description='List of all funds'
 )
+
+funds_options_field = node_connection_field(
+    Fund,
+    FundQuery,
+    FundLeaf,
+    description='List of all funds for Select fields'
+)
+
 CreateFundLeaf = get_create_mutation(Fund, fund_fields, FundLeaf)
 UpdateFundLeaf = get_update_mutation(Fund, fund_fields, FundLeaf)
