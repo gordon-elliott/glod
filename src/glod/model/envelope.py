@@ -12,6 +12,11 @@ from a_tuin.metadata import (
 
 
 class Envelope(ObjectFieldGroupBase):
+    # Data usage
+    #
+    # Used to administer the Free-will envelope programme.
+    # Records the envelope used by a person in a particular year
+    #
 
     public_interface = (
         IntField('year'),

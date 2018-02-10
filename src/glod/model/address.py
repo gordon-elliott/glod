@@ -7,6 +7,11 @@ from a_tuin.metadata import StringField, ObjectFieldGroupBase, Collection
 
 
 class Address(ObjectFieldGroupBase):
+    # Data usage
+    #
+    # 1. delivering messages by postal system
+    # 2. arranging house visits
+    #
 
     public_interface = (
         StringField('address1', required=True),

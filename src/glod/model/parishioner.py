@@ -7,6 +7,11 @@ from a_tuin.metadata import IntField, StringField, ObjectFieldGroupBase, Collect
 
 
 class Parishioner(ObjectFieldGroupBase):
+    # Data usage
+    #
+    # Denormalised data which is the initial representation of parishioner
+    # contact information
+    #
 
     public_interface = (
         IntField('reference_no', is_mutable=False),

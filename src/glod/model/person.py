@@ -28,15 +28,15 @@ class Person(ObjectFieldGroupBase):
 
     public_interface = (
         ObjectReferenceField('organisation', required=True),
-        StringField('family_name'),
-        StringField('given_name'),
-        PersonStatusField('status', required=True, default=PersonStatus.Active),
-        StringField('title'),
-        StringField('mobile'),
-        StringField('email'),
-        DateField('date_of_birth'),
-        BooleanField('dob_is_estimate'),
-        IntField('parishioner_reference_no', is_mutable=False),
+        StringField('family_name', description='Surname of individual. Used to correctly address communications to them.'),
+        StringField('given_name', description='First name of individual. Used to correctly address communications to them.'),
+        PersonStatusField('status', required=True, default=PersonStatus.Active, description='Is the person living, deceased or has contact been lost with them.'),
+        StringField('title', description='Honorific used in formal communications and when addressing letters.'),
+        StringField('mobile', description='In addition to facilitating voice communications may be used to supplement secure access to personal data.'),
+        StringField('email', description='Primary means of electronic communication and identity for maintaining personal information.'),
+        DateField('date_of_birth', description='Optional information for adults. Used to identify minors.'),
+        BooleanField('dob_is_estimate', description='Flag indicating whether date of birth has been verified by family member.'),
+        IntField('parishioner_reference_no', is_mutable=False, description='Internal use. Refers to identity in source data. Required for initial data load.'),
     )
 
     def __str__(self):
