@@ -29,18 +29,22 @@ class StandingOrderDonorField(IntEnumField):
 
 
 class Counterparty(ObjectFieldGroupBase):
+    # Data usage
+    #
+    # Associates an identifiable person with their financial activity
+    #
 
     public_interface = (
         IntField('reference_no'),
-        StringField('bank_text'),
+        StringField('bank_text', description='Used to identify donors from bank statements'),
         ObjectReferenceField('person'),
         StringField('name_override'),
         StandingOrderDonorField('standing_order_donor'),
-        StringField('sustentation'),    # TODO enum?
-        StringField('method'),          # TODO enum?
-        BooleanField('has_SO_card'),
-        BooleanField('by_email'),
-        StringField('notes'),
+        StringField('sustentation', description='Flag indicating whether donations are received in annual lump sum.'),    # TODO enum?
+        StringField('method', description='Method whereby funds are received or dispersed. Used to aid reconciliation.'),          # TODO enum?
+        BooleanField('has_SO_card', description='Has donor requested a standing order donor card.'),
+        BooleanField('by_email', 'Has the donor agreed to receive communications by email?'),
+        StringField('notes', 'Free text record of unusual circumstances.'),
     )
 
     def __str__(self):

@@ -19,6 +19,10 @@ class OrganisationAddressStatusField(IntEnumField):
 
 
 class OrganisationAddress(ObjectFieldGroupBase):
+    # Data usage
+    #
+    # Allows addresses to be associated with an organisation
+    #
 
     public_interface = (
         ObjectReferenceField('organisation', required=True),

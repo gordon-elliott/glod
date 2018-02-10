@@ -33,6 +33,11 @@ class OrganisationStatusField(IntEnumField):
 
 
 class Organisation(ObjectFieldGroupBase):
+    # Data usage
+    #
+    # Represents a household or other organisation
+    # People belong to an organisation
+    #
 
     public_interface = (
         IntField('reference_no', required=True, is_mutable=False),
