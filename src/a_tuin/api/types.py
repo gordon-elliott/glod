@@ -16,6 +16,11 @@ from a_tuin.metadata import (
 )
 
 
+GRAPHENE_TYPE_MAP = {
+    int: graphene.Int,
+    str: graphene.String,
+}
+
 GRAPHENE_FIELD_TYPE_MAP = {
     BooleanField: graphene.Boolean,
     IntField: graphene.Int,

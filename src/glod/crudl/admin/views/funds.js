@@ -13,13 +13,12 @@ const listView = {
     },
 }
 
-const fundMap = {
+const fundRestrictionMap = {
     Unrestricted: 'Unrestricted',
     Restricted: 'Restricted',
-    Endowment: 'Endowment',
+    Endowment: 'Endowment'
 }
-let fundRestrictions = optionsFromMap(fundMap)
-
+let fundRestrictions = optionsFromMap(fundRestrictionMap)
 
 // id, name, restriction, isParishFund, account
 listView.fields = [
@@ -35,7 +34,7 @@ listView.fields = [
         name: 'restriction',
         label: 'Restriction',
         sortable: true,
-        render: value => fundMap[value],
+        render: value => fundRestrictionMap[value],
     },
     {
         name: 'isParishFund',
@@ -51,11 +50,14 @@ listView.fields = [
 ]
 
 listView.filters = {
-    denormalize: function (frontEnd) {
-        if (frontEnd.hasOwnProperty('isParishFund')) {
-            frontEnd.isParishFund = frontEnd.isParishFund === 'true';
+    denormalize: function (frontend) {
+        if (frontend.hasOwnProperty('isParishFund')) {
+            frontend.isParishFund = frontend.isParishFund === 'true';
         }
-        return frontEnd;
+        if (frontend.hasOwnProperty('restriction')) {
+            frontend.__enum__restriction = true;
+        }
+        return frontend;
     },
     fields: [
         {

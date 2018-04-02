@@ -6,7 +6,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 from sqlalchemy import Enum
 from unittest.mock import Mock
 
-from a_tuin.db import TableMap, PagedQuery
+from a_tuin.db import TableMap, PagedQuery, RelationMap
 from a_tuin.db import DB_COLUMN_TYPE_MAP
 
 from a_tuin.unittests.api.fixtures.models import (
@@ -15,7 +15,8 @@ from a_tuin.unittests.api.fixtures.models import (
     AClass,
     AClassCollection,
     AReferringClass,
-    AReferringClassCollection
+    AReferringClassCollection,
+    areferringclass__aclass
 )
 
 
@@ -40,7 +41,7 @@ class AClassQuery(PagedQuery):
         super().__init__(AClass, AClassCollection, session)
 
 
-TableMap(AReferringClass, 'areferringclass', DB_COLUMN_TYPE_MAP)
+TableMap(AReferringClass, 'areferringclass', DB_COLUMN_TYPE_MAP, RelationMap(areferringclass__aclass, 'aclass._id'))
 
 
 class AReferringClassQuery(PagedQuery):

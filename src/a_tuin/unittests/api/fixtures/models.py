@@ -1,3 +1,5 @@
+from a_tuin.metadata.reference import Reference
+
 __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 """ 
@@ -15,6 +17,7 @@ from a_tuin.metadata import (
     IntEnumField,
     ObjectReferenceField,
 )
+from a_tuin.metadata.reference import REFERENCES
 
 
 class AClassStatus(IntEnum):
@@ -50,6 +53,13 @@ class AReferringClass(ObjectFieldGroupBase):
 
 class AReferringClassCollection(Collection):
     pass
+
+
+areferringclass__aclass = Reference(AReferringClass, 'aclass', AClass)
+
+REFERENCES.extend((
+    areferringclass__aclass,
+))
 
 
 class ATypedClass(ObjectFieldGroupBase):

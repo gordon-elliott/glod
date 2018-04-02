@@ -1,17 +1,20 @@
+from a_tuin.unittests.api.fixtures.models import areferringclass__aclass
+
 __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 """ 
 """
 import graphene
+
 from graphene import Node
 from graphql_relay.connection.arrayconnection import cursor_to_offset, offset_to_cursor
 from unittest.mock import Mock
 
 from a_tuin.api.connection import node_connection_field
-from a_tuin.unittests.api.graphql_schema_test_case import GraphQLSchemaTestCase
-from a_tuin.unittests.api.fixtures.mapping import AClass, AClassQuery
-from a_tuin.unittests.api.fixtures.nodes import AClassNode
 
+from a_tuin.unittests.api.graphql_schema_test_case import GraphQLSchemaTestCase
+from a_tuin.unittests.api.fixtures.mapping import AClass, AClassQuery, AReferringClass, AReferringClassQuery
+from a_tuin.unittests.api.fixtures.nodes import AClassNode, AReferringClassNode
 
 aclass_connection_field = node_connection_field(
     AClass,
@@ -20,10 +23,17 @@ aclass_connection_field = node_connection_field(
     description="Fixture class"
 )
 
+areferring_connection_field = node_connection_field(
+    AReferringClass,
+    AReferringClassQuery,
+    AReferringClassNode,
+    description="Fixture referring class"
+)
 
 class RootQueryType(graphene.ObjectType):
     node = Node.Field()
     aclasses = aclass_connection_field
+    areferringclasses = areferring_connection_field
 
 
 schema = graphene.Schema(query=RootQueryType)
@@ -286,3 +296,61 @@ class TestConnection(GraphQLSchemaTestCase):
         sort_expression = mock_query.order_by.call_args_list[0][0][1]
         self.assertEqual('name', sort_expression.element.name)
         self.assertIn('DESC', str(sort_expression.expression))
+
+    def test__filter_casts(self):
+        num_instances = 4
+        offset = 0
+        limit = 3
+        aclass_id = 6666
+        aclass_global_id = Node.to_global_id('AClass', aclass_id)
+        filters = {'aclass': aclass_global_id}
+        order_by = None
+
+        expected_instances = [Mock() for _ in range(num_instances)]
+        # mock entities with row numbers
+        mock_results = [(instance, index + 1) for index, instance in enumerate(expected_instances)]
+        mock_query = Mock()
+        mock_session = Mock()
+        mock_query.add_columns.return_value = mock_query
+
+        def apply_filter(criteria):
+            # check that AClass id has been decoded correctly
+            self.assertEqual(str(aclass_id), criteria.right.value)
+            return mock_query
+
+        mock_query.filter.side_effect = apply_filter
+        mock_query.count.return_value = len(mock_results)
+
+        def apply_offset():
+            del mock_results[0:offset]
+            del expected_instances[0:offset]
+            return mock_query
+
+        mock_query.from_self.side_effect = apply_offset
+
+        def apply_limit(num_results):
+            del mock_results[num_results:]
+            del expected_instances[num_results:]
+            return mock_query
+
+        mock_query.limit.side_effect = apply_limit
+        mock_query.order_by.return_value = mock_query
+        mock_query.all.return_value = mock_results
+        mock_session.query.return_value = mock_query
+
+        context = {'request': {'session': mock_session}}
+        args = {}
+        if offset:
+            args['after'] = offset_to_cursor(offset)
+        if limit:
+            args['first'] = limit
+        if filters:
+            args['filters'] = filters
+        if order_by:
+            args['orderBy'] = order_by
+
+        info = TestConnection.InfoFixture(context)
+
+        instances = areferring_connection_field.resolver(
+            None, info, **args
+        )
