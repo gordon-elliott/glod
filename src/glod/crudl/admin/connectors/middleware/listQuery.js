@@ -1,17 +1,28 @@
 
 function buildArgs(object, topLevel=false) {
     let args = Object.getOwnPropertyNames(object).map(name => {
+
+        // TODO: improve this - it doesn't entirely work - the context display is not updating
+
+        if (name.startsWith('__enum__')) {
+            return '';
+        }
         let value = object[name];
+        const enumName = `__enum__${name}`;
+        if (object.hasOwnProperty(enumName)) {
+            return String.raw`${name}: ${value}`;
+        }
         if (value === Object(value)) {
             return `${name}: ${buildArgs(value)}`
         } else {
             return `${name}: ${JSON.stringify(value)}`
         }
-    }).join(', ')
+    });
+    const argString = args.filter(a => a.length > 0).join(', ');
     if (topLevel) {
-        return args ? `(${args})` : ''
+        return argString ? `(${argString})` : ''
     } else {
-        return args ? `{${args}}` : ''
+        return argString ? `{${argString}}` : ''
     }
 }
 

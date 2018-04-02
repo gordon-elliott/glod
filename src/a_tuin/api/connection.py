@@ -10,7 +10,8 @@ from graphene import Connection, ConnectionField, Node, PageInfo
 from graphql_relay.connection.arrayconnection import offset_to_cursor
 
 from a_tuin.metadata import Mapping, PartialDictFieldGroup, make_boolean, snake_to_camel_case
-from a_tuin.api import with_session, get_input_fields
+from a_tuin.metadata.reference import references_from
+from a_tuin.api import with_session, get_input_fields, OBJECT_REFERENCE_MAP
 
 
 def _parse_order_by(order_by_string):
@@ -21,6 +22,23 @@ def _parse_order_by(order_by_string):
         else:
             sort_ascending = True
         yield column_spec, sort_ascending
+
+
+def _instance_id_from_global_id(global_id, _):
+    _, id_ = graphene.Node.from_global_id(global_id)
+    return id_
+
+
+def _filter_casts(model_class, typed_filter_field_group):
+    filter_casts = {}
+    for reference in references_from(model_class):
+        # map relations on to a column that the mapper can identify
+        for field in typed_filter_field_group:
+            if field.name == reference.source_field_internal_name:
+                field.name = reference.relation_map.fk_fieldname
+        # cast global id to instance id
+        filter_casts[reference.source_field_public_name] = _instance_id_from_global_id
+    return filter_casts
 
 
 def node_connection_field(model_class, query_class, node_class, description):
@@ -65,7 +83,8 @@ def node_connection_field(model_class, query_class, node_class, description):
 
     untyped_filter_field_group = model_class.properties.derive(field_group_class=PartialDictFieldGroup)
     typed_filter_field_group = model_class.internal.derive(field_group_class=PartialDictFieldGroup)
-    filter_to_internal = Mapping(untyped_filter_field_group, typed_filter_field_group)
+    filter_casts = _filter_casts(model_class, typed_filter_field_group)
+    filter_to_internal = Mapping(untyped_filter_field_group, typed_filter_field_group, field_casts=filter_casts)
 
     camel_case_field_group = model_class.properties.derive(snake_to_camel_case, PartialDictFieldGroup)
     order_by_field_group = model_class.internal.derive(make_boolean, PartialDictFieldGroup)

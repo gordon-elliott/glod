@@ -10,6 +10,7 @@ from sqlalchemy.orm import relationship
 class RelationMap(object):
     def __init__(self, reference, referenced_pk_fieldname, **kwargs):
         self._reference = reference
+        reference.relation_map = self
         self._referenced_pk_fieldname = referenced_pk_fieldname
         self._relationship_args = kwargs
 
