@@ -11,7 +11,7 @@ from a_tuin.api.decorators import (
 from a_tuin.api.types import (
     OBJECT_REFERENCE_MAP
 )
-from a_tuin.api.fields import get_local_fields, get_input_fields
+from a_tuin.api.fields import get_local_fields, get_filter_fields
 from a_tuin.api.node import node_class
 from a_tuin.api.leaf import leaf_class_interfaces
 from a_tuin.api.connection import node_connection_field

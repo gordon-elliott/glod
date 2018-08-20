@@ -183,7 +183,10 @@ class IntEnumField(IntField):
 
     def type_cast(self, value):
         if value is not None:
-            return self._enum_class(value)
+            if type(value) == str:
+                return self._enum_class[value]
+            else:
+                return self._enum_class(value)
         else:
             return None
 

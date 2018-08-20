@@ -46,17 +46,22 @@ export function formatDate(date) {
     return date.toJSON().slice(0, 10)
 }
 
-/* transform graphene error to redux-form (array) error
-graphene:
+export function formatStringToDate(dateStr) {
+    let date = new Date(dateStr)
+    return date.toJSON().slice(0, 10)
+}
+
+/* transform mongoose error to redux-form (object) error
+mongoose:
 [
-    "__all__", "message",
-    "key",  "message",
+    "__all__": "message",
+    "key": "message"
 ]
 redux-form:
-{
+[
     "_error": "message",
-    "key": "message",
-}
+    "key": "message"
+]
 */
 export function transformErrors(errors) {
     const errorsObj = {}
