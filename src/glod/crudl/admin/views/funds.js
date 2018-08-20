@@ -54,9 +54,6 @@ listView.filters = {
         if (frontend.hasOwnProperty('isParishFund')) {
             frontend.isParishFund = frontend.isParishFund === 'true';
         }
-        if (frontend.hasOwnProperty('restriction')) {
-            frontend.__enum__restriction = true;
-        }
         return frontend;
     },
     fields: [

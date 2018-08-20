@@ -18,7 +18,7 @@ export function createGraphQLConnector() {
 
 /**
 * A resource connector. Use it like this:
-* const users = createResourceConnector('users', 'id, username, email')
+* const users = createResourceConnector('users', '_id, username, email')
 *
 * users.read()                 // list
 * users.create({...})          // create
@@ -32,24 +32,24 @@ export function createResourceConnector(namePl, fields) {
 
     //-- CREATE QUERY --
     const createQuery = `
-    mutation ($input: Create${NameSg}Input!) {
-        create${NameSg}(input: $input) {
+    mutation ($input: ${NameSg}Input!) {
+        add${NameSg} (data: $input) {
             errors
-            ${nameSg} {${fields}}
+            ${nameSg} { ${fields} }
         }
     }
     `
-    const createQueryData = `create${NameSg}.${nameSg}`    // e.g. createUser.user
-    const createQueryError = `create${NameSg}.errors`      // e.g. createUser.errors
+    const createQueryData = `add${NameSg}.${nameSg}`    // e.g. addUser.user
+    const createQueryError = `add${NameSg}.errors`      // e.g. addUser.errors
 
     //-- READ QUERY --
-    const readQuery = `{ ${nameSg} (id: "%id") {${fields}} }`
+    const readQuery = `{ ${nameSg} (id: "%_id") {${fields}} }`
     const readQueryData = nameSg
 
     //-- UPDATE QUERY --
     const updateQuery = `
-    mutation ($input: Change${NameSg}Input!) {
-        change${NameSg} (input: $input) {
+    mutation ($input: ${NameSg}Input!) {
+        change${NameSg} (id: "%_id", data: $input) {
             errors
             ${nameSg} {${fields}}
         }
@@ -59,14 +59,8 @@ export function createResourceConnector(namePl, fields) {
     const updateQueryError = `change${NameSg}.errors`       // e.g. changeUser.errors
 
     //-- DELETE QUERY --
-    const deleteQuery = `
-    mutation ($input: Delete${NameSg}Input!) {
-        delete${NameSg}(input: $input) {
-            deleted
-        }
-    }
-    `
-    const deleteQueryData = 'delete${NameSg}.deleted'
+    const deleteQuery = `mutation { delete${NameSg} (id: "%_id") { deleted } }`
+    const deleteQueryData = 'deleted'
 
     return createGraphQLConnector()
         .use(listQuery(namePl, fields))
@@ -74,16 +68,12 @@ export function createResourceConnector(namePl, fields) {
         .use(query('read', readQuery, readQueryData))
         .use(query('update', updateQuery, updateQueryData, updateQueryError))
         .use(query('delete', deleteQuery, deleteQueryData))
-        // We transform the delete request data to contain only the id
-        .use(next => ({
-            delete: req => next.delete(Object.assign(req, { data: { id: req.data.id }}))
-        }))
         // Transform errors
         .use(crudlErrors)
 }
 
 /**
-* USAGE: const options = createOptionsConnector('sections', 'id', 'name')
+* USAGE: const options = createOptionsConnector('sections', '_id', 'name')
 * options.read() // Resolves to { options: [ { value: '...', label: '...' }, { value: '...', label: '...' }, ...] }
 */
 export function createOptionsConnector(namePl, valueKey, labelKey) {
@@ -91,3 +81,14 @@ export function createOptionsConnector(namePl, valueKey, labelKey) {
         .use(listQuery(namePl, `value: ${valueKey}, label: ${labelKey}`))
         .use(transformData('read', data => ({ options: data })))
 }
+
+export const login = createFrontendConnector(createBackendConnector())
+    .use(url('/rest-api/login/'))
+    .use(crudToHttp())
+    .use(require('./middleware/crudlErrors').default) // rest-api errors
+    .use(transformData('create',
+        data => ({
+            requestHeaders: { "Authorization": `Token ${data.token}` },
+            info: data,
+        })
+    ))

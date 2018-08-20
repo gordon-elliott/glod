@@ -37,6 +37,18 @@ def _get_enum_type(field):
     return graphene.Enum.from_enum(field.enum_class)
 
 
+@lru_cache()
+def _get_enum_filter_type(field):
+    """ Create a graphene String from the Python enum
+        Force enums to be represented as strings in filter dialogs
+        Make sure that the enum type is reused by memoizing the function
+
+    :param field a_tuin.metadata.Field:
+    :return:
+    """
+    return graphene.String
+
+
 def _map_mounted_field(model_class):
     """ Produce a Graphene field for a model metadata Field
 
@@ -69,7 +81,7 @@ def _map_argument(model_class):
         graphene_field_type = GRAPHENE_FIELD_TYPE_MAP.get(type(field))
         argument_name = field.name
         if graphene_field_type is None and hasattr(field, 'enum_class'):
-            graphene_field_type = _get_enum_type(field)
+            graphene_field_type = _get_enum_filter_type(field)
 
         if graphene_field_type is None and isinstance(field, ObjectReferenceField):
             graphene_field_type = GRAPHENE_TYPE_MAP.get(field.type)
@@ -90,4 +102,4 @@ def _get_mapped_fields(field_mapper, model_class):
 
 
 get_local_fields = partial(_get_mapped_fields, _map_mounted_field)
-get_input_fields = partial(_get_mapped_fields, _map_argument)
+get_filter_fields = partial(_get_mapped_fields, _map_argument)

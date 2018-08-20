@@ -7,11 +7,32 @@ import graphene
 
 from collections import OrderedDict
 from graphene import Connection, ConnectionField, Node, PageInfo
-from graphql_relay.connection.arrayconnection import offset_to_cursor
+from graphql_relay.connection.arrayconnection import (
+    offset_to_cursor,
+    connection_from_list_slice as connection_from_list_slice_unpatched
+)
+from graphql_relay.connection import arrayconnection
 
 from a_tuin.metadata import Mapping, PartialDictFieldGroup, make_boolean, snake_to_camel_case
 from a_tuin.metadata.reference import references_from
-from a_tuin.api import with_session, get_input_fields, OBJECT_REFERENCE_MAP
+from a_tuin.api import with_session, get_filter_fields, OBJECT_REFERENCE_MAP
+
+
+def connection_from_list_slice_patch(list_slice, args=None, connection_type=None,
+                               edge_type=None, pageinfo_type=None,
+                               slice_start=0, list_length=0, list_slice_length=None):
+
+    # remove before and after because they prevent server-side paging
+    for argument_name in ('before', 'after'):
+        if argument_name in args:
+            del args[argument_name]
+
+    return connection_from_list_slice_unpatched(list_slice, args, connection_type,
+                               edge_type, pageinfo_type,
+                               slice_start, list_length, list_slice_length)
+
+
+arrayconnection.connection_from_list_slice = connection_from_list_slice_patch
 
 
 def _parse_order_by(order_by_string):
@@ -112,10 +133,12 @@ def node_connection_field(model_class, query_class, node_class, description):
             criteria = tuple(query.sort_criteria_from_dict(mapped))
             query.order_by(*criteria)
 
+        offset = 0
         after = args.get('after')
         if after:
             offset = int(Node.from_global_id(after)[1])
             query.offset(offset)
+            offset += 1
             args.pop('after')
 
         first = args.get('first')
@@ -125,7 +148,7 @@ def node_connection_field(model_class, query_class, node_class, description):
 
         instances = list(query.collection())
 
-        context['count'] = len(instances)
+        context['count'] = offset + len(instances)
         context['pageInfo'] = PageInfo(
             start_cursor=offset_to_cursor(query.start_index),
             end_cursor=offset_to_cursor(query.end_index),
@@ -141,7 +164,7 @@ def node_connection_field(model_class, query_class, node_class, description):
     filter_input = type(
         '{}FilterInput'.format(entity_name),
         (graphene.InputObjectType,),
-        get_input_fields(model_class)
+        get_filter_fields(model_class)
     )
 
     connection_field = ConnectionField(

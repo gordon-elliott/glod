@@ -1,17 +1,7 @@
 
 function buildArgs(object, topLevel=false) {
     let args = Object.getOwnPropertyNames(object).map(name => {
-
-        // TODO: improve this - it doesn't entirely work - the context display is not updating
-
-        if (name.startsWith('__enum__')) {
-            return '';
-        }
         let value = object[name];
-        const enumName = `__enum__${name}`;
-        if (object.hasOwnProperty(enumName)) {
-            return String.raw`${name}: ${value}`;
-        }
         if (value === Object(value)) {
             return `${name}: ${buildArgs(value)}`
         } else {
@@ -28,9 +18,12 @@ function buildArgs(object, topLevel=false) {
 
 function buildOrderBy(req) {
     if (req.sorting && req.sorting.length > 0) {
-        const field = req.sorting[0] // Graphene supports only one orderBy column
-        let prefix = field.sorted === 'ascending' ? '' : '-'
-        return { orderBy: prefix + field.sortKey }
+        return {
+            orderBy: req.sorting.map(field => {
+                let prefix = field.sorted === 'ascending' ? '' : '-'
+                return prefix + field.sortKey
+            }).join(',')
+        }
     }
     return {}
 }
