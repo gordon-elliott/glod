@@ -13,6 +13,7 @@ from a_tuin.metadata import (
     DateField,
     DecimalField,
     IntEnumField,
+    DescriptionField,
 )
 
 
@@ -25,6 +26,7 @@ GRAPHENE_FIELD_TYPE_MAP = {
     BooleanField: graphene.Boolean,
     IntField: graphene.Int,
     StringField: graphene.String,
+    DescriptionField: graphene.String,
     DateField: DateTime,
     DecimalField: graphene.Float,
     IntEnumField: graphene.Enum,

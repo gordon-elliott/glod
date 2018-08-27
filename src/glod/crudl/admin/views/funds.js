@@ -76,7 +76,7 @@ listView.filters = {
                 {value: 'true', label: 'True'},
                 {value: 'false', label: 'False'}
             ],
-            helpText: 'Note: We use Select in order to distinguish false and none.'
+            helpText: 'Is the fund for the exclusive use of the Parish?'
         },
         {
             name: 'account',

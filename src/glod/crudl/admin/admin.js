@@ -5,8 +5,12 @@ const accounts = require('./views/accounts');
 const funds = require('./views/funds');
 const nominalAccounts = require('./views/nominalAccounts');
 const parishioners = require('./views/parishioners');
+const organisations = require('./views/organisations')
+const people = require('./views/people')
+const addresses = require('./views/addresses')
 const subjects = require('./views/subjects');
 const statementItems = require('./views/statementItems');
+const transactions = require('./views/transactions')
 let { login, logout } = require('./auth')
 
 const admin = {
@@ -22,8 +26,12 @@ const admin = {
         funds,
         nominalAccounts,
         parishioners,
+        organisations,
+        people,
+        addresses,
         subjects,
         statementItems,
+        transactions,
     },
     auth: {
         login,

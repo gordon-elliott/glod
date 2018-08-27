@@ -3,7 +3,6 @@ import React from 'react'
 
 import { statementItems } from '../connectors/statementItems'
 import { accountOptions } from '../connectors/accounts'
-import {funds} from "../connectors/funds";
 
 //-------------------------------------------------------------------
 const listView = {

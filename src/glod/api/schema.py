@@ -18,6 +18,9 @@ from glod.api.parishioner_node import ParishionerNode, parishioners_connection_f
 from glod.api.person_node import PersonNode, persons_connection_field, persons_options_field, CreatePersonLeaf, UpdatePersonLeaf
 from glod.api.pps_node import PPSNode, ppss_connection_field, ppss_options_field, CreatePPSLeaf, UpdatePPSLeaf
 from glod.api.statement_item_node import StatementItemNode, statement_items_connection_field, statement_items_options_field, CreateStatementItemLeaf, UpdateStatementItemLeaf
+from glod.api.counterparty_node import CounterpartyNode, counterparty_connection_field, counterparty_options_field, CreateCounterpartyLeaf, UpdateCounterpartyLeaf
+from glod.api.transaction_node import TransactionNode, transactions_connection_field, transactions_options_field, CreateTransactionLeaf, UpdateTransactionLeaf
+
 
 class RootQueryType(graphene.ObjectType):
     """ Root query for entity lists which support paging
@@ -55,6 +58,12 @@ class RootQueryType(graphene.ObjectType):
     statement_items = statement_items_connection_field
     statement_item_options = statement_items_options_field
     statement_item = Node.Field(StatementItemNode)
+    counterparties = counterparty_connection_field
+    counterparty_options = counterparty_options_field
+    counterparty = Node.Field(CounterpartyNode)
+    transactions = transactions_connection_field
+    transaction_options = transactions_options_field
+    transaction = Node.Field(TransactionNode)
 
 
 class Mutations(graphene.ObjectType):
@@ -80,6 +89,10 @@ class Mutations(graphene.ObjectType):
     pps_update = UpdatePPSLeaf.Field()
     statement_item_create = CreateStatementItemLeaf.Field()
     statement_item_update = UpdateStatementItemLeaf.Field()
+    counterparty_create = CreateCounterpartyLeaf.Field()
+    counterparty_update = UpdateCounterpartyLeaf.Field()
+    transaction_create = CreateTransactionLeaf.Field()
+    transaction_update = UpdateTransactionLeaf.Field()
 
 
 schema = graphene.Schema(query=RootQueryType, mutation=Mutations)
