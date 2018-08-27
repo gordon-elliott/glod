@@ -1,30 +1,45 @@
-import { accounts, account, accountsOptions } from './accounts'
-import { funds, fund } from './funds'
-import { nominalAccounts, nominalAccount } from './nominalAccounts'
-import { parishioners, parishioner } from './parishioners'
-import { subjects, subject } from './subjects'
-import { statementItems, statementItem} from './statementItems'
+import { accounts, accountsOptions } from './accounts'
+import { funds, fundOptions } from './funds'
+import { nominalAccounts, nominalAccountOptions } from './nominalAccounts'
+import { parishioners, parishionerOptions } from './parishioners'
+import { organisations, organisationOptions } from './organisations'
+import { people, personOptions } from './people'
+import { addresses, addressOptions } from './addresses'
+import { subjects, subjectOptions } from './subjects'
+import { statementItems, statementItemOptions } from './statementItems'
+import { transactions, transactionOptions } from './transactions'
 
 module.exports = {
 
     accounts: accounts,
-    account: account,
     accountsOptions: accountsOptions,
 
     funds: funds,
-    fund: fund,
+    fundOptions: fundOptions,
 
     nominalAccounts: nominalAccounts,
-    nominalAccount: nominalAccount,
+    nominalAccountOptions: nominalAccountOptions,
 
     parishioners: parishioners,
-    parishioner: parishioner,
+    parishionerOptions: parishionerOptions,
+
+    organisations: organisations,
+    organisationOptions: organisationOptions,
+
+    people: people,
+    personOptions: personOptions,
+
+    addresses: addresses,
+    addressOptions: addressOptions,
 
     subjects: subjects,
-    subject: subject,
+    subjectOptions: subjectOptions,
 
     statementItems: statementItems,
-    statementItem: statementItem,
+    statementItemOptions: statementItemOptions,
+
+    transactions: transactions,
+    transactionOptions: transactionOptions,
 
     // AUTHENTICATION
     login: {
