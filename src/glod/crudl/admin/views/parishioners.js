@@ -243,8 +243,8 @@ const changeView = {
     tabtitle: 'Main',
     actions: {
         get: req => parishioners(crudl.path.id).read(req),
-        delete: req => parishioners.delete(req), // the request contains the id already
-        save: req => parishioners.update(req), // the request contains the id already
+        delete: req => parishioners(crudl.path.id).delete(req),
+        save: req => parishioners(crudl.path.id).update(req),
     },
     validate: function (values) {
         if (!values.surname || values.surname == "") {

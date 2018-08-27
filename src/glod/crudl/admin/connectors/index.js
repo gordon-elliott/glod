@@ -32,15 +32,15 @@ export function createResourceConnector(namePl, fields) {
 
     //-- CREATE QUERY --
     const createQuery = `
-    mutation ($input: ${NameSg}Input!) {
-        add${NameSg} (data: $input) {
+    mutation ($input: ${NameSg}CreateLeafInput!) {
+        ${nameSg}Create (input: $input) {
             errors
             ${nameSg} { ${fields} }
         }
     }
     `
-    const createQueryData = `add${NameSg}.${nameSg}`    // e.g. addUser.user
-    const createQueryError = `add${NameSg}.errors`      // e.g. addUser.errors
+    const createQueryData = `${nameSg}Create.${nameSg}`    // e.g. addUser.user
+    const createQueryError = `${nameSg}Create.errors`      // e.g. addUser.errors
 
     //-- READ QUERY --
     const readQuery = `{ ${nameSg} (id: "%_id") {${fields}} }`
@@ -48,15 +48,15 @@ export function createResourceConnector(namePl, fields) {
 
     //-- UPDATE QUERY --
     const updateQuery = `
-    mutation ($input: ${NameSg}Input!) {
-        change${NameSg} (id: "%_id", data: $input) {
+    mutation ($input: ${NameSg}UpdateLeafInput!) {
+        ${nameSg}Update (input: $input) {
             errors
             ${nameSg} {${fields}}
         }
     }
     `
-    const updateQueryData = `change${NameSg}.${nameSg}`     // e.g. changeUser.user
-    const updateQueryError = `change${NameSg}.errors`       // e.g. changeUser.errors
+    const updateQueryData = `${nameSg}Update.${nameSg}`     // e.g. changeUser.user
+    const updateQueryError = `${nameSg}Update.errors`       // e.g. changeUser.errors
 
     //-- DELETE QUERY --
     const deleteQuery = `mutation { delete${NameSg} (id: "%_id") { deleted } }`

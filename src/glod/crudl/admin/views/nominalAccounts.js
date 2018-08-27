@@ -123,8 +123,8 @@ const changeView = {
     tabtitle: 'Main',
     actions: {
         get: req => nominalAccounts(crudl.path.id).read(req),
-        delete: req => nominalAccounts.delete(req), // the request contains the id already
-        save: req => nominalAccounts.update(req), // the request contains the id already
+        delete: req => nominalAccounts(crudl.path.id).delete(req),
+        save: req => nominalAccounts(crudl.path.id).update(req),
     },
     validate: function (values) {
         if (!values.code || values.code == "") {

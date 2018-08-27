@@ -146,17 +146,17 @@ listView.filters = {
 
 //-------------------------------------------------------------------
 const changeView = {
-    path: 'parishioners/:id',
-    title: 'Parishioners',
+    path: 'people/:id',
+    title: 'People',
     tabtitle: 'Main',
     actions: {
-        get: req => parishioners(crudl.path.id).read(req),
-        delete: req => parishioners.delete(req), // the request contains the id already
-        save: req => parishioners.update(req), // the request contains the id already
+        get: req => people(crudl.path.id).read(req),
+        delete: req => people(crudl.path.id).delete(req),
+        save: req => people(crudl.path.id).update(req),
     },
     validate: function (values) {
-        if (!values.surname || values.surname == "") {
-            return { _error: '`Surname` is required.' }
+        if (!values.familyName || values.familyName == "") {
+            return { _error: '`Family Name` is required.' }
         }
     },
     denormalize: function (data) {
