@@ -26,7 +26,7 @@ def _replace_object_ids_with_references(model_class, input_dict, context, info):
         fieldname = reference.source_field_public_name
         if fieldname in input_dict:
             id_ = input_dict.pop(fieldname)
-            input_dict[fieldname] = graphene.Node.get_node_from_global_id(id_, context, info)
+            input_dict[fieldname] = graphene.Node.get_node_from_global_id(info, id_)
 
 
 def _replace_references_with_ids(model_class, fields):
@@ -66,7 +66,7 @@ def get_create_mutation(model_class, input_fields, leaf_class):
             session = context['request'][SESSION]
             # extract the 'clientMutationId'
             # TODO work out what to do with this?
-            client_id = input_dict.pop('clientMutationId')
+            client_id = input_dict.pop('client_mutation_id')
             # use ids in payload to lookup related entities
             _replace_object_ids_with_references(model_class, input_dict, context, info)
             # construct new instance from input
@@ -117,11 +117,11 @@ def get_update_mutation(model_class, input_fields, leaf_class):
             context = info.context
             # extract the 'clientMutationId'
             # TODO work out what to do with this?
-            client_id = input_dict.pop('clientMutationId')
+            client_id = input_dict.pop('client_mutation_id')
             # get the id
             id_ = input_dict.pop(ID_FIELD_NAME)
             # lookup the entity
-            instance = graphene.Node.get_node_from_global_id(id_, context, info)
+            instance = graphene.Node.get_node_from_global_id(info, id_)
             # use ids in payload to lookup related entities
             _replace_object_ids_with_references(model_class, input_dict, context, info)
             # assign properties from input

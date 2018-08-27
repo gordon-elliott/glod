@@ -110,8 +110,8 @@ const changeView = {
     tabtitle: 'Main',
     actions: {
         get: req => addresses(crudl.path.id).read(req),
-        delete: req => addresses.delete(req), // the request contains the id already
-        save: req => addresses.update(req), // the request contains the id already
+        delete: req => addresses(crudl.path.id).delete(req),
+        save: req => addresses(crudl.path.id).update(req),
     },
     validate: function (values) {
         if (!values.address1 || values.address1 == "") {
