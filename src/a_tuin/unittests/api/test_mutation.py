@@ -144,7 +144,7 @@ class TestMutation(GraphQLSchemaTestCase):
         leaf = UpdateAClassLeaf.mutate_and_get_payload('root_fixture', mock_info, **input_dict)
 
         self.assertEqual('AClassUpdateLeaf', type(leaf).__name__)
-        mock_get_from_id.assert_called_once_with(id_, context, mock_info)
+        mock_get_from_id.assert_called_once_with(mock_info, id_)
 
         instance = leaf.aClass
         self.assertEqual(mock_instance, instance)

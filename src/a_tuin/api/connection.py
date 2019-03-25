@@ -148,7 +148,7 @@ def node_connection_field(model_class, query_class, node_class, description):
 
         instances = list(query.collection())
 
-        context['count'] = offset + len(instances)
+        context['count'] = filtered_count
         context['pageInfo'] = PageInfo(
             start_cursor=offset_to_cursor(query.start_index),
             end_cursor=offset_to_cursor(query.end_index),
