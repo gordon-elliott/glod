@@ -11,6 +11,7 @@ from a_tuin.api import handle_field_errors
 from a_tuin.metadata.reference import references_from
 
 ID_FIELD_NAME = 'id'
+CLIENT_MUTATION_ID = 'clientMutationId'
 
 
 def _replace_object_ids_with_references(model_class, input_dict, context, info):
@@ -66,7 +67,7 @@ def get_create_mutation(model_class, input_fields, leaf_class):
             session = context['request'][SESSION]
             # extract the 'clientMutationId'
             # TODO work out what to do with this?
-            client_id = input_dict.pop('client_mutation_id')
+            client_id = input_dict.pop(CLIENT_MUTATION_ID)
             # use ids in payload to lookup related entities
             _replace_object_ids_with_references(model_class, input_dict, context, info)
             # construct new instance from input
@@ -117,7 +118,7 @@ def get_update_mutation(model_class, input_fields, leaf_class):
             context = info.context
             # extract the 'clientMutationId'
             # TODO work out what to do with this?
-            client_id = input_dict.pop('client_mutation_id')
+            client_id = input_dict.pop(CLIENT_MUTATION_ID)
             # get the id
             id_ = input_dict.pop(ID_FIELD_NAME)
             # lookup the entity

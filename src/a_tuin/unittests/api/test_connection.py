@@ -1,5 +1,3 @@
-from a_tuin.unittests.api.fixtures.models import areferringclass__aclass
-
 __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 """ 
@@ -15,6 +13,7 @@ from a_tuin.api.connection import node_connection_field
 from a_tuin.unittests.api.graphql_schema_test_case import GraphQLSchemaTestCase
 from a_tuin.unittests.api.fixtures.mapping import AClass, AClassQuery, AReferringClass, AReferringClassQuery
 from a_tuin.unittests.api.fixtures.nodes import AClassNode, AReferringClassNode
+
 
 aclass_connection_field = node_connection_field(
     AClass,
@@ -72,7 +71,7 @@ class TestConnection(GraphQLSchemaTestCase):
                         ('refNo', 'Int'),
                         ('name', 'String'),
                         ('isRunning', 'Boolean'),
-                        ('status', 'AClassStatus'),
+                        ('status', 'String'),
                         ('date', 'DateTime'),
                     ),
                     tuple(
@@ -114,7 +113,8 @@ class TestConnection(GraphQLSchemaTestCase):
         def __init__(self, context):
             self.context = context
 
-    def _apply_filter_with_mocks(self, num_instances, offset, limit, filters, order_by):
+    def _apply_filter_with_mocks(self, total_instances, offset, limit, filters, order_by):
+        num_instances = total_instances - len(filters) if filters else 0
         expected_instances = [Mock() for _ in range(num_instances)]
         # mock entities with row numbers
         mock_results = [(instance, index + 1) for index, instance in enumerate(expected_instances)]
@@ -198,9 +198,9 @@ class TestConnection(GraphQLSchemaTestCase):
         )
 
         self._assert_standard_checks(expected_instances, instances, mock_session, mock_query)
-        self.assertEqual(num_instances, context['count'])
+        self.assertEqual(num_instances - 2, context['count'])
         self._assert_filter(filters, mock_query)
-        self._assert_page_info(context['pageInfo'], False, False, 0, num_instances - 1)
+        self._assert_page_info(context['pageInfo'], False, False, 0, num_instances - 3)
 
     def test_resolve_filter_first_page(self):
         num_instances = 9
@@ -213,7 +213,7 @@ class TestConnection(GraphQLSchemaTestCase):
         )
 
         self._assert_standard_checks(expected_instances, instances, mock_session, mock_query)
-        self.assertEqual(limit, context['count'])
+        self.assertEqual(num_instances - 1, context['count'])
         self._assert_filter(filters, mock_query)
         mock_query.limit.assert_called_once_with(limit)
         self._assert_page_info(context['pageInfo'], True, False, 0, limit - 1)
@@ -229,7 +229,7 @@ class TestConnection(GraphQLSchemaTestCase):
         )
 
         self._assert_standard_checks(expected_instances, instances, mock_session, mock_query)
-        self.assertEqual(limit, context['count'])
+        self.assertEqual(num_instances - 2, context['count'])   # check filtered count
         self._assert_offset(offset, mock_query)
         self._assert_filter(filters, mock_query)
         mock_query.limit.assert_called_once_with(limit)
@@ -246,11 +246,11 @@ class TestConnection(GraphQLSchemaTestCase):
         )
 
         self._assert_standard_checks(expected_instances, instances, mock_session, mock_query)
-        self.assertEqual(num_instances - offset, context['count'])
+        self.assertEqual(num_instances - 1, context['count'])   # check filtered count
         self._assert_offset(offset, mock_query)
         self._assert_filter(filters, mock_query)
         mock_query.limit.assert_called_once_with(limit)
-        self._assert_page_info(context['pageInfo'], False, True, offset, num_instances - 1)
+        self._assert_page_info(context['pageInfo'], False, True, offset, num_instances - 2)
 
     def test_sort_one_ascending(self):
         num_instances = 12
