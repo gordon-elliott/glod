@@ -36,7 +36,8 @@ logging:
 
 google_sheets:
   credentials_file:
-  idl_sheet_id:
+  ledger_sheet_id:
+  parish_list_sheet_id:
 
 crudl:
   admin:

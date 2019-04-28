@@ -15,7 +15,7 @@ class TestOrganisation(TestCase):
 
     def test_household(self):
 
-        household = Organisation(1490, 'Jones', OrganisationCategory.Household)
+        household = Organisation('Jones', OrganisationCategory.Household, OrganisationStatus.Active, 33)
         parent0 = Person(household, 'Jones', 'Joe', title='Ms', mobile='9383938', email='joe@jones.ie')
         parent1 = Person(household, 'Grant', 'Bob', title='Ms', mobile='220938', email='bob@grant.le')
         kid0 = Person(household, 'Jones-Grant', 'Alfie')

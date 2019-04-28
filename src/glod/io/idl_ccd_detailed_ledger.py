@@ -18,7 +18,7 @@ from glod.io.account import accounts_from_gsheet
 from glod.io.fund import funds_from_gsheet
 from glod.io.nominal_account import nominal_accounts_from_gsheet
 from glod.io.subject import subjects_from_gsheet
-from glod.io.parishioner import parishioners_from_gsheet
+from glod.io.parish_list.parishioner import parishioners_from_gsheet
 from glod.io.statement_item import statement_item_from_gsheet
 from glod.io.counterparty import counterparty_from_gsheet
 from glod.io.envelope import envelopes_from_gsheet
@@ -38,9 +38,9 @@ def do_idl():
         '../config/{}'.format(sheets_config.credentials_file)
     )
     google_sheets_client = configure_client(credentials_path)
-    spreadsheet = google_sheets_client.open_by_key(sheets_config.idl_sheet_id)
+    spreadsheet = google_sheets_client.open_by_key(sheets_config.ledger_sheet_id)
     extract_from_detailed_ledger = partial(extract_table, spreadsheet)
-    LOG.info('Extracting data from %s (%s)', spreadsheet.title, sheets_config.idl_sheet_id)
+    LOG.info('Extracting data from %s (%s)', spreadsheet.title, sheets_config.ledger_sheet_id)
 
     truncate_all(engine, configuration.db.default_database_name)
 

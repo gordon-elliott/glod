@@ -30,12 +30,11 @@ class Person(ObjectFieldGroupBase):
         ObjectReferenceField('organisation', required=True),
         StringField('family_name', description='Surname of individual. Used to correctly address communications to them.'),
         StringField('given_name', description='First name of individual. Used to correctly address communications to them.'),
-        PersonStatusField('status', required=True, default=PersonStatus.Active, description='Is the person living, deceased or has contact been lost with them.'),
         StringField('title', description='Honorific used in formal communications and when addressing letters.'),
+        PersonStatusField('status', required=True, default=PersonStatus.Active, description='Is the person living, deceased or has contact been lost with them.'),
         StringField('mobile', description='In addition to facilitating voice communications may be used to supplement secure access to personal data.'),
+        StringField('other_phone', description='Supplementary phone number e.g. work direct dial, fax.'),
         StringField('email', description='Primary means of electronic communication and identity for maintaining personal information.'),
-        DateField('date_of_birth', description='Optional information for adults. Used to identify minors.'),
-        BooleanField('dob_is_estimate', description='Flag indicating whether date of birth has been verified by family member.'),
         IntField('parishioner_reference_no', is_mutable=False, description='Internal use. Refers to identity in source data. Required for initial data load.'),
     )
 

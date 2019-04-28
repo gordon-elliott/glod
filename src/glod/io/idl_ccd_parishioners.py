@@ -10,7 +10,8 @@ from a_tuin.db.metadata import truncate_tables, tables_in_dependency_order
 
 from glod.configuration import configuration
 from glod.db.engine import engine
-from glod.db import ParishionerQuery
+from glod.db import ParishionerQuery, HouseholdQuery
+from glod.io.address import reorganise_households
 from glod.io.organisation import reorganise_parishioners
 
 
@@ -28,8 +29,10 @@ def do_idl():
 
     try:
         with session_scope() as session:
+            households = HouseholdQuery(session).collection()
+            address_map = reorganise_households(session, households)
             parishioners = ParishionerQuery(session).collection()
-            reorganise_parishioners(session, parishioners)
+            reorganise_parishioners(session, parishioners, address_map)
     except Exception as ex:
         LOG.exception(ex)
 

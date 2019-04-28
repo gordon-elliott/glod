@@ -53,7 +53,7 @@ def extract_table(spreadsheet, worksheet_title, starting_cell, column_names):
 
     header = []
     header_row, first_column = a1_to_rowcol(starting_cell)
-    for column in range(first_column, worksheet.col_count):
+    for column in range(first_column, worksheet.col_count + first_column):
         contents = worksheet.cell(header_row, column).value
         if contents:
             header.append(contents)
