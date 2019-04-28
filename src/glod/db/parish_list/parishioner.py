@@ -11,6 +11,7 @@ from glod.db.db_column_type_map import DB_COLUMN_TYPE_MAP
 
 
 TableMap(Parishioner, 'parishioner', DB_COLUMN_TYPE_MAP)
+# TODO enforce unique constraint on refernece no
 
 
 class ParishionerInstanceQuery(InstanceQuery):

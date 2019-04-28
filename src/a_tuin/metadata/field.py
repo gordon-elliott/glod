@@ -220,6 +220,7 @@ class DecimalField(Field):
                 LOG.exception('Invalid operation converting {}'.format(value), invop)
                 raise
 
+
 class DateTimeField(Field):
     def __init__(self, name, is_mutable=True, required=False, default=None, description=None, validation=None, use_custom_properties=False, strfmt='%Y-%m-%d %H:%M:%S'):
         super().__init__(name, datetime, is_mutable=is_mutable, required=required, default=default, description=description, validation=validation, use_custom_properties=use_custom_properties)
