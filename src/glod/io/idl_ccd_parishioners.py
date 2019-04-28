@@ -6,7 +6,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 import logging
 
 from a_tuin.db.session_scope import session_scope
-from a_tuin.db.metadata import truncate_tables, tables_in_dependency_order
+from a_tuin.db.metadata import truncate_tables, tables_in_dependency_order, metadata
 
 from glod.configuration import configuration
 from glod.db.engine import engine
@@ -21,10 +21,14 @@ LOG = logging.getLogger(__file__)
 def do_idl():
     LOG.info('Reorganising parishioner sheet')
 
+    metadata.create_all(engine)
     truncate_tables(
         engine,
         configuration.db.default_database_name,
-        tables_in_dependency_order(('organisation', 'person', 'address', 'organisation_address'))
+        tables_in_dependency_order((
+            'organisation', 'person', 'address', 'organisation_address', 'pps', 'counterparty',
+            'transaction', 'transaction_check', 'envelope', 'communication_permission'
+        ))
     )
 
     try:

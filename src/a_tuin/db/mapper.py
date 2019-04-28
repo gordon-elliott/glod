@@ -6,6 +6,7 @@ from sqlalchemy import (
     String,
     Integer,
     Date,
+    DateTime,
     Numeric,
     Boolean
 )
@@ -17,6 +18,7 @@ from a_tuin.metadata import (
     StringField,
     DescriptionField,
     DateField,
+    DateTimeField,
     DecimalField,
 )
 
@@ -31,5 +33,6 @@ DB_COLUMN_TYPE_MAP = {
     StringField: REGULAR_STRING,
     DescriptionField: DESCRIPTION,
     DateField: Date,
+    DateTimeField: DateTime,
     DecimalField: CURRENCY,
 }

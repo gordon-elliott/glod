@@ -62,3 +62,9 @@ from glod.db.transaction_check import (
     TransactionCheckQuery,
     TransactionCheckInstanceQuery,
 )
+from glod.db.communication_permission import (
+    CommunicationPermission,
+    CommunicationPermissionCollection,
+    CommunicationPermissionQuery,
+    CommunicationPermissionInstanceQuery
+)

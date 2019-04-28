@@ -14,12 +14,14 @@ class CommunicationPermission(ObjectFieldGroupBase):
 
     public_interface = (
         ObjectReferenceField('person', required=True),
+        BooleanField('is_main_contact'),
         DateTimeField('gdpr_response'),
         BooleanField('by_email'),
         BooleanField('by_phone'),
         BooleanField('by_post'),
         BooleanField('news'),
         BooleanField('finance'),
+        # TODO connect this to a "tenant" organisation
     )
 
     def __str__(self):
