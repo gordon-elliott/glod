@@ -40,10 +40,10 @@ class Organisation(ObjectFieldGroupBase):
     #
 
     public_interface = (
-        IntField('reference_no', required=True, is_mutable=False),
         StringField('name', required=True),
         OrganisationCategoryField('category', required=True),
         OrganisationStatusField('status', required=True, default=OrganisationStatus.Active),
+        IntField('reference_no', required=True, is_mutable=False, description='Internal use. Refers to identity in source data. Required for initial data load.'),
     )
 
 

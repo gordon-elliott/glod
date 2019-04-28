@@ -11,7 +11,7 @@ from a_tuin.api import (
     get_local_fields
 )
 from glod.api.parishioner_leaf import ParishionerLeaf
-from glod.db.parishioner import Parishioner, ParishionerQuery
+from glod.db.parish_list.parishioner import Parishioner, ParishionerQuery
 
 
 parishioner_fields = get_local_fields(Parishioner)

@@ -11,3 +11,13 @@ Glods later the spell wore off. These days, the people of Al-Yabi are
 renowned for being remarkably short and bad-tempered."
 
 _Terry Pratchett, Witches Abroad_
+
+## Installation
+
+```
+sudo apt-get install build-essential libssl-dev libffi-dev python-dev
+sudo apt-get install python3.7-dev
+virtualenv -p /usr/bin/python3.7 ~/venv/glod3.7
+source ~/venv/glod3.7/bin/activate
+pip install -r requirements.txt 
+```

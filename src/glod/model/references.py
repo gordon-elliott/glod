@@ -18,6 +18,7 @@ from glod.model.address import Address
 from glod.model.organisation import Organisation
 from glod.model.organisation_address import OrganisationAddress
 from glod.model.person import Person
+from glod.model.communication_permission import CommunicationPermission
 
 
 statement_item__account = Reference(StatementItem, 'account', Account)
@@ -34,6 +35,7 @@ transaction_check__statement_item = Reference(TransactionCheck, 'statement_item'
 organisation_address__address = Reference(OrganisationAddress, 'address', Address)
 organisation_address__organisation = Reference(OrganisationAddress, 'organisation', Organisation)
 person__organisation = Reference(Person, 'organisation', Organisation)
+communication_permission__person = Reference(CommunicationPermission, 'person', Person)
 
 
 REFERENCES.extend((
@@ -51,4 +53,5 @@ REFERENCES.extend((
     organisation_address__address,
     organisation_address__organisation,
     person__organisation,
+    communication_permission__person,
 ))

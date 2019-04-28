@@ -6,7 +6,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 import graphene
 
 from a_tuin.api import id_with_session, OBJECT_REFERENCE_MAP, leaf_class_interfaces
-from glod.db.parishioner import Parishioner, ParishionerInstanceQuery
+from glod.db.parish_list.parishioner import Parishioner, ParishionerInstanceQuery
 
 
 class ParishionerLeaf(graphene.ObjectType):

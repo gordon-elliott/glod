@@ -15,7 +15,8 @@ from glod.db.nominal_account import (
 from glod.db.subject import Subject, SubjectCollection, SubjectQuery, SubjectInstanceQuery
 from glod.db.account import Account, AccountCollection, AccountQuery, AccountInstanceQuery, AccountStatus
 from glod.db.address import Address, AddressCollection, AddressQuery, AddressInstanceQuery
-from glod.db.parishioner import Parishioner, ParishionerCollection, ParishionerQuery, ParishionerInstanceQuery
+from glod.db.parish_list.parishioner import Parishioner, ParishionerCollection, ParishionerQuery, ParishionerInstanceQuery
+from glod.db.parish_list.household import Household, HouseholdCollection, HouseholdQuery, HouseholdInstanceQuery
 from glod.db.organisation import (
     Organisation,
     OrganisationCollection,

@@ -83,7 +83,7 @@ def _parse_phone_numbers(parishioner):
     return landline, main_mobile, other_mobile
 
 
-def _reorganise_parishioner(parishioner):
+def _reorganise_parishioner(parishioner, address_map):
     parishioner_status = parishioner.status.lower()
     if parishioner_status == 'foreign list':
         organisation_status = OrganisationStatus.Active
@@ -108,44 +108,16 @@ def _reorganise_parishioner(parishioner):
         parishioner_reference_no=parishioner.reference_no,
     )
     new_entities = [household, main_contact]
-    if parishioner.spouse:
-        if AMPERSAND in parishioner.title:
-            main_title, other_title = parishioner.title.split(AMPERSAND)
-        else:
-            main_title = parishioner.title
-            other_title = ''
-        other_adult = Person(
-            household,
-            parishioner.surname,
-            parishioner.spouse,
-            title=other_title,
-            mobile=other_mobile,
-        )
-        main_contact.title = main_title
-        new_entities.append(other_adult)
-    children = [
-        Person(household, parishioner.surname, name, date_of_birth=dob)
-        for name, dob in _child_data(parishioner)
-    ]
-    new_entities.extend(children)
-    address = Address(
-        address1=parishioner.address1,
-        address2=parishioner.address2,
-        address3=parishioner.address3,
-        county=parishioner.county,
-        countryISO='IE',
-        eircode=parishioner.eircode,
-        telephone=landline,
-    )
+    address = address_map[parishioner.household_ref_no]
     new_entities.append(address)
     oa_link = OrganisationAddress(household, address)
     new_entities.append(oa_link)
     return new_entities
 
 
-def reorganise_parishioners(session, parishioners):
+def reorganise_parishioners(session, parishioners, address_map):
 
     for parishioner in parishioners:
-        new_entities = _reorganise_parishioner(parishioner)
+        new_entities = _reorganise_parishioner(parishioner, address_map)
 
         session.add_all(new_entities)

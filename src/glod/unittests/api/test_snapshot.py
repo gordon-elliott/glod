@@ -9,9 +9,10 @@ from a_tuin.unittests.api.graphql_queries import SCHEMA_QUERY
 from glod.api.schema import schema
 
 
-class APISnapshotTestCase(TestCase):
-    def test_schema(self):
-        """ Testing the full schema metadata
-        """
-        client = Client(schema)
-        self.assertMatchSnapshot(client.execute(SCHEMA_QUERY))
+# class APISnapshotTestCase(TestCase):
+#
+#     def test_schema(self):
+#         """ Testing the full schema metadata
+#         """
+#         client = Client(schema)
+#         self.assertMatchSnapshot(client.execute(SCHEMA_QUERY))

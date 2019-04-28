@@ -5,7 +5,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from enum import IntEnum
 
-from a_tuin.metadata import StringField, ObjectFieldGroupBase, Collection, ObjectReferenceField, IntEnumField
+from a_tuin.metadata import ObjectFieldGroupBase, Collection, ObjectReferenceField, IntEnumField
 
 
 class OrganisationAddressStatus(IntEnum):
