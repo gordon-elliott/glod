@@ -68,6 +68,7 @@ class Transaction(ObjectFieldGroupBase):
         IncomeExpenditureField('income_expenditure'),
         StringField('FY'),
         ObjectReferenceField('fund'),
+        DescriptionField('comments')
     )
 
     def __str__(self):

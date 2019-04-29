@@ -37,7 +37,7 @@ def _reorganise_parishioner(parishioner, address_map, household_map):
             parishioner.surname,
             organisation_category,
             organisation_status,
-            parishioner.reference_no,
+            household_ref_no,
         )
         address = address_map[household_ref_no]
         oa_link = OrganisationAddress(household, address)

@@ -8,7 +8,7 @@ import pkg_resources
 
 from functools import partial
 
-from a_tuin.db.metadata import metadata, truncate_all
+from a_tuin.db.metadata import metadata, truncate_tables, tables_in_dependency_order
 from a_tuin.db.session_scope import session_scope
 from a_tuin.io.google_sheets import configure_client, extract_table
 
@@ -18,7 +18,6 @@ from glod.io.account import accounts_from_gsheet
 from glod.io.fund import funds_from_gsheet
 from glod.io.nominal_account import nominal_accounts_from_gsheet
 from glod.io.subject import subjects_from_gsheet
-from glod.io.parish_list.parishioner import parishioners_from_gsheet
 from glod.io.statement_item import statement_item_from_gsheet
 from glod.io.counterparty import counterparty_from_gsheet
 from glod.io.envelope import envelopes_from_gsheet
@@ -42,7 +41,16 @@ def do_idl():
     extract_from_detailed_ledger = partial(extract_table, spreadsheet)
     LOG.info('Extracting data from %s (%s)', spreadsheet.title, sheets_config.ledger_sheet_id)
 
-    truncate_all(engine, configuration.db.default_database_name)
+    truncate_tables(
+        engine,
+        configuration.db.default_database_name,
+        tables_in_dependency_order((
+            'account', 'fund', 'nominal_account', 'subject',
+            'counterparty', 'envelope', 'pps',
+            'statement_item',
+            'transaction'
+        ))
+    )
 
     try:
         with session_scope() as session:
@@ -50,7 +58,6 @@ def do_idl():
             funds_from_gsheet(session, extract_from_detailed_ledger)
             nominal_accounts_from_gsheet(session, extract_from_detailed_ledger)
             subjects_from_gsheet(session, extract_from_detailed_ledger)
-            parishioners_from_gsheet(session, extract_from_detailed_ledger)
             counterparty_from_gsheet(session, extract_from_detailed_ledger)
             envelopes_from_gsheet(session, extract_from_detailed_ledger)
             ppses_from_gsheet(session, extract_from_detailed_ledger)

@@ -33,21 +33,24 @@ def funds_from_gsheet(session, extract_from_detailed_ledger):
             'name': 'fund',
             'restriction': 'type',
             'is parish fund': 'parish fund',
+            'is realised': 'realised',
             'account': 'bank account id'
         }
     )
     fund_gsheet['restriction'] = StringField('restriction')
     fund_gsheet['parish fund'] = StringField('parish fund')
+    fund_gsheet['realised'] = StringField('realised')
     fund_gsheet['bank account id'] = StringField('bank account id')
     field_casts = {
         'type': conform_fund_restriction,
         'parish fund': conform_yes_no,
+        'realised': conform_yes_no,
         'bank account id': AccountQuery(session).instance_finder('reference_no', int)
     }
     fund_mapping = Mapping(fund_gsheet, Fund.constructor_parameters, field_casts=field_casts)
     funds = extract_from_detailed_ledger(
         'funds',
         'A11',
-        ('fund', 'type', 'parish fund', 'bank account id')
+        ('fund', 'type', 'parish fund', 'realised', 'bank account id')
     )
     load_class(session, funds, fund_mapping, Fund)

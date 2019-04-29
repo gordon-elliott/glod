@@ -5,14 +5,28 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 import re
 
 from decimal import Decimal
+from enum import IntEnum
 
 from a_tuin.metadata import (
     ObjectReferenceField,
     StringField,
     DateField,
     DecimalField,
-    ObjectFieldGroupBase
+    ObjectFieldGroupBase,
+    IntEnumField
 )
+
+
+class StatementItemDesignatedBalance(IntEnum):
+    No = 1
+    Opening = 2
+    Closing = 3
+
+
+class StatementItemDesignatedBalanceField(IntEnumField):
+
+    def __init__(self, name, is_mutable=True, required=False, default=None, description=None, validation=None):
+        super().__init__(name, StatementItemDesignatedBalance, is_mutable, required, default, description, validation)
 
 
 TRUNCATE_ON = (
@@ -36,6 +50,7 @@ class StatementItem(ObjectFieldGroupBase):
         DecimalField('credit', use_custom_properties=True),
         DecimalField('balance'),
         StringField('detail_override'),
+        StatementItemDesignatedBalanceField('designated_balance', default=StatementItemDesignatedBalance.No)
     )
 
     # metaclass takes care of dealing with the args

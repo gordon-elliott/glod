@@ -37,8 +37,7 @@ from glod.db.counterparty import (
     Counterparty,
     CounterpartyCollection,
     CounterpartyQuery,
-    CounterpartyInstanceQuery,
-    StandingOrderDonor
+    CounterpartyInstanceQuery
 )
 from glod.db.envelope import Envelope, EnvelopeCollection, EnvelopeQuery, EnvelopeInstanceQuery
 from glod.db.pps import PPS, PPSCollection, PPSQuery, PPSInstanceQuery
@@ -46,7 +45,8 @@ from glod.db.statement_item import (
     StatementItem,
     StatementItemCollection,
     StatementItemQuery,
-    StatementItemInstanceQuery
+    StatementItemInstanceQuery,
+    StatementItemDesignatedBalance
 )
 from glod.db.transaction import (
     Transaction,
