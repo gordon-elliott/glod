@@ -28,7 +28,7 @@ from glod.model.organisation import (
 )
 from glod.model.person import PersonStatus, PersonStatusField
 from glod.model.organisation_address import OrganisationAddressStatus, OrganisationAddressStatusField
-from glod.model.counterparty import StandingOrderDonorField, StandingOrderDonor
+from glod.model.statement_item import StatementItemDesignatedBalance, StatementItemDesignatedBalanceField
 from glod.model.transaction import (
     PaymentMethod,
     PaymentMethodField,
@@ -51,7 +51,7 @@ DB_COLUMN_TYPE_MAP[OrganisationAddressStatusField] = Enum(OrganisationAddressSta
 
 DB_COLUMN_TYPE_MAP[PersonStatusField] = Enum(PersonStatus)
 
-DB_COLUMN_TYPE_MAP[StandingOrderDonorField] = Enum(StandingOrderDonor)
+DB_COLUMN_TYPE_MAP[StatementItemDesignatedBalanceField] = Enum(StatementItemDesignatedBalance)
 
 DB_COLUMN_TYPE_MAP[PaymentMethodField] = Enum(PaymentMethod)
 DB_COLUMN_TYPE_MAP[IncomeExpenditureField] = Enum(IncomeExpenditure)

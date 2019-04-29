@@ -9,6 +9,7 @@ from a_tuin.metadata import (
     StringField,
     ObjectReferenceField,
     Collection,
+    DescriptionField
 )
 
 
@@ -22,6 +23,8 @@ class PPS(ObjectFieldGroupBase):
     public_interface = (
         ObjectReferenceField('person'),
         StringField('pps'),
+        StringField('name_override'),
+        DescriptionField('notes')
     )
 
 

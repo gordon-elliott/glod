@@ -67,22 +67,27 @@ def transactions_from_gsheet(session, extract_from_detailed_ledger):
     gs_field_income_expenditure = StringField('income_expenditure')
     gs_field_FY = StringField('FY')
     gs_field_fund = StringField('fund')
+    gs_field_comments = StringField('comments')
 
     transaction_gsheet = ListFieldGroup(
         (
             gs_field_reference_no,
+            gs_field_fund,
             gs_field_public_code,
+            UnusedField('bank account'),
+            UnusedField('compositeId'),
             gs_field_year,
             gs_field_month,
             gs_field_day,
+            gs_field_counterparty,
             UnusedField('counterparty name'),
+            UnusedField('household_id'),
             gs_field_payment_method,
             gs_field_description,
             gs_field_amount,
             gs_field_subject,
             gs_field_income_expenditure,
             gs_field_FY,
-            gs_field_fund,
             UnusedField('sign'),
             UnusedField('net'),
             UnusedField('from bank statement'),
@@ -92,9 +97,8 @@ def transactions_from_gsheet(session, extract_from_detailed_ledger):
             UnusedField('monthText'),
             UnusedField('quarter'),
             UnusedField('subjectSummary'),
-            UnusedField('bank account'),
             UnusedField('fund type'),
-            gs_field_counterparty,
+            gs_field_comments,
         )
     )
     field_casts = {
@@ -120,6 +124,7 @@ def transactions_from_gsheet(session, extract_from_detailed_ledger):
             gs_field_income_expenditure,
             gs_field_FY,
             gs_field_fund,
+            gs_field_comments,
         ),
         Transaction.constructor_parameters
     ))
@@ -129,18 +134,22 @@ def transactions_from_gsheet(session, extract_from_detailed_ledger):
         'A1',
         (
             'id',
+            'fund',
             'reference',
+            'bank account',
+            'compositeId',
             'year',
             'month',
             'day',
-            'counterparty name',
-            'payment method',
+            'counterparty_id',
+            'counterparty_name',
+            'household_id',
+            'payment_method',
             'description',
             'amount',
             'subject',
             'income/expenditure',
             'FY',
-            'fund',
             'sign',
             'net',
             'from bank statement',
@@ -150,9 +159,8 @@ def transactions_from_gsheet(session, extract_from_detailed_ledger):
             'monthText',
             'quarter',
             'subjectSummary',
-            'bank account',
             'fund type',
-            'counterparty_id'
+            'comments'
         )
     )
     load_class(session, transactions, transaction_mapping, Transaction)

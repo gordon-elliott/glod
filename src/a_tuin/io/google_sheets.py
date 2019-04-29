@@ -60,7 +60,8 @@ def extract_table(spreadsheet, worksheet_title, starting_cell, column_names):
         else:
             break
 
-    assert tuple(header[:len(column_names)]) == column_names, 'Header does not match desired columns'
+    header_column_names = tuple(header[:len(column_names)])
+    assert header_column_names == column_names, 'Header does not match desired columns. %r != %r' % (header_column_names, column_names)
 
     LOG.info('Reading %r from %s' % (column_names, worksheet_title))
 

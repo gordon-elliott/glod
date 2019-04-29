@@ -5,8 +5,8 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from a_tuin.db import RelationMap, TableMap, PagedQuery, InstanceQuery
 
-from glod.model.counterparty import Counterparty, StandingOrderDonor, CounterpartyCollection
-from glod.model.references import counterparty__person
+from glod.model.counterparty import Counterparty, CounterpartyCollection
+from glod.model.references import counterparty__person, counterparty__organisation
 
 from glod.db.db_column_type_map import DB_COLUMN_TYPE_MAP
 
@@ -18,6 +18,12 @@ TableMap(
     RelationMap(
         counterparty__person,
         'person._id',
+        backref='counterparties',
+        lazy='selectin'
+    ),
+    RelationMap(
+        counterparty__organisation,
+        'organisation._id',
         backref='counterparties',
         lazy='selectin'
     ),

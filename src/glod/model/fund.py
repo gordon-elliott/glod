@@ -32,6 +32,7 @@ class Fund(ObjectFieldGroupBase):
         StringField('name'),
         FundRestrictionField('restriction'),
         BooleanField('is_parish_fund'),
+        BooleanField('is_realised'),
         ObjectReferenceField('account'),
     )
 

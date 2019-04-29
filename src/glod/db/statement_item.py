@@ -5,7 +5,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from a_tuin.db import RelationMap, TableMap, PagedQuery, InstanceQuery
 
-from glod.model.statement_item import StatementItem
+from glod.model.statement_item import StatementItem, StatementItemDesignatedBalance
 from glod.model.statement_item_collection import StatementItemCollection
 from glod.model.references import statement_item__account
 

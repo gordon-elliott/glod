@@ -24,6 +24,7 @@ from glod.model.communication_permission import CommunicationPermission
 statement_item__account = Reference(StatementItem, 'account', Account)
 fund__account = Reference(Fund, 'account', Account)
 counterparty__person = Reference(Counterparty, 'person', Person)
+counterparty__organisation = Reference(Counterparty, 'organisation', Organisation)
 envelope__counterparty = Reference(Envelope, 'counterparty', Counterparty)
 envelope__person = Reference(Envelope, 'person', Person)
 pps__person = Reference(PPS, 'person', Person)
@@ -42,6 +43,7 @@ REFERENCES.extend((
     statement_item__account,
     fund__account,
     counterparty__person,
+    counterparty__organisation,
     envelope__counterparty,
     envelope__person,
     pps__person,
