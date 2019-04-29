@@ -53,8 +53,15 @@ class Field(object):
     def type(self, value):
         self._type = value
 
+    @property
+    def is_computed(self):
+        return False
+
     def derive(self, transformation):
         return transformation(self)
+
+    def get_value(self, field_group, instance):
+        raise KeyError("{} not found in {}".format(self.name, instance))
 
     def type_cast(self, value):
         if value is None or type(value) == self._type:
@@ -124,7 +131,7 @@ class ObjectReferenceField(Field):
         return value
 
 
-class DenormalisedField(Field):
+class TransformedStringField(Field):
 
     def __init__(self, name, extraction, description=None):
         super().__init__(name, str, is_mutable=False, description=description)
@@ -137,13 +144,34 @@ class DenormalisedField(Field):
 class StringField(Field):
 
     def __init__(self, name, is_mutable=True, required=False, default=None, description=None, validation=None, use_custom_properties=False, strfmt=None):
-        super().__init__(name, str, is_mutable=is_mutable, required=required, default=default, description=description, validation=validation, use_custom_properties=use_custom_properties)
+        Field.__init__(self, name, str, is_mutable=is_mutable, required=required, default=default, description=description, validation=validation, use_custom_properties=use_custom_properties)
         self._strfmt = strfmt
 
     def type_cast(self, value):
         if type(value) in (date, datetime) and self._strfmt is not None:
             return value.strftime(self._strfmt)
         return super().type_cast(value)
+
+
+class ComputedField(Field):
+
+    def __init__(self, name, callable, description=None):
+        Field.__init__(self, name, str, is_mutable=False, description=description)
+        self._callable = callable
+
+    @property
+    def is_computed(self):
+        return True
+
+    def get_value(self, field_group, instance):
+        return self._callable(field_group, instance)
+
+
+class ComputedStringField(StringField, ComputedField):
+
+    def __init__(self, name, callable, required=False, default=None, description=None, validation=None, use_custom_properties=False, strfmt=None):
+        StringField.__init__(self, name, False, required, default, description, validation, use_custom_properties, strfmt)
+        ComputedField.__init__(self, name, callable, description)
 
 
 class DescriptionField(StringField):

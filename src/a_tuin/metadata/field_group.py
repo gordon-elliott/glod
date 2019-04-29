@@ -89,7 +89,11 @@ class FieldGroup(object):
         with field_errors_check() as errors:
             for field in self._fields:
                 try:
-                    cast_values.append((field.name, field.type_cast(input_dict[field.name])))
+                    if field.name in input_dict:
+                        raw_value = input_dict[field.name]
+                    else:
+                        raw_value = field.get_value(self, input_dict)
+                    cast_values.append((field.name, field.type_cast(raw_value)))
                 except FieldAssignmentError as fae:
                     errors.append(fae)
                 except DATA_LOAD_ERRORS as ex:
@@ -97,8 +101,14 @@ class FieldGroup(object):
 
         return OrderedDict(cast_values)
 
-    def _get_value(self, instance, field):
+    def _group_get_value(self, instance, field):
         raise NotImplementedError
+
+    def _get_value(self, instance, field):
+        if field.is_computed:
+            return field.get_value(self, instance)
+        else:
+            return self._group_get_value(instance, field)
 
     def _accessor(self, instance, key):
         raise NotImplementedError
@@ -129,7 +139,7 @@ class SequenceFieldGroup(FieldGroup):
     def _accessor(self, instance, key):
         return getitem(instance, key)
 
-    def _get_value(self, instance, field):
+    def _group_get_value(self, instance, field):
         index, _ = self._get_field_index(field)
         return self._accessor(instance, index)
 
@@ -171,9 +181,10 @@ class ListFieldGroup(MutableSequenceFieldGroup, SequenceFieldGroup):
 
     def set_value(self, instance, field, value):
         try:
-            value = field.prepare_value(value)
-            index, _ = self._get_field_index(field)
-            return self._mutator(instance, index, value)
+            if not field.is_computed:
+                value = field.prepare_value(value)
+                index, _ = self._get_field_index(field)
+                return self._mutator(instance, index, value)
         except FieldAssignmentError:
             raise
         except Exception as ex:
@@ -195,7 +206,7 @@ class DictFieldGroup(MutableSequenceFieldGroup):
     def fill_instance_from_dict(self, input_dict):
         return self._container_type(self._type_cast(input_dict))
 
-    def _get_value(self, instance, field):
+    def _group_get_value(self, instance, field):
         return self._accessor(instance, field.name)
 
     def _accessor(self, instance, key):
@@ -203,8 +214,9 @@ class DictFieldGroup(MutableSequenceFieldGroup):
 
     def set_value(self, instance, field, value):
         try:
-            value = field.prepare_value(value)
-            return self._mutator(instance, field.name, value)
+            if not field.is_computed:
+                value = field.prepare_value(value)
+                return self._mutator(instance, field.name, value)
         except FieldAssignmentError:
             raise
         except Exception as ex:
@@ -219,7 +231,7 @@ class ObjectFieldGroup(MutableSequenceFieldGroup):
     def fill_instance_from_dict(self, input_dict):
         return self._container_type(**self._type_cast(input_dict))
 
-    def _get_value(self, instance, field):
+    def _group_get_value(self, instance, field):
         return self._accessor(instance, field.name)
 
     def _accessor(self, instance, key):
@@ -227,8 +239,9 @@ class ObjectFieldGroup(MutableSequenceFieldGroup):
 
     def set_value(self, instance, field, value):
         try:
-            value = field.prepare_value(value)
-            return self._mutator(instance, field.name, value)
+            if not field.is_computed:
+                value = field.prepare_value(value)
+                return self._mutator(instance, field.name, value)
         except FieldAssignmentError:
             raise
         except Exception as ex:
@@ -266,6 +279,13 @@ class PartialDictFieldGroup(DictFieldGroup):
                     key_values.append((fieldname, field.type_cast(value)))
                 except FieldAssignmentError as fae:
                     errors[field] = fae
+
+            for field in self._fields:
+                try:
+                    computed_value = field.get_value(self, input_dict)
+                    key_values.append((field.name, computed_value))
+                except KeyError:
+                    pass
 
         return OrderedDict(key_values)
 

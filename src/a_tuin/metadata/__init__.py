@@ -3,7 +3,8 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 from a_tuin.metadata.field import (
     UnusedField,
     ObjectReferenceField,
-    DenormalisedField,
+    TransformedStringField,
+    ComputedStringField,
     StringField,
     DescriptionField,
     BooleanField,

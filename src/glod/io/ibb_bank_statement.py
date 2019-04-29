@@ -5,11 +5,9 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from csv import reader
 
-from a_tuin.metadata import StringField, UnusedField, DenormalisedField, ListFieldGroup, Mapping
+from a_tuin.metadata import StringField, UnusedField, ComputedStringField, ListFieldGroup, Mapping
 from glod.model.statement_item import StatementItemDesignatedBalance
 from glod.io.statement_item import cast_dmy_date_from_string
-
-# if field does not have a value but does have a default - use that otherwise keyerror
 
 
 class StatementLoader(object):
@@ -24,8 +22,8 @@ class StatementLoader(object):
         csv_field_debit = StringField('debit')
         csv_field_credit = StringField('credit')
         csv_field_balance = StringField('balance')
-        csv_field_detail_override = DenormalisedField('detail_override', lambda v: None)
-        csv_field_designated_balance = DenormalisedField('designated_balance', lambda v: StatementItemDesignatedBalance.No)
+        csv_field_detail_override = ComputedStringField('detail_override', lambda fg, i: None)
+        csv_field_designated_balance = ComputedStringField('designated_balance', lambda fg, i: StatementItemDesignatedBalance.No)
 
         statement_item_csv_fields = ListFieldGroup(
             (

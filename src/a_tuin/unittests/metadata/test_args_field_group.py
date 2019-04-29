@@ -45,6 +45,8 @@ class TestArgsFieldGroup(TestCase):
 
         fixture = Fixture(identity, purpose, named=named, name=name, account_no=account_no)
 
+        self.assertEqual(name, fixture.name)
+
         self.assertEqual(named, fixture._named)
         self.assertEqual(identity, fixture._id)
         self.assertEqual(purpose, fixture._purpose)

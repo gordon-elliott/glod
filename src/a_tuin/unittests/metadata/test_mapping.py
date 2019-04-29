@@ -19,7 +19,8 @@ from a_tuin.unittests.metadata.fixture_field_group import (
     INITIAL_VALUES,
     field_group_combinations,
     inplace_field_group_combinations,
-    DATETIME_FIXTURE
+    DATETIME_FIXTURE,
+    EXPECTED_VALUES
 )
 
 
@@ -67,6 +68,8 @@ class TestMapping(TestCase):
             'amount': Decimal('1000000.01'),
             'timestamp': DATETIME_FIXTURE
         }
+        destination_expected_values = INITIAL_VALUES.copy()
+        destination_expected_values['dunder'] = "__computed__"
 
         for (_, source_field_group, source_constructor), (_, dest_field_group, destination_constructor) in \
                 inplace_field_group_combinations():
@@ -87,8 +90,9 @@ class TestMapping(TestCase):
 
                 mapping.update_in_place(source_instance, destination_instance)
 
+                destination_expected_instance = destination_constructor(destination_expected_values)
                 self.assertEqual(
-                    source_field_group.as_dict(source_instance),
+                    dest_field_group.as_dict(destination_expected_instance),
                     dest_field_group.as_dict(destination_instance)
                 )
 
@@ -132,7 +136,7 @@ class TestMapping(TestCase):
                 destination_instance = mapping.cast_from(source_instance)
 
                 self.assertEqual(
-                    INITIAL_VALUES,
+                    EXPECTED_VALUES,
                     dest_field_group.as_dict(destination_instance)
                 )
 
@@ -160,15 +164,9 @@ class TestMapping(TestCase):
                     self.assertEqual(exception_text, str(fae.original_exception))
 
     def test_valid_type_cast(self):
-        source_fields, destination_fields = tuple(zip(*FIELD_COMBINATIONS))
-        source_fields = tuple(set(source_fields))
-        destination_fields = tuple(set(destination_fields))
-
         for (_, source_field_group, source_constructor), (_, dest_field_group, destination_constructor) in \
-                field_group_combinations(source_fields, destination_fields):
-
+                field_group_combinations():
             with self.subTest('{}, {}'.format(type(source_field_group), type(dest_field_group))):
-
                 source_instance = source_constructor(INITIAL_VALUES)
                 mapping = Mapping(source_field_group, dest_field_group)
                 mapping.cast_from(source_instance)
@@ -183,8 +181,11 @@ class TestMapping(TestCase):
         mapping = Mapping(source_field_group, dest_field_group)
         destination_instance = mapping.cast_from(source_instance)
 
+        expected_instance = EXPECTED_VALUES.copy()
+        del expected_instance['name']
+        del expected_instance['timestamp']
         self.assertEqual(
-            source_instance,
+            expected_instance,
             dest_field_group.as_dict(destination_instance)
         )
 
@@ -201,7 +202,9 @@ class TestMapping(TestCase):
         mapping = Mapping(source_field_group, dest_field_group)
         destination_instance = mapping.cast_from(source_instance)
 
+        expected_instance = source_instance.copy()
+        expected_instance['dunder'] = '__computed__'
         self.assertEqual(
-            source_instance,
+            expected_instance,
             destination_instance
         )

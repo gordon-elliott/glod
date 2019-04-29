@@ -19,17 +19,19 @@ from a_tuin.metadata.field import (
     FloatField,
     DecimalField,
     DateTimeField,
+    ComputedStringField,
     INVALID_FIELD_COMBINATIONS
 )
 
 
 class _ObjectFieldGroupInstanceFixture(object):
-    def __init__(self, name, count, rate, amount, timestamp):
+    def __init__(self, name, count, rate, amount, timestamp, dunder="__computed__"):
         self.name = name
         self.count = count
         self.rate = rate
         self.amount = amount
         self.timestamp = timestamp
+        self.dunder = dunder
 
 
 class _ObjectFieldGroupFixture(ObjectFieldGroup):
@@ -44,7 +46,8 @@ FIELDS = (
     IntField('count'),
     FloatField('rate'),
     DecimalField('amount'),
-    DateTimeField('timestamp')
+    DateTimeField('timestamp'),
+    ComputedStringField('dunder', lambda field_group, instance: "__computed__")
 )
 DATETIME_FIXTURE = datetime.now()
 INITIAL_VALUES = {
@@ -54,6 +57,9 @@ INITIAL_VALUES = {
     'amount': Decimal('3.22'),
     'timestamp': DATETIME_FIXTURE
 }
+EXPECTED_VALUES = INITIAL_VALUES.copy()
+EXPECTED_VALUES['dunder'] = "__computed__"
+
 FIELD_COMBINATIONS = (
     (src, dest)
     for src, dest in product(FIELDS, FIELDS)
@@ -67,7 +73,7 @@ def field_group_fixtures(fields=None, field_group_classes=None):
 
     def dict_as_sequence(d, sequence_type):
         return sequence_type(
-            d[field.name] for field in fields
+            d[field.name] for field in fields if field.name in d
         )
 
     fixture_constructors = {
