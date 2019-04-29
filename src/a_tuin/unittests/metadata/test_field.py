@@ -6,8 +6,17 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 from datetime import datetime, date
 from decimal import Decimal
 from unittest import TestCase
+from unittest.mock import Mock
 
-from a_tuin.metadata.field import StringField, IntField, FloatField, DecimalField, DateTimeField, DateField
+from a_tuin.metadata.field import (
+    StringField,
+    IntField,
+    FloatField,
+    DecimalField,
+    DateTimeField,
+    DateField,
+    ComputedStringField
+)
 
 
 class TestFieldTypeCast(TestCase):
@@ -68,6 +77,35 @@ class TestFieldTypeCast(TestCase):
             '30/03/2017',
             stringfield.type_cast(date(2017, 3, 30))
         )
+
+
+class TestFieldGetValue(TestCase):
+
+    def test_computed(self):
+        field_group = Mock()
+        computed_field = ComputedStringField(
+            'fieldname', lambda field_group, instance: "--{}--".format(instance["attr"])
+        )
+        self.assertEqual(
+            "--Input--",
+            computed_field.get_value(field_group, dict(attr="Input"))
+        )
+
+    def test_others(self):
+        field_group = Mock()
+        simple_field_types = (
+            StringField,
+            IntField,
+            FloatField,
+            DecimalField,
+            DateTimeField,
+            DateField,
+        )
+        for field_type in simple_field_types:
+            with self.assertRaises(KeyError):
+                field = field_type('field_name')
+                field.get_value(field_group, {})
+
 
 class TestFieldRequired(TestCase):
 

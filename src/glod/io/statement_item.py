@@ -6,7 +6,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 from csv import DictWriter, excel_tab
 from datetime import date, datetime
 
-from a_tuin.metadata import StringField, DenormalisedField, DictFieldGroup, Mapping
+from a_tuin.metadata import StringField, TransformedStringField, DictFieldGroup, Mapping
 from a_tuin.io.gsheet_integration import get_gsheet_fields, load_class
 from glod.io.casts import strip_commas
 from glod.db.statement_item import StatementItem, StatementItemDesignatedBalance
@@ -25,7 +25,7 @@ def statement_item_csv(statement_items, csv_file):
         return account._account_no
 
     csv_fields = tuple(
-        DenormalisedField(name, extract_account_no) if name == 'account' else StringField(name)
+        TransformedStringField(name, extract_account_no) if name == 'account' else StringField(name)
         for name in field_names
         if name not in ('detail_override', 'designated_balance')
     )

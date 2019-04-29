@@ -16,8 +16,9 @@ from a_tuin.unittests.metadata.fixture_field_group import (
     field_group_fixtures,
     FIELDS,
     INITIAL_VALUES,
+    EXPECTED_VALUES,
     MUTABLE_FIELD_GROUP_CLASSES,
-    DATETIME_FIXTURE
+    DATETIME_FIXTURE,
 )
 
 
@@ -31,7 +32,8 @@ class TestFieldList(TestCase):
                     ('count', int),
                     ('rate', float),
                     ('amount', Decimal),
-                    ('timestamp', datetime)
+                    ('timestamp', datetime),
+                    ('dunder', str)
                 ],
                 [(field.name, field._type) for field in field_group]
             )
@@ -53,25 +55,28 @@ class TestFieldList(TestCase):
         for _, field_group, constructor in field_group_fixtures():
             new_instance = field_group.fill_instance_from_dict(INITIAL_VALUES)
             self.assertEqual(
-                INITIAL_VALUES,
-                field_group.as_dict(new_instance)
+                EXPECTED_VALUES,
+                field_group.as_dict(new_instance),
+                "fill_instance_from_dict() does not match for {}, {}".format(field_group, constructor)
             )
 
     def test_get_value(self):
 
         for _, field_group, constructor in field_group_fixtures():
+            instance = constructor(INITIAL_VALUES)
             for field in field_group:
                 self.assertEqual(
-                    INITIAL_VALUES[field.name],
-                    field_group._get_value(constructor(INITIAL_VALUES), field)
+                    EXPECTED_VALUES[field.name],
+                    field_group._get_value(instance, field)
                 )
 
     def test_as_dict(self):
 
         for _, field_group, constructor in field_group_fixtures():
             self.assertEqual(
-                INITIAL_VALUES,
-                field_group.as_dict(constructor(INITIAL_VALUES))
+                EXPECTED_VALUES,
+                field_group.as_dict(constructor(INITIAL_VALUES)),
+                "as_dict() does not match for {}, {}".format(field_group, constructor)
             )
 
     def test_set_value(self):
@@ -81,8 +86,11 @@ class TestFieldList(TestCase):
             'count': 9,
             'rate': 4940234.449994,
             'amount': Decimal('1000000.01'),
-            'timestamp': DATETIME_FIXTURE
+            'timestamp': DATETIME_FIXTURE,
+            'dunder': 'standing'
         }
+        expected = updates.copy()
+        expected['dunder'] = "__computed__"
 
         for field_group_class, field_group, constructor in field_group_fixtures(
                 field_group_classes=MUTABLE_FIELD_GROUP_CLASSES
@@ -90,15 +98,16 @@ class TestFieldList(TestCase):
             instance = constructor(INITIAL_VALUES)
             for field in field_group:
                 self.assertEqual(
-                    INITIAL_VALUES[field.name],
+                    EXPECTED_VALUES[field.name],
                     field_group._get_value(instance, field)
                 )
 
                 field_group.set_value(instance, field, updates[field.name])
 
                 self.assertEqual(
-                    updates[field.name],
-                    field_group._get_value(instance, field)
+                    expected[field.name],
+                    field_group._get_value(instance, field),
+                    "set_value() does not match for {}, {}, {}".format(field_group_class, field_group, constructor)
                 )
 
     def test_set_update_none(self):
@@ -129,7 +138,8 @@ class TestFieldList(TestCase):
             instance = field_group.fill_instance_from_dict(INITIAL_VALUES)
             other = field_group.fill_instance_from_dict(INITIAL_VALUES)
             self.assertFalse(
-                field_group.instances_differ(instance, other)
+                field_group.instances_differ(instance, other),
+                "fill_instance_from_dict() does not match for {}, {}".format(field_group, constructor)
             )
 
     def test_instances_differ_differences_exist(self):
@@ -139,7 +149,8 @@ class TestFieldList(TestCase):
             instance = field_group.fill_instance_from_dict(INITIAL_VALUES)
             other = field_group.fill_instance_from_dict(modified)
             self.assertTrue(
-                field_group.instances_differ(instance, other)
+                field_group.instances_differ(instance, other),
+                "fill_instance_from_dict() does not match for {}, {}".format(field_group, constructor)
             )
 
 class TestPartialDictFieldGroup(TestCase):
@@ -152,4 +163,7 @@ class TestPartialDictFieldGroup(TestCase):
 
         filled = field_group.fill_instance_from_dict(modified)
 
-        self.assertEqual(modified, filled)
+        expected = EXPECTED_VALUES.copy()
+        del expected['count']
+        del expected['timestamp']
+        self.assertEqual(expected, filled)
