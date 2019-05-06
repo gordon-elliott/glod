@@ -11,9 +11,7 @@ from sanic.exceptions import RequestTimeout, ServerError
 from sanic_jinja2 import SanicJinja2, PackageLoader
 
 from a_tuin.constants import SESSION, EXCEPTIONS_TRAPPED
-from a_tuin.db.metadata import metadata
 from a_tuin.db.session_scope import Session
-from glod.db.engine import engine
 from glod.configuration import configuration
 from glod.api.schema import schema
 from glod.server.graphql_compatibility_wrapper import GraphQLCompatibilityWrapper
@@ -91,5 +89,4 @@ app.add_route(GraphQLCompatibilityWrapper.as_view(schema=schema, graphiql=True),
 
 
 if __name__ == '__main__':
-    metadata.create_all(engine)
     app.run(host="0.0.0.0", port=8000, debug=True)

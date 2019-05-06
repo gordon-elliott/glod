@@ -9,19 +9,15 @@ from glod.model.person import Person, PersonCollection
 from glod.model.references import person__organisation
 
 from glod.db.db_column_type_map import DB_COLUMN_TYPE_MAP
+from glod.db.constants import SCHEMA_NAME
 
 
-TableMap(
-    Person,
-    'person',
-    DB_COLUMN_TYPE_MAP,
-    RelationMap(
-        person__organisation,
-        'organisation._id',
-        backref='people',
-        lazy='joined'
-    ),
-)
+TableMap(Person, SCHEMA_NAME, 'person', DB_COLUMN_TYPE_MAP, RelationMap(
+    person__organisation,
+    'organisation._id',
+    backref='people',
+    lazy='joined'
+))
 
 
 class PersonInstanceQuery(InstanceQuery):

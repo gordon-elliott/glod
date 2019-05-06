@@ -8,9 +8,10 @@ from a_tuin.db import TableMap, PagedQuery, InstanceQuery
 from glod.model.address import Address, AddressCollection
 
 from glod.db.db_column_type_map import DB_COLUMN_TYPE_MAP
+from glod.db.constants import SCHEMA_NAME
 
 
-TableMap(Address, 'address', DB_COLUMN_TYPE_MAP)
+TableMap(Address, SCHEMA_NAME, 'address', DB_COLUMN_TYPE_MAP)
 
 
 class AddressInstanceQuery(InstanceQuery):

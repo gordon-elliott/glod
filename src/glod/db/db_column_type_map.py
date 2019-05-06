@@ -36,22 +36,22 @@ from glod.model.transaction import (
     IncomeExpenditureField,
 )
 
-DB_COLUMN_TYPE_MAP[AccountStatusField] = Enum(AccountStatus)
+DB_COLUMN_TYPE_MAP[AccountStatusField] = Enum(AccountStatus, inherit_schema=True)
 
-DB_COLUMN_TYPE_MAP[FundRestrictionField] = Enum(FundRestriction)
+DB_COLUMN_TYPE_MAP[FundRestrictionField] = Enum(FundRestriction, inherit_schema=True)
 
-DB_COLUMN_TYPE_MAP[NominalAccountSOFAHeadingField] = Enum(NominalAccountSOFAHeading)
-DB_COLUMN_TYPE_MAP[NominalAccountCategoryField] = Enum(NominalAccountCategory)
-DB_COLUMN_TYPE_MAP[NominalAccountSubCategoryField] = Enum(NominalAccountSubCategory)
+DB_COLUMN_TYPE_MAP[NominalAccountSOFAHeadingField] = Enum(NominalAccountSOFAHeading, inherit_schema=True)
+DB_COLUMN_TYPE_MAP[NominalAccountCategoryField] = Enum(NominalAccountCategory, inherit_schema=True)
+DB_COLUMN_TYPE_MAP[NominalAccountSubCategoryField] = Enum(NominalAccountSubCategory, inherit_schema=True)
 
-DB_COLUMN_TYPE_MAP[OrganisationStatusField] = Enum(OrganisationStatus)
-DB_COLUMN_TYPE_MAP[OrganisationCategoryField] = Enum(OrganisationCategory)
+DB_COLUMN_TYPE_MAP[OrganisationStatusField] = Enum(OrganisationStatus, inherit_schema=True)
+DB_COLUMN_TYPE_MAP[OrganisationCategoryField] = Enum(OrganisationCategory, inherit_schema=True)
 
-DB_COLUMN_TYPE_MAP[OrganisationAddressStatusField] = Enum(OrganisationAddressStatus)
+DB_COLUMN_TYPE_MAP[OrganisationAddressStatusField] = Enum(OrganisationAddressStatus, inherit_schema=True)
 
-DB_COLUMN_TYPE_MAP[PersonStatusField] = Enum(PersonStatus)
+DB_COLUMN_TYPE_MAP[PersonStatusField] = Enum(PersonStatus, inherit_schema=True)
 
-DB_COLUMN_TYPE_MAP[StatementItemDesignatedBalanceField] = Enum(StatementItemDesignatedBalance)
+DB_COLUMN_TYPE_MAP[StatementItemDesignatedBalanceField] = Enum(StatementItemDesignatedBalance, inherit_schema=True)
 
-DB_COLUMN_TYPE_MAP[PaymentMethodField] = Enum(PaymentMethod)
-DB_COLUMN_TYPE_MAP[IncomeExpenditureField] = Enum(IncomeExpenditure)
+DB_COLUMN_TYPE_MAP[PaymentMethodField] = Enum(PaymentMethod, inherit_schema=True)
+DB_COLUMN_TYPE_MAP[IncomeExpenditureField] = Enum(IncomeExpenditure, inherit_schema=True)

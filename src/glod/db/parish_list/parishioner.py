@@ -8,9 +8,10 @@ from a_tuin.db import TableMap, PagedQuery, InstanceQuery
 from glod.model.parish_list.parishioner import Parishioner, ParishionerCollection
 
 from glod.db.db_column_type_map import DB_COLUMN_TYPE_MAP
+from glod.db.constants import SCHEMA_NAME
 
 
-TableMap(Parishioner, 'parishioner', DB_COLUMN_TYPE_MAP)
+TableMap(Parishioner, SCHEMA_NAME, 'parishioner', DB_COLUMN_TYPE_MAP)
 # TODO enforce unique constraint on refernece no
 
 

@@ -9,18 +9,15 @@ from glod.model.communication_permission import CommunicationPermission, Communi
 from glod.model.references import communication_permission__person
 
 from glod.db.db_column_type_map import DB_COLUMN_TYPE_MAP
+from glod.db.constants import SCHEMA_NAME
 
 
-TableMap(
-    CommunicationPermission,
-    'communication_permission',
-    DB_COLUMN_TYPE_MAP,
-    RelationMap(
-        communication_permission__person,
-        'person._id',
-        backref='communication_permissions',
-        lazy='selectin'
-    ),)
+TableMap(CommunicationPermission, SCHEMA_NAME, 'communication_permission', DB_COLUMN_TYPE_MAP, RelationMap(
+    communication_permission__person,
+    'person._id',
+    backref='communication_permissions',
+    lazy='selectin'
+))
 
 
 class CommunicationPermissionInstanceQuery(InstanceQuery):

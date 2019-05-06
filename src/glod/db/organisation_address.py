@@ -9,25 +9,20 @@ from glod.model.organisation_address import OrganisationAddress, OrganisationAdd
 from glod.model.references import organisation_address__address, organisation_address__organisation
 
 from glod.db.db_column_type_map import DB_COLUMN_TYPE_MAP
+from glod.db.constants import SCHEMA_NAME
 
 
-TableMap(
-    OrganisationAddress,
-    'organisation_address',
-    DB_COLUMN_TYPE_MAP,
-    RelationMap(
-        organisation_address__address,
-        'address._id',
-        backref='organisation_addresses',
-        lazy='selectin'
-    ),
-    RelationMap(
-        organisation_address__organisation,
-        'organisation._id',
-        backref='organisation_addresses',
-        lazy='joined'
-    ),
-)
+TableMap(OrganisationAddress, SCHEMA_NAME, 'organisation_address', DB_COLUMN_TYPE_MAP, RelationMap(
+    organisation_address__address,
+    'address._id',
+    backref='organisation_addresses',
+    lazy='selectin'
+), RelationMap(
+    organisation_address__organisation,
+    'organisation._id',
+    backref='organisation_addresses',
+    lazy='joined'
+))
 
 
 class OrganisationAddressInstanceQuery(InstanceQuery):

@@ -18,27 +18,22 @@ from glod.model.transaction_check import TransactionCheck, TransactionCheckColle
 from glod.model.references import transaction_check__transaction, transaction_check__statement_item
 
 from glod.db.db_column_type_map import DB_COLUMN_TYPE_MAP
+from glod.db.constants import SCHEMA_NAME
+
 
 LOG = logging.getLogger(__name__)
 
-
-TableMap(
-    TransactionCheck,
-    'transaction_check',
-    DB_COLUMN_TYPE_MAP,
-    RelationMap(
-        transaction_check__transaction,
-        'transaction._id',
-        backref='checks',
-        lazy='joined'
-    ),
-    RelationMap(
-        transaction_check__statement_item,
-        'statement_item._id',
-        backref='transaction_checks',
-        lazy='joined'
-    ),
-)
+TableMap(TransactionCheck, SCHEMA_NAME, 'transaction_check', DB_COLUMN_TYPE_MAP, RelationMap(
+    transaction_check__transaction,
+    'transaction._id',
+    backref='checks',
+    lazy='joined'
+), RelationMap(
+    transaction_check__statement_item,
+    'statement_item._id',
+    backref='transaction_checks',
+    lazy='joined'
+))
 
 
 class TransactionCheckInstanceQuery(InstanceQuery):

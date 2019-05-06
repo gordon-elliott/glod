@@ -8,9 +8,10 @@ from a_tuin.db import TableMap, PagedQuery, InstanceQuery
 from glod.model.parish_list.household import Household, HouseholdCollection
 
 from glod.db.db_column_type_map import DB_COLUMN_TYPE_MAP
+from glod.db.constants import SCHEMA_NAME
 
 
-TableMap(Household, 'household', DB_COLUMN_TYPE_MAP)
+TableMap(Household, SCHEMA_NAME, 'household', DB_COLUMN_TYPE_MAP)
 # TODO enforce unique constraint on refernece no
 
 
