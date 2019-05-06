@@ -8,9 +8,10 @@ from a_tuin.db import TableMap, PagedQuery, InstanceQuery
 from glod.model.subject import Subject, SubjectCollection
 
 from glod.db.db_column_type_map import DB_COLUMN_TYPE_MAP
+from glod.db.constants import SCHEMA_NAME
 
 
-TableMap(Subject, 'subject', DB_COLUMN_TYPE_MAP)
+TableMap(Subject, SCHEMA_NAME, 'subject', DB_COLUMN_TYPE_MAP)
 
 
 class SubjectInstanceQuery(InstanceQuery):

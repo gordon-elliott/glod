@@ -9,25 +9,20 @@ from glod.model.envelope import Envelope, EnvelopeCollection
 from glod.model.references import envelope__counterparty, envelope__person
 
 from glod.db.db_column_type_map import DB_COLUMN_TYPE_MAP
+from glod.db.constants import SCHEMA_NAME
 
 
-TableMap(
-    Envelope,
-    'envelope',
-    DB_COLUMN_TYPE_MAP,
-    RelationMap(
-        envelope__counterparty,
-        'counterparty._id',
-        backref='envelopes',
-        lazy='joined'
-    ),
-    RelationMap(
-        envelope__person,
-        'person._id',
-        backref='envelopes',
-        lazy='joined'
-    ),
-)
+TableMap(Envelope, SCHEMA_NAME, 'envelope', DB_COLUMN_TYPE_MAP, RelationMap(
+    envelope__counterparty,
+    'counterparty._id',
+    backref='envelopes',
+    lazy='joined'
+), RelationMap(
+    envelope__person,
+    'person._id',
+    backref='envelopes',
+    lazy='joined'
+))
 
 
 class EnvelopeInstanceQuery(InstanceQuery):

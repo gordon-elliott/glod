@@ -21,6 +21,7 @@ from a_tuin.unittests.api.fixtures.models import (
 
 
 DB_COLUMN_TYPE_MAP[AClassStatusField] = Enum(AClassStatus)
+SCHEMA_NAME = 'a_schema'
 
 MOCK_SESSION = Mock()
 
@@ -33,7 +34,7 @@ def with_session(fn):
     return wrapped_with_session
 
 
-TableMap(AClass, 'aclass', DB_COLUMN_TYPE_MAP)
+TableMap(AClass, SCHEMA_NAME, 'aclass', DB_COLUMN_TYPE_MAP)
 
 
 class AClassQuery(PagedQuery):
@@ -41,7 +42,8 @@ class AClassQuery(PagedQuery):
         super().__init__(AClass, AClassCollection, session)
 
 
-TableMap(AReferringClass, 'areferringclass', DB_COLUMN_TYPE_MAP, RelationMap(areferringclass__aclass, 'aclass._id'))
+TableMap(AReferringClass, SCHEMA_NAME, 'areferringclass', DB_COLUMN_TYPE_MAP,
+    RelationMap(areferringclass__aclass, 'aclass._id'))
 
 
 class AReferringClassQuery(PagedQuery):

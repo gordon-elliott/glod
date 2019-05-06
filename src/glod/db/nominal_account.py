@@ -14,9 +14,10 @@ from glod.model.nominal_account  import (
 )
 
 from glod.db.db_column_type_map import DB_COLUMN_TYPE_MAP
+from glod.db.constants import SCHEMA_NAME
 
 
-TableMap(NominalAccount, 'nominal_account', DB_COLUMN_TYPE_MAP)
+TableMap(NominalAccount, SCHEMA_NAME, 'nominal_account', DB_COLUMN_TYPE_MAP)
 
 
 class NominalAccountInstanceQuery(InstanceQuery):

@@ -9,31 +9,25 @@ from glod.model.transaction import Transaction, PaymentMethod, IncomeExpenditure
 from glod.model.references import transaction__counterparty, transaction__subject, transaction__fund
 
 from glod.db.db_column_type_map import DB_COLUMN_TYPE_MAP
+from glod.db.constants import SCHEMA_NAME
 
 
-TableMap(
-    Transaction,
-    'transaction',
-    DB_COLUMN_TYPE_MAP,
-    RelationMap(
-        transaction__counterparty,
-        'counterparty._id',
-        backref='transactions',
-        lazy='selectin'
-    ),
-    RelationMap(
-        transaction__subject,
-        'subject._id',
-        backref='transactions',
-        lazy='joined'
-    ),
-    RelationMap(
-        transaction__fund,
-        'fund._id',
-        backref='transactions',
-        lazy='joined'
-    ),
-)
+TableMap(Transaction, SCHEMA_NAME, 'transaction', DB_COLUMN_TYPE_MAP, RelationMap(
+    transaction__counterparty,
+    'counterparty._id',
+    backref='transactions',
+    lazy='selectin'
+), RelationMap(
+    transaction__subject,
+    'subject._id',
+    backref='transactions',
+    lazy='joined'
+), RelationMap(
+    transaction__fund,
+    'fund._id',
+    backref='transactions',
+    lazy='joined'
+))
 
 
 class TransactionInstanceQuery(InstanceQuery):

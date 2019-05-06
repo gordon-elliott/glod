@@ -9,18 +9,15 @@ from glod.model.fund import Fund, FundRestriction, FundCollection
 from glod.model.references import fund__account
 
 from glod.db.db_column_type_map import DB_COLUMN_TYPE_MAP
+from glod.db.constants import SCHEMA_NAME
 
-TableMap(
-    Fund,
-    'fund',
-    DB_COLUMN_TYPE_MAP,
-    RelationMap(
-        fund__account,
-        'account._id',
-        backref='funds',
-        lazy='joined'
-    ),
-)
+
+TableMap(Fund, SCHEMA_NAME, 'fund', DB_COLUMN_TYPE_MAP, RelationMap(
+    fund__account,
+    'account._id',
+    backref='funds',
+    lazy='joined'
+))
 
 class FundInstanceQuery(InstanceQuery):
     def __init__(self, session):

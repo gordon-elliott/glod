@@ -33,8 +33,9 @@ class RelationMap(object):
             relationship(target, **self._relationship_args)
         )
 
-    def mapper_constraint(self, columns):
+    def mapper_constraint(self, schema, columns):
         del columns[self.object_ref_fieldname]
         columns[self.fk_fieldname] = Column(self.fk_column_name, Integer, key=self.fk_fieldname)
-        fk_constraint = ((self.fk_fieldname,), (self._referenced_pk_fieldname,))
+        qualified_pk_fieldname = "{}.{}".format(schema, self._referenced_pk_fieldname)
+        fk_constraint = ((self.fk_fieldname,), (qualified_pk_fieldname,))
         return fk_constraint

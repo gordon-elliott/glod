@@ -22,8 +22,9 @@ ID_PROPERTY_NAME = 'id'
 
 
 class TableMap(object):
-    def __init__(self, model_class, table_name, db_column_type_map, *relation_maps):
+    def __init__(self, model_class, schema, table_name, db_column_type_map, *relation_maps):
         self._model_class = model_class
+        self._schema = schema
         self._table_name = table_name
         self._db_column_type_map = db_column_type_map
         self._relation_maps = relation_maps
@@ -47,7 +48,7 @@ class TableMap(object):
 
     def _db_constraints_from_model(self, columns):
         fk_constraints = tuple(
-            relation_map.mapper_constraint(columns)
+            relation_map.mapper_constraint(self._schema, columns)
             for relation_map in self._relation_maps
         )
         constraints = {
@@ -66,6 +67,8 @@ class TableMap(object):
         )
         constraints = self._db_constraints_from_model(columns)
 
-        self._table = Table(self._table_name, metadata, *columns.values(), *constraints.values())
+        self._table = Table(
+            self._table_name, metadata, *columns.values(), *constraints.values(), schema=self._schema
+        )
         self._model_class.c = self._table.c
         mapper(self._model_class, self._table, properties=fk_properties)

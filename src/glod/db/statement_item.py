@@ -10,18 +10,15 @@ from glod.model.statement_item_collection import StatementItemCollection
 from glod.model.references import statement_item__account
 
 from glod.db.db_column_type_map import DB_COLUMN_TYPE_MAP
+from glod.db.constants import SCHEMA_NAME
 
-TableMap(
-    StatementItem,
-    'statement_item',
-    DB_COLUMN_TYPE_MAP,
-    RelationMap(
-        statement_item__account,
-        'account._id',
-        backref='statement_items',
-        lazy='joined'
-    ),
-)
+
+TableMap(StatementItem, SCHEMA_NAME, 'statement_item', DB_COLUMN_TYPE_MAP, RelationMap(
+    statement_item__account,
+    'account._id',
+    backref='statement_items',
+    lazy='joined'
+))
 
 class StatementItemInstanceQuery(InstanceQuery):
     def __init__(self, session):

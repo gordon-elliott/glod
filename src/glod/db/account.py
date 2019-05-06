@@ -8,9 +8,10 @@ from a_tuin.db import TableMap, PagedQuery, InstanceQuery
 from glod.model.account import Account, AccountStatus, AccountCollection
 
 from glod.db.db_column_type_map import DB_COLUMN_TYPE_MAP
+from glod.db.constants import SCHEMA_NAME
 
 
-TableMap(Account, 'account', DB_COLUMN_TYPE_MAP)
+TableMap(Account, SCHEMA_NAME, 'account', DB_COLUMN_TYPE_MAP)
 
 
 class AccountInstanceQuery(InstanceQuery):
