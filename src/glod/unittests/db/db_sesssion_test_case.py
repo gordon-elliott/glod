@@ -14,6 +14,8 @@ from sqlalchemy_utils import database_exists, create_database, drop_database
 
 from a_tuin.db.metadata import metadata, truncate_all
 from glod.configuration import configuration
+from glod.db.constants import SCHEMA_NAME as GLOD_SCHEMA
+from a_tuin.unittests.api.fixtures.mapping import SCHEMA_NAME as ATUIN_SCHEMA
 
 
 TEST_DB_NAME = 'test_{}'.format(uuid1().hex)
@@ -34,6 +36,8 @@ class DBSessionTestCase(TestCase):
         if not database_exists(cls.engine.url):
             LOG.info('Creating test DB %s' % TEST_DB_NAME)
             create_database(cls.engine.url)
+            for schema_name in (GLOD_SCHEMA, ATUIN_SCHEMA):
+                cls.engine.execute("create schema {}".format(schema_name))
 
             metadata.create_all(cls.engine)
 
