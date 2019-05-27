@@ -15,7 +15,7 @@ metadata = MetaData()
 
 def tables_in_dependency_order(table_names=None):
     return (
-        table.name
+        table.fullname
         for table in reversed(metadata.sorted_tables)
         if not table_names or table.name in table_names
     )
