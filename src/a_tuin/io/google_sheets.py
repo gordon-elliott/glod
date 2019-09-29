@@ -4,22 +4,25 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """
 import logging
 
-from gspread import authorize
+from gspread import Client
 from gspread.utils import a1_to_rowcol
-from oauth2client.service_account import ServiceAccountCredentials
-
+from google.oauth2 import service_account
+from google.auth.transport.requests import AuthorizedSession
 
 LOG = logging.getLogger(__name__)
 ROWS_PER_FETCH = 500
+SCOPES = [
+    'https://spreadsheets.google.com/feeds',
+    'https://www.googleapis.com/auth/drive'
+]
 
 
 def configure_client(credentials_path):
-    scope = [
-        'https://spreadsheets.google.com/feeds',
-        'https://www.googleapis.com/auth/drive'
-    ]
-    credentials = ServiceAccountCredentials.from_json_keyfile_name(credentials_path, scope)
-    return authorize(credentials)
+    credentials = service_account.Credentials.from_service_account_file(credentials_path)
+    scoped_credentials = credentials.with_scopes(SCOPES)
+    session = AuthorizedSession(scoped_credentials)
+    gsheet_client = Client(scoped_credentials, session)
+    return gsheet_client
 
 
 def is_formula(cell):

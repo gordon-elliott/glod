@@ -1,4 +1,5 @@
 dotmap
+google-auth
 graphene
 # TODO consider augmenting SQLAlchemy binding
 graphene-sqlalchemy

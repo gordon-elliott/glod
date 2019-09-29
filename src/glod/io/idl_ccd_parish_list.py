@@ -23,7 +23,6 @@ LOG = logging.getLogger(__file__)
 
 def do_idl():
     LOG.info('Load parish list from spreadsheet into staging tables')
-    metadata.create_all(engine)
 
     sheets_config = configuration.google_sheets
     credentials_path = pkg_resources.resource_filename(
