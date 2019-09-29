@@ -12,6 +12,6 @@ from dotmap import DotMap
 config_path = pkg_resources.resource_filename(__name__, 'config/dev.yaml')
 
 with open(config_path, 'r') as ymlfile:
-    configuration = DotMap(yaml.load(ymlfile))
+    configuration = DotMap(yaml.full_load(ymlfile))
 
 logging.config.dictConfig(configuration.logging.toDict())

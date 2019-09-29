@@ -1,6 +1,14 @@
 db:
-  default_database_name:
-  connection_template:
+  server:
+  port: 5432
+  admin_user: postgres
+  admin_password:
+  operational_db_name: dev
+  restricted_user: runtime
+  restricted_password:
+  protocol: postgresql+psycopg2
+  admin_connection: "{protocol}://{admin_user}:{admin_password}@{server}:{port}/{operational_db_name}"
+  restricted_connection: "{protocol}://{restricted_user}:{restricted_password}@{server}:{port}/{operational_db_name}"
 
 logging:
   version: 1
@@ -30,8 +38,12 @@ logging:
       level: INFO
       handlers: [console]
       propagate: no
+    graphql.execution.executor:
+      level: DEBUG
+      handlers: [console]
+      propagate: no
   root:
-    level: DEBUG
+    level: INFO
     handlers: [console]
 
 google_sheets:
