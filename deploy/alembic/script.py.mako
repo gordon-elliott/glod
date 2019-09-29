@@ -1,3 +1,5 @@
+__copyright__ = 'Copyright(c) Gordon Elliott 2019'
+
 """${message}
 
 Revision ID: ${up_revision}
