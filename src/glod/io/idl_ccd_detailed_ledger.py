@@ -29,8 +29,6 @@ LOG = logging.getLogger(__file__)
 
 
 def do_idl():
-    metadata.create_all(engine)
-
     sheets_config = configuration.google_sheets
     credentials_path = pkg_resources.resource_filename(
         __name__,
@@ -48,7 +46,7 @@ def do_idl():
             'account', 'fund', 'nominal_account', 'subject',
             'counterparty', 'envelope', 'pps',
             'statement_item',
-            'transaction'
+            'transaction', 'transaction_check'
         ))
     )
 

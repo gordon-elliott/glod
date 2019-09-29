@@ -21,7 +21,6 @@ LOG = logging.getLogger(__file__)
 def do_idl():
     LOG.info('Reorganising parishioner sheet')
 
-    metadata.create_all(engine)
     truncate_tables(
         engine,
         configuration.db.default_database_name,

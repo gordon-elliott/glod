@@ -25,10 +25,6 @@ do $do$ begin
     end if;
 end $do$
 """
-INSTRUCTIONS = f"""Operational database created. 
-Now set sqlalchemy.url = {connection_string} in alembic.ini and run alembic migrations.
-(venv) gordon@dev-workstation:~/projects/glod$ PYTHONPATH=./src alembic upgrade head
-"""
 
 
 def create_operational_database(config_file):
@@ -38,22 +34,32 @@ def create_operational_database(config_file):
 
     try:
         config_dict = configuration.db.toDict()
-        connection_string = configuration.db.admin_connection.format(**config_dict)
+        admin_connection_string = configuration.db.admin_connection.format(**config_dict)
 
-        if database_exists(connection_string):
-            logger.info(f"Database {connection_string} already exists.")
-        else:
-            create_database(connection_string)
-            logger.info(f"Created database {connection_string}.")
-
-        engine = create_engine(connection_string, echo=False)
+        engine = create_engine(admin_connection_string, echo=False)
         Session.configure(bind=engine)
 
         with session_scope() as session:
             session.execute(CREATE_ROLE_SQL.format(**config_dict))
+
+        restricted_connection_string = configuration.db.restricted_connection.format(**config_dict)
+        if database_exists(restricted_connection_string):
+            logger.info(f"Database {restricted_connection_string} already exists.")
+        else:
+            create_database(restricted_connection_string)
+            logger.info(f"Created database {restricted_connection_string}.")
+
+        engine = create_engine(restricted_connection_string, echo=False)
+        Session.configure(bind=engine)
+
+        with session_scope() as session:
             session.execute("grant all privileges on database {operational_db_name} to {restricted_user}".format(**config_dict))
 
-        logger.info(INSTRUCTIONS)
+        instructions = f"""Operational database created. 
+        Now set sqlalchemy.url = {restricted_connection_string} in alembic.ini and run alembic migrations.
+        (venv) gordon@dev-workstation:~/projects/glod$ PYTHONPATH=./src alembic upgrade head
+        """
+        logger.info(instructions)
 
     except Exception as ex:
         logger.exception(ex)

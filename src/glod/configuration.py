@@ -15,3 +15,6 @@ with open(config_path, 'r') as ymlfile:
     configuration = DotMap(yaml.full_load(ymlfile))
 
 logging.config.dictConfig(configuration.logging.toDict())
+
+LOG = logging.getLogger(__file__)
+LOG.info(f"Configuration loaded from {config_path}")
