@@ -10,7 +10,7 @@ from google.oauth2 import service_account
 from google.auth.transport.requests import AuthorizedSession
 
 LOG = logging.getLogger(__name__)
-ROWS_PER_FETCH = 500
+ROWS_PER_FETCH = 1000
 SCOPES = [
     'https://spreadsheets.google.com/feeds',
     'https://www.googleapis.com/auth/drive'
@@ -30,11 +30,10 @@ def is_formula(cell):
     return input_value and input_value[0] == '='
 
 
-def _sheet_rows(worksheet, num_columns, first_row, first_column):
+def _sheet_rows(worksheet, first_row, first_column, last_column_in_range):
     for first_row_in_range in range(first_row, worksheet.row_count, ROWS_PER_FETCH):
         previous_column = 0
         last_row_in_range = min(first_row_in_range + ROWS_PER_FETCH - 1, worksheet.row_count)
-        last_column_in_range = first_column + num_columns - 1
         LOG.info('Fetching worksheet columns %d to %d, rows %d to %d' % (
             first_column, last_column_in_range, first_row_in_range, last_row_in_range
         ))
@@ -54,22 +53,19 @@ def extract_table(spreadsheet, worksheet_title, starting_cell, column_names):
 
     worksheet = spreadsheet.worksheet(worksheet_title)
 
-    header = []
     header_row, first_column = a1_to_rowcol(starting_cell)
-    for column in range(first_column, worksheet.col_count + first_column):
-        contents = worksheet.cell(header_row, column).value
-        if contents:
-            header.append(contents)
-        else:
-            break
+    num_columns = len(column_names)
+    last_column = first_column + num_columns - 1
+    header = tuple(
+        cell.value
+        for cell in worksheet.range(header_row, first_column, header_row, last_column)
+    )
+    assert header == column_names, 'Header does not match desired columns. %r != %r' % (header, column_names)
 
-    header_column_names = tuple(header[:len(column_names)])
-    assert header_column_names == column_names, 'Header does not match desired columns. %r != %r' % (header_column_names, column_names)
-
-    LOG.info('Reading %r from %s' % (column_names, worksheet_title))
+    LOG.info(f'Reading {column_names} from {worksheet_title}')
 
     first_row = header_row + 1
-    for row_cells in _sheet_rows(worksheet, len(column_names), first_row, first_column):
+    for row_cells in _sheet_rows(worksheet, first_row, first_column, last_column):
         values = tuple(cell.value for cell in row_cells)
         if any(values):
             yield values

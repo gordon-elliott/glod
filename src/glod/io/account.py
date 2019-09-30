@@ -25,6 +25,7 @@ ACCOUNT_STATUS_MAP = {
 def conform_value(value, _):
     return ACCOUNT_STATUS_MAP.get(value.lower(), AccountStatus.Active)
 
+
 field_casts = dict(status=conform_value)
 
 account_csv_fields = Account.constructor_parameters.derive(
