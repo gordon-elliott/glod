@@ -28,7 +28,7 @@ def truncate_tables(engine, db_name, tables_in_order):
             ', '.join(tables_in_order)
         ))
         transaction.commit()
-    LOG.info('Cleared tables in test DB %s', db_name)
+    LOG.info(f'Cleared tables in DB {db_name}')
 
 
 def truncate_all(engine, db_name):
