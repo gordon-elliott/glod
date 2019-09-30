@@ -4,13 +4,10 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """
 
 import logging
-import pkg_resources
 
-from functools import partial
-
-from a_tuin.db.metadata import metadata, truncate_tables, tables_in_dependency_order
+from a_tuin.db.metadata import truncate_tables, tables_in_dependency_order
 from a_tuin.db.session_scope import session_scope
-from a_tuin.io.google_sheets import configure_client, extract_table
+from a_tuin.io.google_sheets import extract_from_sheet
 
 from glod.configuration import configuration
 from glod.db.engine import engine
@@ -26,29 +23,18 @@ from glod.io.transaction import transactions_from_gsheet
 
 
 LOG = logging.getLogger(__file__)
+DEPENDENT_TABLES = (
+    'account', 'fund', 'nominal_account', 'subject',
+    'counterparty', 'envelope', 'pps',
+    'statement_item',
+    'transaction', 'transaction_check'
+)
 
 
-def do_idl():
+def load_detailed_ledger():
     sheets_config = configuration.google_sheets
-    credentials_path = pkg_resources.resource_filename(
-        __name__,
-        '../config/{}'.format(sheets_config.credentials_file)
-    )
-    google_sheets_client = configure_client(credentials_path)
-    spreadsheet = google_sheets_client.open_by_key(sheets_config.ledger_sheet_id)
-    extract_from_detailed_ledger = partial(extract_table, spreadsheet)
-    LOG.info('Extracting data from %s (%s)', spreadsheet.title, sheets_config.ledger_sheet_id)
-
-    truncate_tables(
-        engine,
-        configuration.db.default_database_name,
-        tables_in_dependency_order((
-            'account', 'fund', 'nominal_account', 'subject',
-            'counterparty', 'envelope', 'pps',
-            'statement_item',
-            'transaction', 'transaction_check'
-        ))
-    )
+    sheet_id = sheets_config.ledger_sheet_id
+    extract_from_detailed_ledger = extract_from_sheet(__name__, sheets_config, sheet_id)
 
     try:
         with session_scope() as session:
@@ -63,6 +49,16 @@ def do_idl():
             transactions_from_gsheet(session, extract_from_detailed_ledger)
     except Exception as ex:
         LOG.exception(ex)
+
+
+def do_idl():
+    truncate_tables(
+        engine,
+        configuration.db.operational_db_name,
+        tables_in_dependency_order(DEPENDENT_TABLES)
+    )
+
+    load_detailed_ledger()
 
 
 if __name__ == '__main__':

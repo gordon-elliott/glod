@@ -3,7 +3,9 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """ 
 """
 import logging
+import pkg_resources
 
+from functools import partial
 from gspread import Client
 from gspread.utils import a1_to_rowcol
 from google.oauth2 import service_account
@@ -17,17 +19,12 @@ SCOPES = [
 ]
 
 
-def configure_client(credentials_path):
+def _configure_client(credentials_path):
     credentials = service_account.Credentials.from_service_account_file(credentials_path)
     scoped_credentials = credentials.with_scopes(SCOPES)
     session = AuthorizedSession(scoped_credentials)
     gsheet_client = Client(scoped_credentials, session)
     return gsheet_client
-
-
-def is_formula(cell):
-    input_value = cell.input_value
-    return input_value and input_value[0] == '='
 
 
 def _sheet_rows(worksheet, first_row, first_column, last_column_in_range):
@@ -49,7 +46,7 @@ def _sheet_rows(worksheet, first_row, first_column, last_column_in_range):
             yield row
 
 
-def extract_table(spreadsheet, worksheet_title, starting_cell, column_names):
+def _extract_table(spreadsheet, worksheet_title, starting_cell, column_names):
 
     worksheet = spreadsheet.worksheet(worksheet_title)
 
@@ -72,3 +69,14 @@ def extract_table(spreadsheet, worksheet_title, starting_cell, column_names):
         else:
             # stop when we reach a blank line
             break
+
+
+def extract_from_sheet(module_name, sheets_config, sheet_id):
+    credentials_path = pkg_resources.resource_filename(
+        module_name,
+        '../config/{}'.format(sheets_config.credentials_file)
+    )
+    google_sheets_client = _configure_client(credentials_path)
+    spreadsheet = google_sheets_client.open_by_key(sheet_id)
+    LOG.info('Extracting data from %s (%s)', spreadsheet.title, sheet_id)
+    return partial(_extract_table, spreadsheet)

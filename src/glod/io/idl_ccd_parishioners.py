@@ -16,20 +16,13 @@ from glod.io.organisation import reorganise_parishioners
 
 
 LOG = logging.getLogger(__file__)
+DEPENDENT_TABLES = (
+    'organisation', 'person', 'address', 'organisation_address', 'pps', 'counterparty',
+    'transaction', 'transaction_check', 'envelope', 'communication_permission'
+)
 
 
-def do_idl():
-    LOG.info('Reorganising parishioner sheet')
-
-    truncate_tables(
-        engine,
-        configuration.db.default_database_name,
-        tables_in_dependency_order((
-            'organisation', 'person', 'address', 'organisation_address', 'pps', 'counterparty',
-            'transaction', 'transaction_check', 'envelope', 'communication_permission'
-        ))
-    )
-
+def transform_parishioners():
     try:
         with session_scope() as session:
             households = HouseholdQuery(session).collection()
@@ -38,6 +31,16 @@ def do_idl():
             reorganise_parishioners(session, parishioners, address_map)
     except Exception as ex:
         LOG.exception(ex)
+
+
+def do_idl():
+    LOG.info('Reorganising parishioner tables')
+    truncate_tables(
+        engine,
+        configuration.db.operational_db_name,
+        tables_in_dependency_order(DEPENDENT_TABLES)
+    )
+    transform_parishioners()
 
 
 if __name__ == '__main__':
