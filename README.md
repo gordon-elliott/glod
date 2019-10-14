@@ -22,4 +22,16 @@ pip install wheel
 python3.7 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt 
+curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+sudo apt-get install nodejs
+
+cd src/glod/crudl
+npm install
+```
+
+
+## Build
+
+```
+npm run watchify
 ```

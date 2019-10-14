@@ -1,2 +1,4 @@
 .idea
 /venv/
+/src/glod/crudl/node_modules/
+/src/glod/crudl/static/
