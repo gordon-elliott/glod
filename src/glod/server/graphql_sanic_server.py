@@ -9,10 +9,11 @@ from sanic import Sanic
 from sanic.response import text, json
 from sanic.exceptions import RequestTimeout, ServerError
 from sanic_jinja2 import SanicJinja2, PackageLoader
+from graphql.execution.executors.asyncio import AsyncioExecutor
 
 from a_tuin.constants import SESSION, EXCEPTIONS_TRAPPED
-from a_tuin.db.session_scope import Session
 from glod.configuration import configuration
+from glod.db.engine import Session      # it is important to import from glod.db.engine in order that the session is bound to a db engine
 from glod.api.schema import schema
 from glod.server.graphql_compatibility_wrapper import GraphQLCompatibilityWrapper
 
@@ -55,9 +56,23 @@ def timeout(request, exception):
     return text('RequestTimeout from error_handler.', 408)
 
 
-static_path = pkg_resources.resource_filename(__name__, '../crudl/static')
-app.static('/static', static_path, use_modified_since=configuration.use_modified_since)
-app.static('/favicon.ico', '{}/favicon.ico'.format(static_path), use_modified_since=configuration.use_modified_since)
+@app.listener('before_server_start')
+def init_graphql(app, loop):
+    app.add_route(
+        GraphQLCompatibilityWrapper.as_view(
+            schema=schema, executor=AsyncioExecutor(loop=loop), graphiql=False
+        ),
+        '/graphql'
+    )
+    app.add_route(
+        GraphQLCompatibilityWrapper.as_view(
+            schema=schema, executor=AsyncioExecutor(loop=loop), graphiql=True
+        ),
+        '/graphiql'
+    )
+    static_path = pkg_resources.resource_filename(__name__, '../crudl/static')
+    app.static('/static', static_path, use_modified_since=configuration.use_modified_since)
+    app.static('/favicon.ico', '{}/favicon.ico'.format(static_path), use_modified_since=configuration.use_modified_since)
 
 
 # @app.route("/")
@@ -82,10 +97,6 @@ async def admin(request):
 async def login(request):
     LOG.debug('login %r' % request.json)
     return json({'token': '--tkn-', 'user': 'Gordon Elliott', 'username': 'ge'})
-
-
-app.add_route(GraphQLCompatibilityWrapper.as_view(schema=schema, graphiql=False), '/graphql')
-app.add_route(GraphQLCompatibilityWrapper.as_view(schema=schema, graphiql=True), '/graphiql')
 
 
 if __name__ == '__main__':

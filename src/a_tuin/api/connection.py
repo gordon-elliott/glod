@@ -4,6 +4,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """
 
 import graphene
+import logging
 
 from collections import OrderedDict
 from graphene import Connection, ConnectionField, Node, PageInfo
@@ -16,6 +17,9 @@ from graphql_relay.connection import arrayconnection
 from a_tuin.metadata import Mapping, PartialDictFieldGroup, make_boolean, snake_to_camel_case
 from a_tuin.metadata.reference import references_from
 from a_tuin.api import with_session, get_filter_fields, OBJECT_REFERENCE_MAP
+
+
+LOG = logging.getLogger(__name__)
 
 
 def connection_from_list_slice_patch(list_slice, args=None, connection_type=None,

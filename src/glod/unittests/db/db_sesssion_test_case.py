@@ -29,8 +29,7 @@ class DBSessionTestCase(TestCase):
     def setUpClass(cls):
         super().setUpClass()
 
-        connection_string = configuration.db.connection_template.format(TEST_DB_NAME)
-
+        connection_string = cls._test_db_connection_string(TEST_DB_NAME)
         cls.engine = create_engine(connection_string, echo=False)   # to avoid duplicate log messages
 
         if not database_exists(cls.engine.url):
@@ -47,12 +46,18 @@ class DBSessionTestCase(TestCase):
 
                     for old_db_name in db_name_file:
                         LOG.info('Dropping old test database {}'.format(old_db_name))
-                        drop_database(
-                            configuration.db.connection_template.format(old_db_name)
-                        )
+                        connection_string = cls._test_db_connection_string(old_db_name)
+                        drop_database(connection_string)
 
             with open(DB_NAME_FILE, 'w') as db_name_file:
                 db_name_file.write('{}\n'.format(TEST_DB_NAME))
+
+    @classmethod
+    def _test_db_connection_string(cls, db_name):
+        db_configuration_map = configuration.db.toDict()
+        db_configuration_map['operational_db_name'] = db_name
+        connection_string = configuration.db.restricted_connection.format(**db_configuration_map)
+        return connection_string
 
     @classmethod
     def tearDownClass(cls):
