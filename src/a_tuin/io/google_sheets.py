@@ -3,7 +3,6 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """ 
 """
 import logging
-import pkg_resources
 
 from functools import partial
 from gspread import Client
@@ -11,12 +10,10 @@ from gspread.utils import a1_to_rowcol
 from google.oauth2 import service_account
 from google.auth.transport.requests import AuthorizedSession
 
+from a_tuin.io.google_drive import SCOPES, get_credentials_path
+
 LOG = logging.getLogger(__name__)
 ROWS_PER_FETCH = 1000
-SCOPES = [
-    'https://spreadsheets.google.com/feeds',
-    'https://www.googleapis.com/auth/drive'
-]
 
 
 def _configure_client(credentials_path):
@@ -72,10 +69,7 @@ def _extract_table(spreadsheet, worksheet_title, starting_cell, column_names):
 
 
 def extract_from_sheet(module_name, sheets_config, sheet_id):
-    credentials_path = pkg_resources.resource_filename(
-        module_name,
-        '../config/{}'.format(sheets_config.credentials_file)
-    )
+    credentials_path = get_credentials_path(module_name, sheets_config)
     google_sheets_client = _configure_client(credentials_path)
     spreadsheet = google_sheets_client.open_by_key(sheet_id)
     LOG.info('Extracting data from %s (%s)', spreadsheet.title, sheet_id)

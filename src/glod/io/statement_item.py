@@ -1,12 +1,17 @@
-__copyright__ = 'Copyright(c) Gordon Elliott 2017'
+__copyright__ = 'Copyright(c) Gordon Elliott 2020'
 
 """ 
 """
 
+import pkg_resources
+
+from a_tuin.io.google_sheets import _configure_client
+from glod.configuration import configuration
+
 from csv import DictWriter, excel_tab
 from datetime import date, datetime
 
-from a_tuin.metadata import StringField, TransformedStringField, DictFieldGroup, Mapping
+from a_tuin.metadata import StringField, TransformedStringField, DictFieldGroup, Mapping, TupleFieldGroup
 from a_tuin.io.gsheet_integration import get_gsheet_fields, load_class
 from glod.io.casts import strip_commas
 from glod.db.statement_item import StatementItem, StatementItemDesignatedBalance
@@ -14,8 +19,7 @@ from glod.db.statement_item import StatementItem, StatementItemDesignatedBalance
 from glod.db.account import AccountQuery
 
 
-def statement_item_csv(statement_items, csv_file):
-
+def _statement_item_export_fields():
     field_names = tuple(
         field.name
         for field in StatementItem.constructor_parameters
@@ -30,6 +34,12 @@ def statement_item_csv(statement_items, csv_file):
         if name not in ('detail_override', 'designated_balance')
     )
     csv_fields[1]._strfmt = '%d/%m/%Y'
+    return csv_fields
+
+
+def statement_item_csv(statement_items, csv_file):
+
+    csv_fields = _statement_item_export_fields()
     csv_field_names = [field.name for field in csv_fields]
     csv_field_group = DictFieldGroup(csv_fields)
 
@@ -84,3 +94,37 @@ def statement_item_from_gsheet(session, extract_from_detailed_ledger):
         ('account', 'date', 'details', 'currency', 'debit', 'credit', 'balance', 'detail override', 'designated balance')
     )
     load_class(session, statement_items, statement_item_mapping, StatementItem)
+
+# TODO: refactor
+def statement_item_to_gsheet(statement_items, gsheet_name):
+    module_name = __name__
+    sheets_config = configuration.google_sheets
+    credentials_path = pkg_resources.resource_filename(
+        module_name,
+        '../config/{}'.format(sheets_config.credentials_file)
+    )
+    google_sheets_client = _configure_client(credentials_path)
+    si_sheet = google_sheets_client.create(gsheet_name)
+    si_sheet.share('gordon.e.elliott@gmail.com', perm_type='user', role='writer')
+    worksheet = si_sheet.sheet1
+    worksheet.update_title("statement items")
+    worksheet.freeze(rows=1)
+    worksheet.format("A", {'numberFormat': {'type': 'TEXT'}})   # TODO: perhaps strip leading 0
+    worksheet.format("B", {'numberFormat': {'type': 'DATE', 'pattern': 'dd/mm/yyy'}, 'horizontalAlignment': 'RIGHT'})
+    worksheet.format("C:D", {'numberFormat': {'type': 'TEXT'}})
+    worksheet.format("E:G", {'numberFormat': {'type': 'NUMBER', 'pattern': '#,###.00'}, 'horizontalAlignment': 'RIGHT'})
+
+    gsheet_fields = _statement_item_export_fields()
+    gsheet_field_names = [field.name for field in gsheet_fields]
+    gsheet_field_group = TupleFieldGroup(gsheet_fields)
+
+    internal_to_gsheet = Mapping(StatementItem.internal, gsheet_field_group)
+
+    data = [
+        internal_to_gsheet.cast_from(statement_item)
+        for statement_item in statement_items
+    ]
+    worksheet.append_rows(
+        [gsheet_field_names] + data
+    )
+    # TODO: Use insert_data_option to insert rows
