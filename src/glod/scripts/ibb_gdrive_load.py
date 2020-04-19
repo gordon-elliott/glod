@@ -1,6 +1,5 @@
 __copyright__ = 'Copyright(c) Gordon Elliott 2020'
 
-from a_tuin.in_out.google_drive import statement_item_export_files
 
 """ Load statement from AIB iBB service via Google Drive
 """
@@ -12,14 +11,15 @@ import sys
 
 from glod.configuration import configuration
 from glod.db.statement_item import StatementItem, StatementItemCollection
-from glod.in_out.ibb_bank_statement import StatementLoader, output_statement_items, get_account_collection
-
+from glod.in_out.statement_item import statement_item_export_files, output_statement_items
+from glod.in_out.account import get_account_collection
+from glod.in_out.ibb_bank_statement import StatementLoader
 
 LOG = logging.getLogger(__file__)
 logging.basicConfig(level=logging.DEBUG)
 
 
-def do_load(account_filename, export_folder, export_file, output_gsheet, num_months):
+def do_load(account_filename, export_folder, export_file, output_spreadsheet, output_worksheet, num_months):
     try:
         with open(account_filename) as account_file:
             account_collection = get_account_collection(account_file)
@@ -37,7 +37,7 @@ def do_load(account_filename, export_folder, export_file, output_gsheet, num_mon
             .only_most_common_months(num_months) \
             .remove_net_zero_items()
 
-        output_statement_items(None, output_gsheet, statement_items)
+        output_statement_items(None, output_spreadsheet, output_worksheet, statement_items)
 
     except Exception as ex:
         LOG.exception(ex)
@@ -52,9 +52,13 @@ if __name__ == '__main__':
     )
     parser.add_argument('export_folder', type=str)
     parser.add_argument('export_file', type=str)
-    parser.add_argument('out_gsheet', type=str)
+    parser.add_argument('out_spreadsheet', type=str)
+    parser.add_argument('--out_worksheet', type=str, required=False)
     parser.add_argument('--account_file', type=str, required=False)
     parser.add_argument('--num_months', type=int, required=False, default=1)
     args = parser.parse_args()
 
-    sys.exit(do_load(args.account_file, args.export_folder, args.export_file, args.out_gsheet, args.num_months))
+    sys.exit(do_load(
+        args.account_file, args.export_folder, args.export_file,
+        args.out_spreadsheet, args.out_worksheet, args.num_months
+    ))

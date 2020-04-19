@@ -16,7 +16,7 @@ LOG = logging.getLogger(__name__)
 ROWS_PER_FETCH = 1000
 
 
-def _configure_client(credentials_path):
+def configure_client(credentials_path):
     credentials = service_account.Credentials.from_service_account_file(credentials_path)
     scoped_credentials = credentials.with_scopes(SCOPES)
     session = AuthorizedSession(scoped_credentials)
@@ -70,7 +70,7 @@ def _extract_table(spreadsheet, worksheet_title, starting_cell, column_names):
 
 def extract_from_sheet(module_name, sheets_config, sheet_id):
     credentials_path = get_credentials_path(module_name, sheets_config)
-    google_sheets_client = _configure_client(credentials_path)
+    google_sheets_client = configure_client(credentials_path)
     spreadsheet = google_sheets_client.open_by_key(sheet_id)
     LOG.info('Extracting data from %s (%s)', spreadsheet.title, sheet_id)
     return partial(_extract_table, spreadsheet)

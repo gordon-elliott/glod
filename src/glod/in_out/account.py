@@ -5,6 +5,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from csv import DictReader
 
+from a_tuin.db.session_scope import session_scope
 from a_tuin.in_out.gsheet_integration import get_gsheet_fields, load_class
 from a_tuin.metadata import (
     Mapping,
@@ -14,6 +15,8 @@ from a_tuin.metadata import (
 )
 
 from glod.db.account import Account, AccountStatus, AccountCollection
+from glod.db import AccountQuery
+
 
 ACCOUNT_STATUS_MAP = {
     'in use': AccountStatus.Active,
@@ -58,3 +61,12 @@ def accounts_from_gsheet(session, extract_from_detailed_ledger):
         ('id', 'purpose', 'status', 'name', 'institution', 'sort code', 'account no', 'BIC', 'IBAN')
     )
     load_class(session, accounts, account_mapping, Account)
+
+
+def get_account_collection(account_file):
+    if account_file:
+        account_collection = accounts_from_csv(account_file)
+    else:
+        with session_scope() as session:
+            account_collection = AccountQuery(session).collection()
+    return account_collection
