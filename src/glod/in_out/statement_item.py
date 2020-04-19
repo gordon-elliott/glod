@@ -5,15 +5,15 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2020'
 
 import pkg_resources
 
-from a_tuin.io.google_sheets import _configure_client
+from a_tuin.in_out.google_sheets import _configure_client
 from glod.configuration import configuration
 
 from csv import DictWriter, excel_tab
 from datetime import date, datetime
 
 from a_tuin.metadata import StringField, TransformedStringField, DictFieldGroup, Mapping, TupleFieldGroup
-from a_tuin.io.gsheet_integration import get_gsheet_fields, load_class
-from glod.io.casts import strip_commas
+from a_tuin.in_out.gsheet_integration import get_gsheet_fields, load_class
+from glod.in_out.casts import strip_commas
 from glod.db.statement_item import StatementItem, StatementItemDesignatedBalance
 
 from glod.db.account import AccountQuery

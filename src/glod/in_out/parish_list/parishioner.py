@@ -3,7 +3,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """ 
 """
 
-from a_tuin.io.gsheet_integration import model_instances
+from a_tuin.in_out.gsheet_integration import model_instances
 from a_tuin.metadata import Mapping, UnusedField, IntField, StringField, ListFieldGroup
 
 from glod.db.parish_list.parishioner import Parishioner

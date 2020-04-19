@@ -1,6 +1,6 @@
 __copyright__ = 'Copyright(c) Gordon Elliott 2020'
 
-from a_tuin.io.google_drive import statement_item_export_files
+from a_tuin.in_out.google_drive import statement_item_export_files
 
 """ Load statement from AIB iBB service via Google Drive
 """
@@ -12,7 +12,7 @@ import sys
 
 from glod.configuration import configuration
 from glod.db.statement_item import StatementItem, StatementItemCollection
-from glod.io.ibb_bank_statement import StatementLoader, output_statement_items, get_account_collection
+from glod.in_out.ibb_bank_statement import StatementLoader, output_statement_items, get_account_collection
 
 
 LOG = logging.getLogger(__file__)

@@ -3,7 +3,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """ 
 """
 
-from a_tuin.io.gsheet_integration import get_gsheet_fields, load_class
+from a_tuin.in_out.gsheet_integration import get_gsheet_fields, load_class
 from a_tuin.metadata import StringField, Mapping
 
 from glod.db.fund import FundRestriction, Fund

@@ -6,7 +6,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 from io import StringIO
 from unittest import TestCase
 
-from glod.io.account import accounts_from_csv
+from glod.in_out.account import accounts_from_csv
 
 
 ACCOUNT_CSV = """id,purpose,status,name,institution,sort code,account no,BIC,IBAN,display name,units

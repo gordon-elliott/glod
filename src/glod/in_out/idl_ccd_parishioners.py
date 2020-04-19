@@ -11,8 +11,8 @@ from a_tuin.db.metadata import truncate_tables, tables_in_dependency_order, meta
 from glod.configuration import configuration
 from glod.db.engine import engine
 from glod.db import ParishionerQuery, HouseholdQuery
-from glod.io.address import reorganise_households
-from glod.io.organisation import reorganise_parishioners
+from glod.in_out.address import reorganise_households
+from glod.in_out.organisation import reorganise_parishioners
 
 
 LOG = logging.getLogger(__file__)
