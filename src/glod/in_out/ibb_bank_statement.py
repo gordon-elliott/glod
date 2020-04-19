@@ -6,37 +6,11 @@ import logging
 
 from csv import reader
 
-from a_tuin.db.session_scope import session_scope
 from a_tuin.metadata import StringField, UnusedField, ComputedStringField, ListFieldGroup, Mapping
-from glod.db import AccountQuery
-from glod.in_out.account import accounts_from_csv
-from glod.in_out.statement_item import cast_dmy_date_from_string, statement_item_to_gsheet, statement_item_csv
 from glod.model.statement_item import StatementItemDesignatedBalance
-
+from glod.in_out.statement_item import cast_dmy_date_from_string
 
 LOG = logging.getLogger(__name__)
-
-
-def get_account_collection(account_file):
-    if account_file:
-        account_collection = accounts_from_csv(account_file)
-    else:
-        with session_scope() as session:
-            account_collection = AccountQuery(session).collection()
-    return account_collection
-
-
-def output_statement_items(output_csv, output_gsheet, statement_items):
-    if output_gsheet:
-        LOG.info(f"Writing to gsheet {output_gsheet}")
-        statement_item_to_gsheet(statement_items, output_gsheet)
-    elif output_csv:
-        with output_csv:
-            statement_item_csv(statement_items, output_csv)
-    else:
-        with session_scope() as session:
-            for statement_item in statement_items:
-                session.add(statement_item)
 
 
 class StatementLoader(object):
