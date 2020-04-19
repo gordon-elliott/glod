@@ -10,9 +10,9 @@ from a_tuin.db.metadata import truncate_tables, tables_in_dependency_order
 
 from glod.configuration import configuration
 from glod.db.engine import engine
-from glod.io.idl_ccd_parish_list import load_parish_list, DEPENDENT_TABLES as PARISH_LIST_TABLES
-from glod.io.idl_ccd_parishioners import transform_parishioners, DEPENDENT_TABLES as PARISHIONERS_TABLES
-from glod.io.idl_ccd_detailed_ledger import load_detailed_ledger, DEPENDENT_TABLES as LEDGER_TABLES
+from glod.in_out.idl_ccd_parish_list import load_parish_list, DEPENDENT_TABLES as PARISH_LIST_TABLES
+from glod.in_out.idl_ccd_parishioners import transform_parishioners, DEPENDENT_TABLES as PARISHIONERS_TABLES
+from glod.in_out.idl_ccd_detailed_ledger import load_detailed_ledger, DEPENDENT_TABLES as LEDGER_TABLES
 
 
 LOG = logging.getLogger(__file__)

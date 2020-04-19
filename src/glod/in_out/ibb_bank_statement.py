@@ -9,8 +9,8 @@ from csv import reader
 from a_tuin.db.session_scope import session_scope
 from a_tuin.metadata import StringField, UnusedField, ComputedStringField, ListFieldGroup, Mapping
 from glod.db import AccountQuery
-from glod.io.account import accounts_from_csv
-from glod.io.statement_item import cast_dmy_date_from_string, statement_item_to_gsheet, statement_item_csv
+from glod.in_out.account import accounts_from_csv
+from glod.in_out.statement_item import cast_dmy_date_from_string, statement_item_to_gsheet, statement_item_csv
 from glod.model.statement_item import StatementItemDesignatedBalance
 
 

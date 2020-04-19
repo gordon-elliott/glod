@@ -11,7 +11,7 @@ from unittest import TestCase
 
 from glod.model.statement_item import StatementItem
 from glod.model.account import Account
-from glod.io.statement_item import statement_item_csv
+from glod.in_out.statement_item import statement_item_csv
 
 
 class TestStatementCSV(TestCase):

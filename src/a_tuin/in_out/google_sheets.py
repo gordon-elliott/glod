@@ -10,7 +10,7 @@ from gspread.utils import a1_to_rowcol
 from google.oauth2 import service_account
 from google.auth.transport.requests import AuthorizedSession
 
-from a_tuin.io.google_drive import SCOPES, get_credentials_path
+from a_tuin.in_out.google_drive import SCOPES, get_credentials_path
 
 LOG = logging.getLogger(__name__)
 ROWS_PER_FETCH = 1000

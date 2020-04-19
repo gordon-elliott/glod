@@ -8,7 +8,7 @@ import argparse
 import logging
 import sys
 
-from glod.io.ibb_bank_statement import StatementLoader, output_statement_items, get_account_collection
+from glod.in_out.ibb_bank_statement import StatementLoader, output_statement_items, get_account_collection
 from glod.db.statement_item import StatementItem, StatementItemCollection
 
 

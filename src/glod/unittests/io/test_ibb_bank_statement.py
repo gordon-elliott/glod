@@ -7,8 +7,8 @@ from decimal import Decimal
 from io import StringIO
 from unittest import TestCase
 
-from glod.io.ibb_bank_statement import StatementLoader
-from glod.io.account import accounts_from_csv
+from glod.in_out.ibb_bank_statement import StatementLoader
+from glod.in_out.account import accounts_from_csv
 from glod.unittests.io.test_account import ACCOUNT_CSV
 from glod.model.statement_item import StatementItem
 

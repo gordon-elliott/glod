@@ -3,7 +3,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """ 
 """
 
-from a_tuin.io.gsheet_integration import load_class
+from a_tuin.in_out.gsheet_integration import load_class
 from a_tuin.metadata import StringField, Mapping, UnusedField, ListFieldGroup
 
 from glod.db.transaction import PaymentMethod, IncomeExpenditure, Transaction
@@ -11,7 +11,7 @@ from glod.db.counterparty import CounterpartyQuery
 from glod.db.subject import SubjectQuery
 from glod.db.fund import FundQuery
 
-from glod.io.casts import strip_commas
+from glod.in_out.casts import strip_commas
 
 
 PAYMENT_METHOD_MAP = {
