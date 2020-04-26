@@ -60,7 +60,23 @@ class TestStatementItemCollection(TestCase):
         collection = StatementItemCollection(items)
         deduped = list(collection.remove_net_zero_items())
 
-        self.assertEqual(4, len(deduped))
+        self.assertEqual(3, len(deduped))
+
+    def test_remove_net_zero_items_where_no_transactions_leave_balance_update(self):
+        other_account = Account(4004, name='savings', account_no='9388729')
+        opening_balance = Decimal('1000.00')
+        items = (
+            # earliest
+            StatementItem(self.account, self.today,                    'details', 'EUR', None, Decimal('1.01'), opening_balance),
+            StatementItem(self.account, self.today + self.one_day * 1, 'details', 'EUR', Decimal('1.01'), None, Decimal('1001.01')),
+            StatementItem(self.account, self.today + self.one_day * 2, 'details', 'EUR', None, None, Decimal('1000.00')),
+            StatementItem(other_account, self.today,                   'details', 'EUR', None, None, Decimal('1000.00')),
+            # latest
+        )
+        collection = StatementItemCollection(items)
+        deduped = list(collection.remove_net_zero_items())
+
+        self.assertEqual(3, len(deduped))
 
     def test_most_common_month(self):
         one_month = timedelta(days=31)

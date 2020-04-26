@@ -5,8 +5,8 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 import logging
 
 from functools import partial
-from gspread import Client
-from gspread.utils import a1_to_rowcol
+from gspread import Client, SpreadsheetNotFound
+from gspread.utils import a1_to_rowcol, absolute_range_name
 from google.oauth2 import service_account
 from google.auth.transport.requests import AuthorizedSession
 
@@ -74,3 +74,69 @@ def extract_from_sheet(module_name, sheets_config, sheet_id):
     spreadsheet = google_sheets_client.open_by_key(sheet_id)
     LOG.info('Extracting data from %s (%s)', spreadsheet.title, sheet_id)
     return partial(_extract_table, spreadsheet)
+
+
+def insert_rows(
+    worksheet,
+    values,
+    index=1,
+    value_input_option='RAW'
+):
+    """Adds rows to the worksheet at the specified index
+    and populates it with values.
+
+    Widens the worksheet if there are more values than columns.
+
+    :param worksheet: sheet to add the rows to
+    :param values: List of tuples of values for the new rows.
+    :param index: (optional) Offset for the newly inserted row.
+    :type index: int
+    :param value_input_option: (optional) Determines how input data should
+                                be interpreted. See `ValueInputOption`_ in
+                                the Sheets API.
+    :type value_input_option: str
+
+    .. _ValueInputOption: https://developers.google.com/sheets/api/reference/rest/v4/ValueInputOption
+
+    """
+
+    zero_based_index = index - 1
+    body = {
+        "requests": [{
+            "insertDimension": {
+                "range": {
+                  "sheetId": worksheet.id,
+                  "dimension": "ROWS",
+                  "startIndex": zero_based_index,
+                  "endIndex": zero_based_index + len(values)
+                }
+            }
+        }]
+    }
+
+    worksheet.spreadsheet.batch_update(body)
+
+    range_label = absolute_range_name(worksheet.title, f"{index}:{index+len(values)}")
+
+    data = worksheet.spreadsheet.values_update(
+        range_label,
+        params={
+            'valueInputOption': value_input_option
+        },
+        body={
+            'values': values
+        }
+    )
+
+    return data
+
+
+def open_sheet(module_name, drive_config, output_spreadsheet):
+    credentials_path = get_credentials_path(module_name, drive_config)
+    google_sheets_client = configure_client(credentials_path)
+
+    try:
+        return google_sheets_client.open_by_key(output_spreadsheet)
+    except SpreadsheetNotFound:
+        # TODO: get check for non-existent ss working
+        return None

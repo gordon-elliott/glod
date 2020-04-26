@@ -5,7 +5,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 import logging
 import os
 
-from unittest import TestCase
+from unittest import TestCase, skip
 from uuid import uuid1
 
 from sqlalchemy import create_engine
@@ -23,6 +23,7 @@ DB_NAME_FILE = '/tmp/glod_unittest_db_name.txt'
 LOG = logging.getLogger(__name__)
 
 
+# @skip("Not connected to db")
 class DBSessionTestCase(TestCase):
 
     @classmethod
