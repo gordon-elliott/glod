@@ -12,6 +12,7 @@ from glod.in_out.ibb_bank_statement import StatementLoader
 from glod.in_out.statement_item import output_statement_items
 from glod.in_out.account import get_account_collection
 from glod.db.statement_item import StatementItem, StatementItemCollection
+from glod.configuration import configuration
 
 
 LOG = logging.getLogger(__file__)
@@ -29,7 +30,15 @@ def do_load(account_file, export_file, output_csv, output_spreadsheet, output_wo
             .only_most_common_months(num_months) \
             .remove_net_zero_items()
 
-        output_statement_items(output_csv, output_spreadsheet, output_worksheet, statement_items)
+        output_statement_items(
+            __name__,
+            configuration.google_sheets,
+            output_csv,
+            output_spreadsheet,
+            output_worksheet,
+            account_collection,
+            statement_items
+        )
 
     except Exception as ex:
         LOG.exception(ex)
