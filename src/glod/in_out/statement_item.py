@@ -99,24 +99,11 @@ def statement_item_from_gsheet(session, extract_from_detailed_ledger):
     load_class(session, statement_items, statement_item_mapping, StatementItem)
 
 
-def statement_item_to_gsheet(statement_items, gsheet_name):
-    credentials_path = get_credentials_path(__name__, configuration.google_sheets)
-    google_sheets_client = configure_client(credentials_path)
-    si_sheet = google_sheets_client.create(gsheet_name)
-    si_sheet.share('gordon.e.elliott@gmail.com', perm_type='user', role='writer')
-    worksheet = si_sheet.sheet1
-    worksheet.update_title("statement items")
-    worksheet.freeze(rows=1)
-    worksheet.format("A", {'numberFormat': {'type': 'TEXT'}})   # TODO: perhaps strip leading 0
-    worksheet.format("B", {'numberFormat': {'type': 'DATE', 'pattern': 'dd/mm/yyy'}, 'horizontalAlignment': 'RIGHT'})
-    worksheet.format("C:D", {'numberFormat': {'type': 'TEXT'}})
-    worksheet.format("E:G", {'numberFormat': {'type': 'NUMBER', 'pattern': '#,###.00'}, 'horizontalAlignment': 'RIGHT'})
-
+def _append(statement_items, worksheet):
     gsheet_field_names, statement_items_for_gsheet = _statement_items_for_gsheet(statement_items)
     worksheet.append_rows(
         [gsheet_field_names] + list(statement_items_for_gsheet)
     )
-    # TODO: Use insert_data_option to insert rows
 
 
 def _statement_items_for_gsheet(statement_items):
@@ -143,11 +130,75 @@ def statement_item_export_files(module_name, drive_config, fy, sequence_no):
                 yield download(request)
 
 
-def output_statement_items(output_csv, output_spreadsheet, output_worksheet, statement_items):
+def _new_sheet(module_name, drive_config, output_spreadsheet_name):
+    credentials_path = get_credentials_path(module_name, configuration.google_sheets)
+    google_sheets_client = configure_client(credentials_path)
+    si_sheet = google_sheets_client.create(output_spreadsheet_name)
+    # TODO: get collaborators from config
+    si_sheet.share('gordon.e.elliott@gmail.com', perm_type='user', role='writer')
+    worksheet = si_sheet.sheet1
+    worksheet.update_title(drive_config.statement_items_sheet_name)
+    worksheet.freeze(rows=1)
+    worksheet.format("A", {'numberFormat': {'type': 'TEXT'}})   # TODO: perhaps strip leading 0
+    worksheet.format("B", {'numberFormat': {'type': 'DATE', 'pattern': 'dd/mm/yyy'}, 'horizontalAlignment': 'RIGHT'})
+    worksheet.format("C:D", {'numberFormat': {'type': 'TEXT'}})
+    worksheet.format("E:G", {'numberFormat': {'type': 'NUMBER', 'pattern': '#,###.00'}, 'horizontalAlignment': 'RIGHT'})
+    return si_sheet, worksheet
+
+
+def open_sheet(module_name, drive_config, output_spreadsheet):
+    credentials_path = get_credentials_path(module_name, drive_config)
+    google_sheets_client = configure_client(credentials_path)
+    import gspread
+    try:
+        return google_sheets_client.open_by_key(output_spreadsheet)
+    except gspread.SpreadsheetNotFound:
+        # TODO: get check for non-existent ss working
+        return None
+
+
+def _merge(statement_items, worksheet, account_collection):
+    for account in account_collection:
+        first_account_cell = worksheet.find(account._account_no)
+        _, statement_items_for_gsheet = _statement_items_for_gsheet(statement_items)
+        # TODO filter statement items by account
+        row_before = first_account_cell.row - 1
+        LOG.info(f"Inserting after row {row_before}")
+        worksheet.append_rows(
+            list(statement_items_for_gsheet),
+            insert_data_option='INSERT_ROWS',
+            table_range=f"A{row_before}"
+        )
+        # bug - no rows being added
+
+
+def output_statement_items(
+        module_name,
+        drive_config,
+        output_csv,
+        output_spreadsheet,
+        output_worksheet,
+        account_collection,
+        statement_items
+):
     if output_spreadsheet:
-        # TODO if ss exists then merge, otherwise create and insert
-        LOG.info(f"Writing to gsheet {output_spreadsheet}")
-        statement_item_to_gsheet(statement_items, output_spreadsheet)
+        gsheet = open_sheet(module_name, drive_config, output_spreadsheet)
+        if gsheet:
+            import gspread
+            try:
+                worksheet = gsheet.worksheet(drive_config.statement_items_sheet_name)
+            except gspread.exceptions.WorksheetNotFound:
+                worksheet = None
+            if worksheet:
+                worksheet.duplicate(new_sheet_name=output_worksheet)
+            else:
+                worksheet = gsheet.add_worksheet(title=drive_config.statement_items_sheet_name)
+            LOG.info(f"Merging with existing gsheet {output_spreadsheet}")
+            _merge(statement_items, worksheet, account_collection)
+        else:
+            _, worksheet = _new_sheet(module_name, drive_config, output_spreadsheet)
+            LOG.info(f"Writing to new gsheet {output_spreadsheet}")
+            _append(statement_items, worksheet)
     elif output_csv:
         with output_csv:
             statement_item_csv(statement_items, output_csv)
@@ -155,12 +206,3 @@ def output_statement_items(output_csv, output_spreadsheet, output_worksheet, sta
         with session_scope() as session:
             for statement_item in statement_items:
                 session.add(statement_item)
-
-
-def _merge_to_gsheet(sheet_id, worksheet_name, statement_items, accounts):
-    # copy work sheet
-    # for each account
-    #   establish previous month from existing items
-    #   in worksheet copy, find rows for account in last month before current month
-    #   report error if there are already rows for the current month
-    pass

@@ -37,7 +37,15 @@ def do_load(account_filename, export_folder, export_file, output_spreadsheet, ou
             .only_most_common_months(num_months) \
             .remove_net_zero_items()
 
-        output_statement_items(None, output_spreadsheet, output_worksheet, statement_items)
+        output_statement_items(
+            __name__,
+            configuration.google_sheets,
+            None,
+            output_spreadsheet,
+            output_worksheet,
+            account_collection,
+            statement_items
+        )
 
     except Exception as ex:
         LOG.exception(ex)
