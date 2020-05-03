@@ -8,7 +8,7 @@ from functools import partial
 from csv import DictWriter, excel_tab
 from datetime import date, datetime
 
-from a_tuin.metadata import StringField, TransformedStringField, DictFieldGroup, Mapping, TupleFieldGroup
+from a_tuin.metadata import StringField, TransformedStringField, DictFieldGroup, Mapping, TupleFieldGroup, FloatField
 from a_tuin.db.session_scope import session_scope
 from a_tuin.in_out.google_drive import get_gdrive_service, files_in_folder, download, get_credentials_path
 from a_tuin.in_out.google_sheets import configure_client, insert_rows, open_sheet
@@ -20,6 +20,11 @@ from glod.db.statement_item import StatementItem, StatementItemDesignatedBalance
 from glod.db.account import AccountQuery
 
 LOG = logging.getLogger(__name__)
+COMPUTED_FIELDS = ('detail_override', 'designated_balance')
+
+
+def _extract_account_no(account):
+    return account._account_no
 
 
 def _statement_item_export_fields():
@@ -27,17 +32,29 @@ def _statement_item_export_fields():
         field.name
         for field in StatementItem.constructor_parameters
     )
-
-    def extract_account_no(account):
-        return account._account_no
-
     csv_fields = tuple(
-        TransformedStringField(name, extract_account_no) if name == 'account' else StringField(name)
+        TransformedStringField(name, _extract_account_no) if name == 'account' else StringField(name)
         for name in field_names
-        if name not in ('detail_override', 'designated_balance')
+        if name not in COMPUTED_FIELDS
     )
     csv_fields[1]._strfmt = '%d/%m/%Y'
     return csv_fields
+
+
+def _statement_item_gsheet_export_fields():
+    transformed_fields_map = {
+        'account': TransformedStringField('account', _extract_account_no),
+        'date': StringField('date', strfmt='%d/%m/%Y'),
+        'debit': FloatField('debit'),
+        'credit': FloatField('credit'),
+        'balance': FloatField('balance'),
+    }
+    gsheet_fields = tuple(
+        transformed_fields_map.get(field.name, field)
+        for field in StatementItem.public_interface
+        if field.name not in COMPUTED_FIELDS
+    )
+    return gsheet_fields
 
 
 def statement_item_csv(statement_items, csv_file):
@@ -107,7 +124,7 @@ def _append(statement_items, worksheet):
 
 
 def _statement_items_for_gsheet(statement_items):
-    gsheet_fields = _statement_item_export_fields()
+    gsheet_fields = _statement_item_gsheet_export_fields()
     gsheet_field_names = [field.name for field in gsheet_fields]
     gsheet_field_group = TupleFieldGroup(gsheet_fields)
     internal_to_gsheet = Mapping(StatementItem.internal, gsheet_field_group)
@@ -147,7 +164,7 @@ def _format_worksheet(worksheet):
     worksheet.format("A", {'numberFormat': {'type': 'TEXT'}})
     worksheet.format("B", {'numberFormat': {'type': 'DATE', 'pattern': 'dd/mm/yyy'}, 'horizontalAlignment': 'RIGHT'})
     worksheet.format("C:D", {'numberFormat': {'type': 'TEXT'}})
-    worksheet.format("E:G", {'numberFormat': {'type': 'NUMBER', 'pattern': '#,###.00'}, 'horizontalAlignment': 'RIGHT'})
+    worksheet.format("E:G", {'numberFormat': {'type': 'NUMBER', 'pattern': '#,##0.00'}, 'horizontalAlignment': 'RIGHT'})
 
 
 def _merge(statement_items, worksheet, account_collection):
@@ -172,7 +189,6 @@ def output_statement_items(
         drive_config,
         output_csv,
         output_spreadsheet,
-        output_worksheet,
         account_collection,
         statement_items
 ):
@@ -180,16 +196,16 @@ def output_statement_items(
         gsheet = open_sheet(module_name, drive_config, output_spreadsheet)
         if gsheet:
             import gspread
+            worksheet_name = drive_config.statement_items_sheet_name
             try:
-                worksheet = gsheet.worksheet(drive_config.statement_items_sheet_name)
+                worksheet = gsheet.worksheet(worksheet_name)
             except gspread.exceptions.WorksheetNotFound:
                 worksheet = None
             if worksheet:
-                worksheet = worksheet.duplicate(new_sheet_name=output_worksheet)
-                # TODO when happy with logic update worksheet in place
+                LOG.info(f"Merging with existing worksheet, {worksheet_name}, on gsheet {output_spreadsheet}")
             else:
-                worksheet = gsheet.add_worksheet(title=drive_config.statement_items_sheet_name)
-            LOG.info(f"Merging with existing gsheet {output_spreadsheet}")
+                worksheet = gsheet.add_worksheet(title=worksheet_name)
+                LOG.info(f"Adding new sheet, {worksheet_name}, to existing gsheet {output_spreadsheet}")
             _merge(statement_items, worksheet, account_collection)
         else:
             _, worksheet = _new_sheet(module_name, drive_config, output_spreadsheet)
