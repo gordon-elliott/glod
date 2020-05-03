@@ -10,6 +10,8 @@ from operator import itemgetter
 from a_tuin.metadata import Collection, chainable
 
 
+ACCOUNT_BALANCE = 'opening balance'
+
 # TODO sequence no
 
 
@@ -33,6 +35,7 @@ class StatementItemCollection(Collection):
                 account_balance_item = None
             if item.net == Decimal('0.00'):
                 account_balance_item = item
+                account_balance_item.details = ACCOUNT_BALANCE
             else:
                 items_per_account += 1
                 yield item

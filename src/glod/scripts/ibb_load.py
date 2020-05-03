@@ -19,7 +19,7 @@ LOG = logging.getLogger(__file__)
 logging.basicConfig(level=logging.INFO)
 
 
-def do_load(account_file, export_file, output_csv, output_spreadsheet, output_worksheet, num_months):
+def do_load(account_file, export_file, output_csv, output_spreadsheet, num_months):
     try:
         account_collection = get_account_collection(account_file)
 
@@ -35,7 +35,6 @@ def do_load(account_file, export_file, output_csv, output_spreadsheet, output_wo
             configuration.google_sheets,
             output_csv,
             output_spreadsheet,
-            output_worksheet,
             account_collection,
             statement_items
         )
@@ -55,11 +54,7 @@ if __name__ == '__main__':
     parser.add_argument('--account_file', type=argparse.FileType('r'), required=False)
     parser.add_argument('--out_csv', type=argparse.FileType('w'), required=False)
     parser.add_argument('--out_spreadsheet', type=str, required=False)
-    parser.add_argument('--out_worksheet', type=str, required=False, default='statement items')
     parser.add_argument('--num_months', type=int, required=False, default=1)
     args = parser.parse_args()
 
-    sys.exit(do_load(
-        args.account_file, args.export_file, args.out_csv,
-        args.out_spreadsheet, args.out_worksheet, args.num_months
-    ))
+    sys.exit(do_load(args.account_file, args.export_file, args.out_csv, args.out_spreadsheet, args.num_months))
