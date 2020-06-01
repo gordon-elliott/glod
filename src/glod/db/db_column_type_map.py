@@ -28,6 +28,8 @@ from glod.model.organisation import (
 )
 from glod.model.person import PersonStatus, PersonStatusField
 from glod.model.organisation_address import OrganisationAddressStatus, OrganisationAddressStatusField
+from glod.model.pps import PPSStatus, PPSStatusField
+from glod.model.tax_rebate_submission import SubmissionStatus, SubmissionStatusField
 from glod.model.statement_item import StatementItemDesignatedBalance, StatementItemDesignatedBalanceField
 from glod.model.transaction import (
     PaymentMethod,
@@ -50,6 +52,10 @@ DB_COLUMN_TYPE_MAP[OrganisationCategoryField] = Enum(OrganisationCategory, inher
 DB_COLUMN_TYPE_MAP[OrganisationAddressStatusField] = Enum(OrganisationAddressStatus, inherit_schema=True)
 
 DB_COLUMN_TYPE_MAP[PersonStatusField] = Enum(PersonStatus, inherit_schema=True)
+
+DB_COLUMN_TYPE_MAP[PPSStatusField] = Enum(PPSStatus, inherit_schema=True)
+
+DB_COLUMN_TYPE_MAP[SubmissionStatusField] = Enum(SubmissionStatus, inherit_schema=True)
 
 DB_COLUMN_TYPE_MAP[StatementItemDesignatedBalanceField] = Enum(StatementItemDesignatedBalance, inherit_schema=True)
 

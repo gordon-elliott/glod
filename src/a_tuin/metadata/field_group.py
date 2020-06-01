@@ -70,9 +70,9 @@ class FieldGroup(object):
 
     def iterate_instance(self, instance, per_field_map):
         with field_errors_check() as errors:
-            for field in self._fields:
+            for field, destination_field in per_field_map.items():
                 try:
-                    yield field, self._get_value(instance, field), per_field_map.get(field)
+                    yield field, self._get_value(instance, field), destination_field
                 except FieldAssignmentError as field_error:
                     errors.append(field_error)
                 except Exception as ex:

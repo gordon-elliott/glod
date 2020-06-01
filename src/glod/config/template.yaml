@@ -49,7 +49,10 @@ logging:
 google_sheets:
   credentials_file:
   ledger_sheet_id:
+  tax_rebates_sheet_id:
+  statement_items_sheet_name:
   parish_list_sheet_id:
+  account_statements_folder: account.statements
 
 crudl:
   admin:
