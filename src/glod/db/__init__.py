@@ -41,6 +41,19 @@ from glod.db.counterparty import (
 )
 from glod.db.envelope import Envelope, EnvelopeCollection, EnvelopeQuery, EnvelopeInstanceQuery
 from glod.db.pps import PPS, PPSCollection, PPSQuery, PPSInstanceQuery
+from glod.db.tax_rebate import TaxRebate, TaxRebateCollection, TaxRebateQuery, TaxRebateInstanceQuery
+from glod.db.tax_rebate_submission import (
+    TaxRebateSubmission,
+    TaxRebateSubmissionCollection,
+    TaxRebateSubmissionQuery,
+    TaxRebateSubmissionInstanceQuery
+)
+from glod.db.person_rebate_submission import (
+    PersonRebateSubmission,
+    PersonRebateSubmissionCollection,
+    PersonRebateSubmissionQuery,
+    PersonRebateSubmissionInstanceQuery
+)
 from glod.db.statement_item import (
     StatementItem,
     StatementItemCollection,

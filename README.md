@@ -16,7 +16,7 @@ _Terry Pratchett, Witches Abroad_
 
 ```
 sudo apt-get install build-essential libssl-dev libffi-dev python3-dev
-sudo apt-get install python3.7 python3-venv python3.7-venv
+sudo apt-get install python3.7 python3-venv python3.7-venv pdftk
 #sudo apt-get install ansible
 pip install wheel
 python3.7 -m venv venv

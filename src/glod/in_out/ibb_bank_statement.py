@@ -8,7 +8,7 @@ from csv import reader
 
 from a_tuin.metadata import StringField, UnusedField, ComputedStringField, ListFieldGroup, Mapping
 from glod.model.statement_item import StatementItemDesignatedBalance
-from glod.in_out.statement_item import cast_dmy_date_from_string
+from glod.in_out.casts import cast_dmy_date_from_string
 
 LOG = logging.getLogger(__name__)
 

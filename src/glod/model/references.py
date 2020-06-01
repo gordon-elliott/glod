@@ -11,6 +11,9 @@ from glod.model.fund import Fund
 from glod.model.counterparty import Counterparty
 from glod.model.envelope import Envelope
 from glod.model.pps import PPS
+from glod.model.tax_rebate import TaxRebate
+from glod.model.tax_rebate_submission import TaxRebateSubmission
+from glod.model.person_rebate_submission import PersonRebateSubmission
 from glod.model.subject import Subject
 from glod.model.transaction import Transaction
 from glod.model.transaction_check import TransactionCheck
@@ -28,6 +31,9 @@ counterparty__organisation = Reference(Counterparty, 'organisation', Organisatio
 envelope__counterparty = Reference(Envelope, 'counterparty', Counterparty)
 envelope__person = Reference(Envelope, 'person', Person)
 pps__person = Reference(PPS, 'person', Person)
+tax_rebate__person = Reference(TaxRebate, 'person', Person)
+person_rebate_submission__tax_rebate_submission = Reference(PersonRebateSubmission, 'tax_rebate_submission', TaxRebateSubmission)
+person_rebate_submission__person = Reference(PersonRebateSubmission, 'person', Person)
 transaction__counterparty = Reference(Transaction, 'counterparty', Counterparty)
 transaction__subject = Reference(Transaction, 'subject', Subject)
 transaction__fund = Reference(Transaction, 'fund', Fund)
@@ -47,6 +53,9 @@ REFERENCES.extend((
     envelope__counterparty,
     envelope__person,
     pps__person,
+    tax_rebate__person,
+    person_rebate_submission__tax_rebate_submission,
+    person_rebate_submission__person,
     transaction__counterparty,
     transaction__subject,
     transaction__fund,

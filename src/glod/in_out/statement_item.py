@@ -6,7 +6,6 @@ import logging
 
 from functools import partial
 from csv import DictWriter, excel_tab
-from datetime import date, datetime
 
 from a_tuin.metadata import StringField, TransformedStringField, DictFieldGroup, Mapping, TupleFieldGroup, FloatField
 from a_tuin.db.session_scope import session_scope
@@ -15,7 +14,7 @@ from a_tuin.in_out.google_sheets import configure_client, insert_rows, open_shee
 from a_tuin.in_out.gsheet_integration import get_gsheet_fields, load_class
 
 from glod.configuration import configuration
-from glod.in_out.casts import strip_commas
+from glod.in_out.casts import strip_commas, cast_dmy_date_from_string
 from glod.db.statement_item import StatementItem, StatementItemDesignatedBalance
 from glod.db.account import AccountQuery
 
@@ -81,10 +80,6 @@ def ignore_na(value, _):
         return None
     else:
         return strip_commas(value, _)
-
-
-def cast_dmy_date_from_string(value, _):
-    return date.fromtimestamp(datetime.strptime(value, '%d/%m/%Y').timestamp())
 
 
 def cast_designated_balance(value, _):
