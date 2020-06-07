@@ -26,6 +26,15 @@ class TaxRebate(ObjectFieldGroupBase):
         StringField('2018_rebate'),
     )
 
+    def has_rebate_for_year(self, fy: int):
+        field_name = f"{fy}_rebate"
+        if hasattr(self, field_name):
+            fy_info = getattr(self, field_name)
+            if "claimed" in fy_info:
+                filing_year = int(fy_info.replace(" - claimed", ""))
+                return filing_year
+        return None
+
 
 class TaxRebateCollection(Collection):
     pass

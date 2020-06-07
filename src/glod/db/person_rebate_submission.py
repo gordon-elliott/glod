@@ -10,17 +10,23 @@ from glod.db.db_column_type_map import DB_COLUMN_TYPE_MAP
 from glod.db.constants import SCHEMA_NAME
 
 
-TableMap(PersonRebateSubmission, SCHEMA_NAME, 'person_rebate_submission', DB_COLUMN_TYPE_MAP, RelationMap(
-    person_rebate_submission__person,
-    'person._id',
-    backref='people',
-    lazy='joined'
-), RelationMap(
-    person_rebate_submission__tax_rebate_submission,
-    'tax_rebate_submission._id',
-    backref='tax_rebate_submissions',
-    lazy='joined'
-))
+TableMap(
+    PersonRebateSubmission,
+    SCHEMA_NAME,
+    'person_rebate_submission',
+    DB_COLUMN_TYPE_MAP,
+    RelationMap(
+        person_rebate_submission__tax_rebate_submission,
+        'tax_rebate_submission._id',
+        backref='people',
+        lazy='joined'
+    ), RelationMap(
+        person_rebate_submission__person,
+        'person._id',
+        backref='tax_rebate_submissions',
+        lazy='joined'
+    )
+)
 
 
 class PersonRebateSubmissionInstanceQuery(InstanceQuery):
