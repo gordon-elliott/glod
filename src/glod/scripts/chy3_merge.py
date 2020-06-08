@@ -1,7 +1,5 @@
 __copyright__ = 'Copyright(c) Gordon Elliott 2020'
 
-from subprocess import run
-
 """ Mail merge for CHY3 forms and cover letters
 """
 
@@ -10,7 +8,14 @@ import argparse
 import logging
 import sys
 
-from glod.configuration import configuration
+from datetime import date
+from decimal import Decimal
+
+from a_tuin.db.session_scope import session_scope
+from glod.db.engine import engine       # required in order to connect db
+
+from glod.in_out.pdf_merge import fill_form
+from glod.db.pps import PPSQuery
 
 LOG = logging.getLogger(__file__)
 logging.basicConfig(level=logging.DEBUG)
@@ -34,55 +39,29 @@ FIELDS = (
     VALID_FROM,
 )
 
-SAMPLE = {
-    DONOR: "Joe Bloggs",
-    PPS: "998989C",
-    POSTAL_ADDRESS: "TeeMoKree,\n4 Main St,\nTownland,\nNewtown,\nCo Wicklow",
-    PHONE: "9380830",
-    EMAIL: "joseph.mary.bloggs@example.com",
-    CHARITY_NAME: "Christ Church Delgany",
-    VALID_FROM: "2020",
-}
-
-FDF_HEADER = """%FDF-1.2
-%âãÏÓ
-1 0 obj 
-<< /FDF 
-<< /Fields [
-"""
-
-FDF_FOOTER = """
-] >> >>
-endobj 
-trailer
-<< /Root 1 0 R >>
-%%EOF
-"""
-
-
-def fill_forms(template_filename, output_path):
-    fdf_str = generate_fdf(SAMPLE)
-    fill_form(template_filename, fdf_str, output_path)
-
-
-def generate_fdf(data):
-    fields = "\n".join(fdf_fields(data))
-    return f"{FDF_HEADER}{fields}{FDF_FOOTER}"
-
-
-def fdf_fields(data):
-    for field_name, value in data.items():
-        yield f"<< /T ({field_name}) /V ({value}) >>"
-
-
-def fill_form(input_path, fdf, output_path):
-    cmd = ["pdftk", input_path, "fill_form", "-", "output", output_path, "flatten"]
-    run(cmd, input=fdf.encode("utf-8"), check=True)
-
 
 def do_merge(template_filename):
     try:
-        fill_forms(template_filename, "merged.0.pdf")
+        current_year = date.today().year
+        last_3_years = tuple(range(current_year - 2, current_year + 1))
+        donation_threshold = Decimal(250.0)
+        with session_scope() as session:
+            targets = PPSQuery(session).chy3_completion_targets(last_3_years, donation_threshold)
+            for selected_member, person, household_org, address in targets:
+                merge_data = {
+                    DONOR: selected_member.name_override if selected_member.name_override else person.name_without_title,
+                    PPS: selected_member.pps if selected_member.pps else '',
+                    POSTAL_ADDRESS: address.post_label(),
+                    PHONE: person.mobile if person.mobile else address.telephone,
+                    EMAIL: person.email,
+                    CHARITY_NAME: "Christ Church Delgany",
+                    VALID_FROM: str(current_year),
+                }
+                # TODO use a temporary folder
+                # TODO merge with cover letters
+                # TODO merge into single PDF - pdftk *.pdf cat output combined.pdf
+                file_name = f"./merge0/merged.{household_org.id}.pdf"
+                fill_form(template_filename, file_name, merge_data)
     except Exception as ex:
         LOG.exception(ex)
         return 1
