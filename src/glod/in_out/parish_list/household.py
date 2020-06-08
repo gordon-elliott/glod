@@ -8,6 +8,7 @@ from a_tuin.in_out.gsheet_integration import get_gsheet_fields, model_instances
 from a_tuin.metadata import Mapping
 
 from glod.db.parish_list.household import Household
+from glod.in_out.casts import strip_commas_and_spaces
 
 
 def households_from_gsheet(session, extract_from_parish_list):
@@ -23,7 +24,17 @@ def households_from_gsheet(session, extract_from_parish_list):
             'telephone': 'landline',
         }
     )
-    household_mapping = Mapping(household_gsheet, Household.constructor_parameters)
+    household_mapping = Mapping(
+        household_gsheet,
+        Household.constructor_parameters,
+        field_casts={
+            'address1': strip_commas_and_spaces,
+            'address2': strip_commas_and_spaces,
+            'address3': strip_commas_and_spaces,
+            'county': strip_commas_and_spaces,
+            'eircode': strip_commas_and_spaces,
+        }
+    )
     household_rows = extract_from_parish_list(
         'households',
         'A1',

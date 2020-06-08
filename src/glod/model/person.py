@@ -48,6 +48,10 @@ class Person(ObjectFieldGroupBase):
         else:
             return '{0._given_name} {0._family_name}'.format(self)
 
+    @property
+    def name_without_title(self):
+        return '{0._given_name} {0._family_name}'.format(self)
+
 
 class PersonCollection(Collection):
     pass

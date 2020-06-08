@@ -66,7 +66,7 @@ class Transaction(ObjectFieldGroupBase):
         DecimalField('amount'),
         ObjectReferenceField('subject'),
         IncomeExpenditureField('income_expenditure'),
-        StringField('FY'),
+        StringField('FY'),      # TODO clean up old data and make this an int field
         ObjectReferenceField('fund'),
         DescriptionField('comments')
     )
