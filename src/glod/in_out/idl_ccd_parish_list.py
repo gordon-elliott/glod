@@ -20,9 +20,9 @@ DEPENDENT_TABLES = ('parishioner', 'household')
 
 
 def load_parish_list():
-    sheets_config = configuration.google_sheets
+    sheets_config = configuration.gdrive
     sheet_id = sheets_config.parish_list_sheet_id
-    extract_from_parish_list = extract_from_sheet(__name__, sheets_config, sheet_id)
+    extract_from_parish_list = extract_from_sheet(configuration, sheet_id)
 
     try:
         with session_scope() as session:

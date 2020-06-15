@@ -5,12 +5,13 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2020'
 
 import io
 import logging
+import os
 import pkg_resources
 
+from contextlib import contextmanager
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
-from googleapiclient.http import MediaIoBaseDownload
-
+from googleapiclient.http import MediaIoBaseDownload, MediaFileUpload
 
 LOG = logging.getLogger(__file__)
 
@@ -18,20 +19,31 @@ SCOPES = [
     'https://spreadsheets.google.com/feeds',
     'https://www.googleapis.com/auth/drive'
 ]
+PDF_MIME_TYPE = 'application/pdf'
+TAG_OPENING = '<<'
+TAG_CLOSING = '>>'
 
 
-def get_credentials_path(module_name, gdrive_config):
+def get_credentials_path(configuration):
     return pkg_resources.resource_filename(
-        module_name,
-        '../config/{}'.format(gdrive_config.credentials_file)
+        configuration.folders.root_package,
+        os.path.join(configuration.folders.config, configuration.gdrive.credentials_file),
     )
 
 
-def get_gdrive_service(module_name, drive_config):
-    credentials_path = get_credentials_path(module_name, drive_config)
+def get_gsuite_service(configuration, service_name, service_version):
+    credentials_path = get_credentials_path(configuration)
     credentials = service_account.Credentials.from_service_account_file(credentials_path)
     scoped_credentials = credentials.with_scopes(SCOPES)
-    return build('drive', 'v3', credentials=scoped_credentials, cache_discovery=False)
+    return build(service_name, service_version, credentials=scoped_credentials, cache_discovery=False)
+
+
+def get_gdrive_service(configuration):
+    return get_gsuite_service(configuration, 'drive', 'v3')
+
+
+def get_gdocs_service(configuration):
+    return get_gsuite_service(configuration, 'docs', 'v1')
 
 
 def files_in_folder(service, query, page_size=100):
@@ -53,6 +65,54 @@ def download(request):
         status, done = downloader.next_chunk()
         if status:
             LOG.debug(f"Download {int(status.progress() * 100)}")
+    return buffer
+
+
+def download_textfile(request):
+    buffer = download(request)
     wrapper = io.TextIOWrapper(buffer, encoding='utf-8')
     wrapper.seek(0)     # this is essential in order that the CSV contents can be read
     return wrapper
+
+
+def download_as_pdf(service, merged_file_id, out_file_name):
+    request = service.files().export_media(fileId=merged_file_id, mimeType=PDF_MIME_TYPE)
+    buffer = download(request)
+    with open(out_file_name, 'wb') as outfile:
+        outfile.write(buffer.getvalue())
+
+
+def upload_to_gdrive(gdrive, source_file_path, name_for_uploaded_file, mime_type, share_with_email):
+    media = MediaFileUpload(source_file_path, mimetype=mime_type)
+    uploaded_file_id = gdrive.files().create(
+        body={'name': name_for_uploaded_file},
+        media_body=media,
+        fields='id'
+    ).execute().get('id')
+    permissions = {
+        "role": "writer",
+        "type": "user",
+        "emailAddress": share_with_email
+    }
+    gdrive.permissions().create(body=permissions, fileId=uploaded_file_id).execute()
+    return uploaded_file_id
+
+
+@contextmanager
+def merge_cover_letter(gdrive, gdocs, template_file_id, replacements):
+    body = {'name': 'Merged form letter'}
+    merged_file_id = gdrive.files().copy(body=body, fileId=template_file_id, fields='id').execute().get('id')
+    try:
+        replacement_command = [{'replaceAllText': {
+            'containsText': {
+                'text': ''.join((TAG_OPENING, key, TAG_CLOSING)),
+                'matchCase': True,
+            },
+            'replaceText': value,
+        }} for key, value in replacements.items()]
+
+        gdocs.documents().batchUpdate(body={'requests': replacement_command}, documentId=merged_file_id, fields='').execute()
+
+        yield merged_file_id
+    finally:
+        gdrive.files().delete(fileId=merged_file_id)

@@ -68,8 +68,8 @@ def _extract_table(spreadsheet, worksheet_title, starting_cell, column_names):
             break
 
 
-def extract_from_sheet(module_name, sheets_config, sheet_id):
-    credentials_path = get_credentials_path(module_name, sheets_config)
+def extract_from_sheet(configuration, sheet_id):
+    credentials_path = get_credentials_path(configuration)
     google_sheets_client = configure_client(credentials_path)
     spreadsheet = google_sheets_client.open_by_key(sheet_id)
     LOG.info('Extracting data from %s (%s)', spreadsheet.title, sheet_id)
@@ -131,8 +131,8 @@ def insert_rows(
     return data
 
 
-def open_sheet(module_name, drive_config, output_spreadsheet):
-    credentials_path = get_credentials_path(module_name, drive_config)
+def open_sheet(configuration, output_spreadsheet):
+    credentials_path = get_credentials_path(configuration)
     google_sheets_client = configure_client(credentials_path)
 
     try:
