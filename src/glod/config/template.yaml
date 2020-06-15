@@ -1,13 +1,23 @@
+charity:
+  name:
+  admin:
+    email:
+
+tax:
+  chy3:
+    minimum_donation: 250.0
+    consider_last_n_years: 3
+
 db:
   server:
   port: 5432
-  admin_user: postgres
+  admin_user:
   admin_password:
-  operational_db_name: dev
-  restricted_user: runtime
+  operational_db_name:
+  restricted_user:
   restricted_password:
   protocol: postgresql+psycopg2
-  admin_connection: "{protocol}://{admin_user}:{admin_password}@{server}:{port}/{operational_db_name}"
+  admin_connection: "{protocol}://{admin_user}:{admin_password}@{server}:{port}/postgres"
   restricted_connection: "{protocol}://{restricted_user}:{restricted_password}@{server}:{port}/{operational_db_name}"
 
 logging:
@@ -46,16 +56,24 @@ logging:
     level: INFO
     handlers: [console]
 
-google_sheets:
+folders:
+  root_package: glod
+  config: config
+  resources: resources
+
+gdrive:
   credentials_file:
   ledger_sheet_id:
   tax_rebates_sheet_id:
-  statement_items_sheet_name:
+  statement_items_sheet_name: "bank statements"
   parish_list_sheet_id:
   account_statements_folder: account.statements
+  chy3_template_doc_id:
 
 crudl:
   admin:
     use_modified_since: False
+#    crudl_js: http://cdn.crudl.io/static/releases/0.2.0/crudl.min.js
     crudl_js: http://cdn.crudl.io/static/releases/0.3.0/crudl.js
+#    crudl_js: /static/crudl/crudl.js
     crudl_css: http://cdn.crudl.io/static/releases/0.3.0/crudl-ui/css/crudl-ui.css

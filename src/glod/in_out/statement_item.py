@@ -9,7 +9,7 @@ from csv import DictWriter, excel_tab
 
 from a_tuin.metadata import StringField, TransformedStringField, DictFieldGroup, Mapping, TupleFieldGroup, FloatField
 from a_tuin.db.session_scope import session_scope
-from a_tuin.in_out.google_drive import get_gdrive_service, files_in_folder, download, get_credentials_path
+from a_tuin.in_out.google_drive import get_gdrive_service, files_in_folder, download_textfile, get_credentials_path
 from a_tuin.in_out.google_sheets import configure_client, insert_rows, open_sheet
 from a_tuin.in_out.gsheet_integration import get_gsheet_fields, load_class
 
@@ -131,7 +131,7 @@ def _statement_items_for_gsheet(statement_items):
 
 
 def statement_item_export_files(module_name, drive_config, fy, sequence_no):
-    service = get_gdrive_service(module_name, drive_config)
+    service = get_gdrive_service(configuration)
     walk_folder = partial(files_in_folder, service)
 
     for statements_folder_id, _ in walk_folder(f"sharedWithMe and name = '{drive_config.account_statements_folder}'"):
@@ -139,15 +139,15 @@ def statement_item_export_files(module_name, drive_config, fy, sequence_no):
             for statement_file_id, statement_filename in walk_folder(f"'{fy_folder_id}' in parents and name contains '({sequence_no})'"):
                 LOG.info(f"Loading statement items from {fy}/{statement_filename} ({statement_file_id})")
                 request = service.files().get_media(fileId=statement_file_id)
-                yield download(request)
+                yield download_textfile(request)
 
 
 def _new_sheet(module_name, drive_config, output_spreadsheet_name):
-    credentials_path = get_credentials_path(module_name, configuration.google_sheets)
+    credentials_path = get_credentials_path(configuration)
     google_sheets_client = configure_client(credentials_path)
     si_sheet = google_sheets_client.create(output_spreadsheet_name)
     # TODO: get collaborators from config
-    si_sheet.share('gordon.e.elliott@gmail.com', perm_type='user', role='writer')
+    si_sheet.share(configuration.admin.email, perm_type='user', role='writer')
     worksheet = si_sheet.sheet1
     worksheet.update_title(drive_config.statement_items_sheet_name)
     _format_worksheet(worksheet)
@@ -188,7 +188,7 @@ def output_statement_items(
         statement_items
 ):
     if output_spreadsheet:
-        gsheet = open_sheet(module_name, drive_config, output_spreadsheet)
+        gsheet = open_sheet(configuration, output_spreadsheet)
         if gsheet:
             import gspread
             worksheet_name = drive_config.statement_items_sheet_name

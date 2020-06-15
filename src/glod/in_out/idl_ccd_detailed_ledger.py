@@ -39,9 +39,9 @@ DEPENDENT_TABLES = (
 
 
 def load_detailed_ledger():
-    sheets_config = configuration.google_sheets
-    extract_from_detailed_ledger = extract_from_sheet(__name__, sheets_config, sheets_config.ledger_sheet_id)
-    extract_from_tax_rebates = extract_from_sheet(__name__, sheets_config, sheets_config.tax_rebates_sheet_id)
+    sheets_config = configuration.gdrive
+    extract_from_detailed_ledger = extract_from_sheet(configuration, sheets_config.ledger_sheet_id)
+    extract_from_tax_rebates = extract_from_sheet(configuration, sheets_config.tax_rebates_sheet_id)
 
     try:
         with session_scope() as session:

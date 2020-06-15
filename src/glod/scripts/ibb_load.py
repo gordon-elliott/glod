@@ -32,7 +32,7 @@ def do_load(account_file, export_file, output_csv, output_spreadsheet, num_month
 
         output_statement_items(
             __name__,
-            configuration.google_sheets,
+            configuration.gdrive,
             output_csv,
             output_spreadsheet,
             account_collection,
