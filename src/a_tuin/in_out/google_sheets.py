@@ -5,8 +5,11 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 import logging
 
 from functools import partial
+from time import sleep
+
 from gspread import Client, SpreadsheetNotFound
 from gspread.utils import a1_to_rowcol, absolute_range_name
+from gspread.exceptions import APIError
 from google.oauth2 import service_account
 from google.auth.transport.requests import AuthorizedSession
 
@@ -14,6 +17,8 @@ from a_tuin.in_out.google_drive import SCOPES, get_credentials_path
 
 LOG = logging.getLogger(__name__)
 ROWS_PER_FETCH = 1000
+RETRIES = 3
+BACK_OFF = 100
 
 
 def configure_client(credentials_path):
@@ -32,12 +37,18 @@ def _sheet_rows(worksheet, first_row, first_column, last_column_in_range):
             first_column, last_column_in_range, first_row_in_range, last_row_in_range
         ))
         row = []
-        for cell in worksheet.range(first_row_in_range, first_column, last_row_in_range, last_column_in_range):
-            if cell.col < previous_column:
-                yield row
-                row = []
-            row.append(cell)
-            previous_column = cell.col
+        for try_no in range(RETRIES):
+            try:
+                for cell in worksheet.range(first_row_in_range, first_column, last_row_in_range, last_column_in_range):
+                    if cell.col < previous_column:
+                        yield row
+                        row = []
+                    row.append(cell)
+                    previous_column = cell.col
+                break
+            except APIError as api_error:
+                LOG.warning(f"Retrying. Attempt {try_no}. {api_error}")
+                sleep(BACK_OFF)
 
         if row:
             yield row

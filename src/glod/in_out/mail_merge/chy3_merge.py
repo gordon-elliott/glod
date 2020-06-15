@@ -34,7 +34,7 @@ VALID_FROM = "Text20"
 
 
 def _merge_letters(gdrive, gdocs, temp_dir, template_file_id, template_filename, valid_from_tax_year, targets):
-    for selected_member, person, household_org, address in targets[13:19]:
+    for selected_member, person, household_org, address in targets:
         LOG.info(f"Merging letter for {person.name}, household id: {household_org.id}")
         cover_letter_filename = f"cover.{household_org.id}.pdf"
         cover_letter_path = os.path.join(temp_dir, cover_letter_filename)
