@@ -48,6 +48,8 @@ def get_gdocs_service(configuration):
 
 def files_in_folder(service, query, page_size=100):
     child_files = service.files().list(
+        includeItemsFromAllDrives=True,
+        supportsAllDrives=True,
         q=query,
         pageSize=page_size,
         fields="nextPageToken, files(id, name)"
