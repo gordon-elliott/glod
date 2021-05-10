@@ -40,6 +40,7 @@ def do_load(account_filename, export_folder, export_file, output_spreadsheet, nu
         output_statement_items(
             __name__,
             configuration.gdrive,
+            configuration.ledger_sheet,
             None,
             output_spreadsheet,
             account_collection,
