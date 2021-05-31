@@ -10,7 +10,6 @@ graphql-core<3.0.0a0    # to avoid ImportError: cannot import name 'ResolveInfo'
 graphql-relay<3.0       # to avoid ImportError: cannot import name 'GraphQLArgumentMap' from 'graphql.type'
 graphql-server-core
 gspread
-pkg-resources
 psycopg2-binary
 PyYAML
 sanic
