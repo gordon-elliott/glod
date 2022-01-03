@@ -101,12 +101,13 @@ ledger_sheet:
   formula_templates:
     -
     -
+    - =if(eq(I{row_no}, "opening"), 1000000, J{prev_row}+1)
     - =if(ISBLANK(H{row_no}), C{row_no}, H{row_no})
-    - =if(ISTEXT(J{row_no}), if(EQ("LODGMENT", LEFT(J{row_no}, 8)), value(mid(J{row_no}, 9, 12)), if(iserror(FIND(LEFT(J{row_no}, 2), "D0|D1|E0|E1")), "", LEFT(J{row_no}, 6))), J{row_no})
-    - =if(K{row_no}="", "", CONCATENATE(A{row_no}, "|", K{row_no}))
+    - =if(ISTEXT(K{row_no}), if(EQ("LODGMENT", LEFT(K{row_no}, 8)), value(mid(K{row_no}, 9, 12)), if(iserror(FIND(LEFT(K{row_no}, 2), "D0|D1|E0|E1")), "", LEFT(K{row_no}, 6))), K{row_no})
+    - =if(L{row_no}="", "", CONCATENATE(J{row_no}, "|", L{row_no}))
     - =E{row_no}*-1+F{row_no}
-    - =if(eq(I{row_no}, "opening"), G{row_no}, round(N{prev_row}+M{row_no}, 6))
-    - =if(or(ISBLANK(G{row_no}), eq("N/A", G{row_no})), "", EQ(G{row_no}, N{row_no}))
+    - =if(eq(I{row_no}, "opening"), G{row_no}, round(O{prev_row}+N{row_no}, 6))
+    - =if(or(ISBLANK(G{row_no}), eq("N/A", G{row_no})), "", EQ(G{row_no}, O{row_no}))
     - =year(datevalue((B{row_no})))
     - =month(datevalue(B{row_no}))
     - =day(datevalue(B{row_no}))
@@ -114,13 +115,15 @@ ledger_sheet:
     -
     -
     -
-    - =if(or(ISBLANK(L{row_no}), L{row_no}=""), "", vlookup(L{row_no}, transactions_by_reference, 6, FALSE))
-    - =if(or(ISBLANK(L{row_no}), L{row_no}=""), "", vlookup(L{row_no}, transactions_by_reference, 8, FALSE))
-    - =if(X{row_no}="", "", eq(X{row_no}, V{row_no}))
-    - =if(or(ISBLANK(L{row_no}), L{row_no}=""), "", vlookup(L{row_no}, transactions_by_reference, 16, FALSE))
-    - =if(Z{row_no}="", "", if(Z{row_no}<0, eq(Z{row_no}, -1*E{row_no}), eq(Z{row_no}, F{row_no})))
-    - =if(or(ISBLANK(L{row_no}), L{row_no}=""), "", vlookup(L{row_no}, transactions_by_reference, 2, FALSE))
-    - =if(AB{row_no}="", "", eq(AB{row_no}, P{row_no}))
+    -
+    -
+    -
+    -
+    -
+    -
+    -
+    - =if(U{row_no}="", "", Q{row_no}=U{row_no})
+    - =if(AC{row_no}="", "", AC{row_no}=sum(E{row_no}:F{row_no}))
 
 crudl:
   admin:
