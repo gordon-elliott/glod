@@ -142,7 +142,7 @@ def statement_item_export_files(module_name, drive_config, fy, sequence_no):
                 yield download_textfile(request)
 
 
-def _new_sheet(module_name, drive_config, output_spreadsheet_name):
+def _new_sheet(module_name, drive_config, ledger_config, output_spreadsheet_name):
     credentials_path = get_credentials_path(configuration)
     google_sheets_client = configure_client(credentials_path)
     si_sheet = google_sheets_client.create(output_spreadsheet_name)
@@ -150,21 +150,22 @@ def _new_sheet(module_name, drive_config, output_spreadsheet_name):
     si_sheet.share(configuration.admin.email, perm_type='user', role='writer')
     worksheet = si_sheet.sheet1
     worksheet.update_title(drive_config.statement_items_sheet_name)
-    _format_worksheet(worksheet)
+    _format_worksheet(worksheet, ledger_config)
     return si_sheet, worksheet
 
 
-def _format_worksheet(worksheet):
-    worksheet.freeze(rows=1)
-    worksheet.format("A", {'numberFormat': {'type': 'TEXT'}})
-    worksheet.format("B", {'numberFormat': {'type': 'DATE', 'pattern': 'dd/mm/yyy'}, 'horizontalAlignment': 'RIGHT'})
-    worksheet.format("C:D", {'numberFormat': {'type': 'TEXT'}})
-    worksheet.format("E:G", {'numberFormat': {'type': 'NUMBER', 'pattern': '#,##0.00'}, 'horizontalAlignment': 'RIGHT'})
+def _format_worksheet(worksheet, ledger_config):
+    worksheet.freeze(**ledger_config.freeze.toDict())
+    for column_format in ledger_config.column_formats:
+        worksheet.format(**column_format.toDict())
 
 
-def _merge(statement_items, worksheet, account_collection):
+def _merge(statement_items, ledger_config, worksheet, account_collection):
     _, statement_items_for_gsheet = _statement_items_for_gsheet(statement_items)
+    # list is processed multiple times so it is necessary to instantiate the generator here
     statement_items_for_gsheet = list(statement_items_for_gsheet)
+    formula_templates = [template or "" for template in ledger_config.formula_templates]
+
     for account in account_collection:
         account_no = account._account_no
         rows_to_add = list(filter(lambda row: row[0] == account_no, statement_items_for_gsheet))
@@ -172,16 +173,24 @@ def _merge(statement_items, worksheet, account_collection):
             first_account_cell = worksheet.find(account_no)
             assert first_account_cell.col == 1, "Did not expect to find account number except in column 1"
             insert_at = first_account_cell.row
+            rows_with_formulae = [
+                list(row_data) + [
+                    formula_template.format(row_no=row_no, prev_row=row_no + 1)
+                    for formula_template in formula_templates
+                ]
+                for row_no, row_data in enumerate(rows_to_add, insert_at)
+            ]
 
             LOG.info(f"Inserting {len(rows_to_add)} rows for account {account_no} at row {insert_at}")
-            insert_rows(worksheet, rows_to_add, insert_at)
-    _format_worksheet(worksheet)
-    # TODO How to treat formulae?
+
+            insert_rows(worksheet, rows_with_formulae, insert_at, value_input_option="USER_ENTERED")
+    _format_worksheet(worksheet, ledger_config)
 
 
 def output_statement_items(
         module_name,
         drive_config,
+        ledger_config,
         output_csv,
         output_spreadsheet,
         account_collection,
@@ -201,9 +210,9 @@ def output_statement_items(
             else:
                 worksheet = gsheet.add_worksheet(title=worksheet_name)
                 LOG.info(f"Adding new sheet, {worksheet_name}, to existing gsheet {output_spreadsheet}")
-            _merge(statement_items, worksheet, account_collection)
+            _merge(statement_items, ledger_config, worksheet, account_collection)
         else:
-            _, worksheet = _new_sheet(module_name, drive_config, output_spreadsheet)
+            _, worksheet = _new_sheet(module_name, drive_config, ledger_config, output_spreadsheet)
             LOG.info(f"Writing to new gsheet {output_spreadsheet}")
             _append(statement_items, worksheet)
     elif output_csv:

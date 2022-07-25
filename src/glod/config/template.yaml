@@ -70,6 +70,62 @@ gdrive:
   account_statements_folder: account.statements
   chy3_template_doc_id:
 
+ledger_sheet:
+  freeze:
+    rows: 1
+  column_formats:
+    -
+      range_name: A
+      cell_format:
+        numberFormat:
+          type: TEXT
+    -
+      range_name: B
+      cell_format:
+        numberFormat:
+          type: DATE
+          pattern: dd/mm/yyy
+        horizontalAlignment: RIGHT
+    -
+      range_name: C:D
+      cell_format:
+        numberFormat:
+          type: TEXT
+    -
+      range_name: E:G
+      cell_format:
+        numberFormat:
+          type: NUMBER
+          pattern: "#,##0.00"
+        horizontalAlignment: RIGHT
+  formula_templates:
+    -
+    -
+    - =if(eq(I{row_no}, "opening"), 1000000, J{prev_row}+1)
+    - =if(ISBLANK(H{row_no}), C{row_no}, H{row_no})
+    - =if(ISTEXT(K{row_no}), if(EQ("LODGMENT", LEFT(K{row_no}, 8)), value(mid(K{row_no}, 9, 12)), if(iserror(FIND(LEFT(K{row_no}, 2), "D0|D1|E0|E1|50")), "", LEFT(K{row_no}, 6))), K{row_no})
+    - =CONCATENATE(A{row_no}, "|", if(L{row_no}="", J{row_no}, L{row_no}))
+    - =E{row_no}*-1+F{row_no}
+    - =if(eq(I{row_no}, "opening"), G{row_no}, round(O{prev_row}+N{row_no}, 6))
+    - =if(or(ISBLANK(G{row_no}), eq("N/A", G{row_no})), "", EQ(G{row_no}, O{row_no}))
+    - =year(datevalue((B{row_no})))
+    - =month(datevalue(B{row_no}))
+    - =day(datevalue(B{row_no}))
+    -
+    -
+    -
+    -
+    -
+    -
+    -
+    -
+    -
+    -
+    -
+    -
+    - =if(V{row_no}="", "", Q{row_no}=V{row_no})
+    - =if(AD{row_no}="", "", AD{row_no}=sum(E{row_no}:F{row_no}))
+
 crudl:
   admin:
     use_modified_since: False

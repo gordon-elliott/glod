@@ -48,6 +48,8 @@ def get_gdocs_service(configuration):
 
 def files_in_folder(service, query, page_size=100):
     child_files = service.files().list(
+        includeItemsFromAllDrives=True,
+        supportsAllDrives=True,
         q=query,
         pageSize=page_size,
         fields="nextPageToken, files(id, name)"
@@ -101,7 +103,9 @@ def upload_to_gdrive(gdrive, source_file_path, name_for_uploaded_file, mime_type
 @contextmanager
 def merge_cover_letter(gdrive, gdocs, template_file_id, replacements):
     body = {'name': 'Merged form letter'}
-    merged_file_id = gdrive.files().copy(body=body, fileId=template_file_id, fields='id').execute().get('id')
+    merged_file_id = gdrive.files().copy(
+        body=body, fileId=template_file_id, fields='id', supportsAllDrives=True
+    ).execute().get('id')
     try:
         replacement_command = [{'replaceAllText': {
             'containsText': {
