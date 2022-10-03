@@ -19,6 +19,7 @@ LOG = logging.getLogger(__name__)
 ROWS_PER_FETCH = 1000
 RETRIES = 3
 BACK_OFF = 100
+COLUMNS_TO_CHECK_FOR_HEADERS = 50
 
 
 def configure_client(credentials_path):
@@ -59,22 +60,30 @@ def _extract_table(spreadsheet, worksheet_title, starting_cell, column_names):
     worksheet = spreadsheet.worksheet(worksheet_title)
 
     header_row, first_column = a1_to_rowcol(starting_cell)
-    num_columns = len(column_names)
-    last_column = first_column + num_columns - 1
-    header = tuple(
-        cell.value
+    last_column = first_column + COLUMNS_TO_CHECK_FOR_HEADERS - 1
+    header_map = {
+        cell.value: cell.col
         for cell in worksheet.range(header_row, first_column, header_row, last_column)
-    )
-    assert header == column_names, 'Header does not match desired columns. %r != %r' % (header, column_names)
+        if cell.value and cell.value in column_names
+    }
+    columns_in_order = [
+        header_map[column_name] for column_name in column_names
+    ]
+    last_column = max(header_map.values())
+    header = list(header_map.keys())
+    assert set(header) == set(column_names), 'Header does not match desired columns. %r != %r' % (header, column_names)
 
-    LOG.info(f'Reading {column_names} from {worksheet_title}')
+    LOG.info(f'Reading {", ".join(column_names)} from {worksheet_title}')
 
     first_row = header_row + 1
     for row_cells in _sheet_rows(worksheet, first_row, first_column, last_column):
-        values = tuple(cell.value for cell in row_cells)
-        if any(values):
-            yield values
-        else:
+        row_values = {cell.col: cell.value for cell in row_cells}
+        desired_values = tuple(
+            row_values[col] for col in columns_in_order
+        )
+        if any(desired_values):
+            yield desired_values
+        elif not(any(row_values.values())):
             # stop when we reach a blank line
             break
 
