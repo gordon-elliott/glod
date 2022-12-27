@@ -1,6 +1,6 @@
 __copyright__ = 'Copyright(c) Gordon Elliott 2020'
 
-""" 
+""" Utilities to manipulate Google Drive
 """
 
 import io
@@ -8,7 +8,6 @@ import logging
 import os
 import pkg_resources
 
-from contextlib import contextmanager
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload, MediaFileUpload
@@ -20,8 +19,6 @@ SCOPES = [
     'https://www.googleapis.com/auth/drive'
 ]
 PDF_MIME_TYPE = 'application/pdf'
-TAG_OPENING = '<<'
-TAG_CLOSING = '>>'
 
 
 def get_credentials_path(configuration):
@@ -98,25 +95,3 @@ def upload_to_gdrive(gdrive, source_file_path, name_for_uploaded_file, mime_type
     }
     gdrive.permissions().create(body=permissions, fileId=uploaded_file_id).execute()
     return uploaded_file_id
-
-
-@contextmanager
-def merge_cover_letter(gdrive, gdocs, template_file_id, replacements):
-    body = {'name': 'Merged form letter'}
-    merged_file_id = gdrive.files().copy(
-        body=body, fileId=template_file_id, fields='id', supportsAllDrives=True
-    ).execute().get('id')
-    try:
-        replacement_command = [{'replaceAllText': {
-            'containsText': {
-                'text': ''.join((TAG_OPENING, key, TAG_CLOSING)),
-                'matchCase': True,
-            },
-            'replaceText': value,
-        }} for key, value in replacements.items()]
-
-        gdocs.documents().batchUpdate(body={'requests': replacement_command}, documentId=merged_file_id, fields='').execute()
-
-        yield merged_file_id
-    finally:
-        gdrive.files().delete(fileId=merged_file_id)

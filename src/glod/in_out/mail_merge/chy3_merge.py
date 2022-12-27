@@ -9,13 +9,13 @@ from tempfile import TemporaryDirectory
 
 from a_tuin.db.session_scope import session_scope
 from a_tuin.in_out.google_drive import (
-    merge_cover_letter,
     download_as_pdf,
     get_gdrive_service,
     get_gdocs_service,
     upload_to_gdrive,
     PDF_MIME_TYPE
 )
+from a_tuin.in_out.google_docs import merge_letter
 from a_tuin.in_out.pdf_merge import fill_form, concatenate
 
 from glod.configuration import configuration
@@ -39,7 +39,7 @@ def _merge_letters(gdrive, gdocs, temp_dir, template_file_id, template_filename,
         cover_letter_filename = f"cover.{household_org.id}.pdf"
         cover_letter_path = os.path.join(temp_dir, cover_letter_filename)
         replacements = dict(given_name=person.given_name)
-        with merge_cover_letter(gdrive, gdocs, template_file_id, replacements) as merged_file_id:
+        with merge_letter(gdrive, gdocs, template_file_id, replacements) as merged_file_id:
             download_as_pdf(gdrive, merged_file_id, cover_letter_path)
 
         chy3_filename = f"chy3.{household_org.id}.pdf"
