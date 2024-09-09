@@ -35,7 +35,7 @@ def _merge_letters(gdrive, gdocs, temp_dir, template_file_id, targets, column_na
         yield letter_path
 
 
-def _read_from_gsheet(input_workbook_file_id, sheet_name, merge_fields):
+def read_from_gsheet(input_workbook_file_id, sheet_name, merge_fields):
     extract_from_workbook = extract_from_sheet(configuration, input_workbook_file_id)
     parishioners = extract_from_workbook(sheet_name, 'A1', merge_fields)
     return parishioners
@@ -52,10 +52,13 @@ def merge_letters(input_workbook_file_id, sheet_name, template_file_id):
     LOG.info(f"Tags to merge from {template_title}: {', '.join(merge_fields)}")
 
     full_merge_pdf_filename = f"{template_title}_{sheet_name}_{current_year}.pdf"
-    targets = _read_from_gsheet(input_workbook_file_id, sheet_name, merge_fields)
+    targets = read_from_gsheet(input_workbook_file_id, sheet_name, merge_fields)
     with TemporaryDirectory(dir=working_folder, prefix=f'{template_title}_merge_') as temp_dir:
         output_files = list(
-            _merge_letters(gdrive, gdocs, temp_dir, template_file_id, targets, merge_fields)
+            _merge_letters(
+                gdrive, gdocs, temp_dir, template_file_id,
+                targets, merge_fields
+            )
         )
 
         full_merge_pdf_filepath = os.path.join(temp_dir, full_merge_pdf_filename)

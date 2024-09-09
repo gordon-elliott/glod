@@ -16,22 +16,12 @@ _Terry Pratchett, Witches Abroad_
 
 ```
 sudo apt-get install build-essential libssl-dev libffi-dev python3-dev
-sudo apt-get install python3.7 python3-venv python3.7-venv pdftk
-#sudo apt-get install ansible
+sudo apt-get install python3.12 python3-venv python3.12-venv pdftk
 pip install wheel
-python3.7 -m venv venv
+python3.12 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt 
-curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-sudo apt-get install nodejs
-
-cd src/glod/crudl
-npm install
 ```
 
 
 ## Build
-
-```
-npm run watchify
-```

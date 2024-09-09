@@ -6,7 +6,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2020'
 import io
 import logging
 import os
-import pkg_resources
+import importlib_resources
 
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
@@ -22,10 +22,9 @@ PDF_MIME_TYPE = 'application/pdf'
 
 
 def get_credentials_path(configuration):
-    return pkg_resources.resource_filename(
-        configuration.folders.root_package,
-        os.path.join(configuration.folders.config, configuration.gdrive.credentials_file),
-    )
+    ref = (importlib_resources.files(configuration.folders.root_package) /
+           os.path.join(configuration.folders.config, configuration.gdrive.credentials_file))
+    return ref
 
 
 def get_gsuite_service(configuration, service_name, service_version):

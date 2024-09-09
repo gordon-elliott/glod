@@ -13,9 +13,9 @@ LOG = logging.getLogger(__file__)
 logging.basicConfig(level=logging.DEBUG)
 
 
-def do_merge(template_filename):
+def do_merge(empty_certificate_form, input_workbook_file_id, sheet_name, template_letter_file_id):
     try:
-        merge_chy3_letters(template_filename)
+        merge_chy3_letters(empty_certificate_form, input_workbook_file_id, sheet_name, template_letter_file_id)
     except Exception as ex:
         LOG.exception(ex)
         return 1
@@ -27,9 +27,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Mail merge for CHY3 forms and cover letters'
     )
-    parser.add_argument('template_filename', type=str)
+    parser.add_argument('empty_certificate_form', type=str)
+    parser.add_argument('input_workbook_file_id', type=str)
+    parser.add_argument('sheet_name', type=str)
+    parser.add_argument('template_letter_file_id', type=str)
     args = parser.parse_args()
 
     sys.exit(do_merge(
-        args.template_filename
+        args.empty_certificate_form, args.input_workbook_file_id, args.sheet_name, args.template_letter_file_id
     ))
