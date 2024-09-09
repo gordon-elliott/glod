@@ -55,7 +55,10 @@ def merge_letters(input_workbook_file_id, sheet_name, template_file_id):
     targets = _read_from_gsheet(input_workbook_file_id, sheet_name, merge_fields)
     with TemporaryDirectory(dir=working_folder, prefix=f'{template_title}_merge_') as temp_dir:
         output_files = list(
-            _merge_letters(gdrive, gdocs, temp_dir, template_file_id, targets, merge_fields)
+            _merge_letters(
+                gdrive, gdocs, temp_dir, template_file_id,
+                targets, merge_fields
+            )
         )
 
         full_merge_pdf_filepath = os.path.join(temp_dir, full_merge_pdf_filename)
