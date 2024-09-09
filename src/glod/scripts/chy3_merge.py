@@ -13,9 +13,9 @@ LOG = logging.getLogger(__file__)
 logging.basicConfig(level=logging.DEBUG)
 
 
-def do_merge(template_filename, input_workbook_file_id, sheet_name, template_file_id):
+def do_merge(empty_certificate_form, input_workbook_file_id, sheet_name, template_letter_file_id):
     try:
-        merge_chy3_letters(template_filename, input_workbook_file_id, sheet_name, template_file_id)
+        merge_chy3_letters(empty_certificate_form, input_workbook_file_id, sheet_name, template_letter_file_id)
     except Exception as ex:
         LOG.exception(ex)
         return 1

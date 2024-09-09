@@ -22,7 +22,8 @@ PDF_MIME_TYPE = 'application/pdf'
 
 
 def get_credentials_path(configuration):
-    ref = importlib_resources.files(configuration.folders.root_package) / os.path.join(configuration.folders.config, configuration.gdrive.credentials_file)
+    ref = (importlib_resources.files(configuration.folders.root_package) /
+           os.path.join(configuration.folders.config, configuration.gdrive.credentials_file))
     return ref
 
 

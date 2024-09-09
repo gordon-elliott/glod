@@ -19,9 +19,8 @@ from a_tuin.in_out.google_docs import merge_letter, template_doc_properties
 from a_tuin.in_out.pdf_merge import fill_form, concatenate
 
 from glod.configuration import configuration
-from glod.db.engine import engine  # required in order that db is bound
 from glod.db import PPSQuery
-from glod.in_out.mail_merge.letter_merge import _read_from_gsheet
+from glod.in_out.mail_merge.letter_merge import read_from_gsheet
 
 LOG = logging.getLogger(__name__)
 
@@ -73,7 +72,7 @@ def _merge_letters(
 
 
 def merge_chy3_letters(
-    template_filename, input_workbook_file_id, sheet_name, template_file_id
+    empty_certificate_form, input_workbook_file_id, sheet_name, template_letter_file_id
 ):
     current_year = date.today().year
     consider_last_n_years = int(configuration.tax.chy3.consider_last_n_years)
@@ -86,11 +85,9 @@ def merge_chy3_letters(
     drive_config = configuration.gdrive
     gdrive = get_gdrive_service(configuration)
     gdocs = get_gdocs_service(configuration)
-    template_file_id = drive_config.chy3_template_doc_id
+    template_letter_file_id = drive_config.chy3_template_doc_id
 
     working_folder = "."
-    # template_title, merge_fields = template_doc_properties(gdocs, template_file_id)
-    template_title = "test"
     merge_fields = (
         "GIVEN_NAME",
         "DONOR",
@@ -100,21 +97,19 @@ def merge_chy3_letters(
         "EMAIL",
         "HOUSEHOLD_ID",
     )
-    LOG.info(f"Tags to merge from {template_title}: {', '.join(merge_fields)}")
-
     full_merge_pdf_filename = f"chy3_letters_from_{valid_from_tax_year}.pdf"
 
-    targets = list(_read_from_gsheet(input_workbook_file_id, sheet_name, merge_fields))
+    targets = read_from_gsheet(input_workbook_file_id, sheet_name, merge_fields)
     with TemporaryDirectory(
-        dir=working_folder, prefix=f"{template_title}_merge_"
+        dir=working_folder, prefix=f"chy3_merge_"
     ) as temp_dir:
         output_files = list(
             _merge_letters(
                 gdrive,
                 gdocs,
                 temp_dir,
-                template_file_id,
-                template_filename,
+                template_letter_file_id,
+                empty_certificate_form,
                 valid_from_tax_year,
                 targets,
             )
