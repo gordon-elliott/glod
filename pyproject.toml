@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "glod"
+version = "0.4.1"
+authors = [
+  { name="Gordon Elliott", email="not-disclosed" },
+]
+description = "Charity accounting utilities"
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+  "dotmap",
+  "google-auth",
+  "google-api-python-client",
+  "google-auth-httplib2",
+  "google-auth-oauthlib",
+]
+
+[project.urls]
+Homepage = "https://github.com/gordon-elliott/glod"
+
