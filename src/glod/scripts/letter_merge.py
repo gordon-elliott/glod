@@ -7,6 +7,7 @@ import logging
 import sys
 
 from glod.in_out.mail_merge.letter_merge import merge_letters
+from glod.configuration import configuration
 
 LOG = logging.getLogger(__file__)
 logging.basicConfig(level=logging.DEBUG)
@@ -14,7 +15,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 def do_merge(input_workbook_file_id, sheet_name, template_file_id):
     try:
-        merge_letters(input_workbook_file_id, sheet_name, template_file_id)
+        merge_letters(configuration, input_workbook_file_id, sheet_name, template_file_id)
     except Exception as ex:
         LOG.exception(ex)
         return 1

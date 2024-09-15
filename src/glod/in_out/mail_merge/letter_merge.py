@@ -16,7 +16,6 @@ from a_tuin.in_out.google_drive import (
 from a_tuin.in_out.google_docs import merge_letter, template_doc_properties
 from a_tuin.in_out.google_sheets import extract_from_sheet
 from a_tuin.in_out.pdf_merge import concatenate
-from glod.configuration import configuration
 
 LOG = logging.getLogger(__name__)
 
@@ -35,13 +34,13 @@ def _merge_letters(gdrive, gdocs, temp_dir, template_file_id, targets, column_na
         yield letter_path
 
 
-def read_from_gsheet(input_workbook_file_id, sheet_name, merge_fields):
+def read_from_gsheet(configuration, input_workbook_file_id, sheet_name, merge_fields):
     extract_from_workbook = extract_from_sheet(configuration, input_workbook_file_id)
     parishioners = extract_from_workbook(sheet_name, 'A1', merge_fields)
     return parishioners
 
 
-def merge_letters(input_workbook_file_id, sheet_name, template_file_id):
+def merge_letters(configuration, input_workbook_file_id, sheet_name, template_file_id):
     current_year = date.today().year
 
     gdrive = get_gdrive_service(configuration)
@@ -52,7 +51,7 @@ def merge_letters(input_workbook_file_id, sheet_name, template_file_id):
     LOG.info(f"Tags to merge from {template_title}: {', '.join(merge_fields)}")
 
     full_merge_pdf_filename = f"{template_title}_{sheet_name}_{current_year}.pdf"
-    targets = read_from_gsheet(input_workbook_file_id, sheet_name, merge_fields)
+    targets = read_from_gsheet(configuration, input_workbook_file_id, sheet_name, merge_fields)
     with TemporaryDirectory(dir=working_folder, prefix=f'{template_title}_merge_') as temp_dir:
         output_files = list(
             _merge_letters(
