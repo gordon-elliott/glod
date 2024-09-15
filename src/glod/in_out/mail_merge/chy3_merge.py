@@ -99,10 +99,8 @@ def merge_chy3_letters(
     )
     full_merge_pdf_filename = f"chy3_letters_from_{valid_from_tax_year}.pdf"
 
-    targets = read_from_gsheet(input_workbook_file_id, sheet_name, merge_fields)
-    with TemporaryDirectory(
-        dir=working_folder, prefix=f"chy3_merge_"
-    ) as temp_dir:
+    targets = read_from_gsheet(configuration, input_workbook_file_id, sheet_name, merge_fields)
+    with TemporaryDirectory(dir=working_folder, prefix=f"chy3_merge_") as temp_dir:
         output_files = list(
             _merge_letters(
                 gdrive,
