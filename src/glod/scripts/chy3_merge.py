@@ -7,6 +7,7 @@ import argparse
 import logging
 import sys
 
+from glod.configuration import configuration
 from glod.in_out.mail_merge.chy3_merge import merge_chy3_letters
 
 LOG = logging.getLogger(__file__)
@@ -15,7 +16,9 @@ logging.basicConfig(level=logging.DEBUG)
 
 def do_merge(empty_certificate_form, input_workbook_file_id, sheet_name, template_letter_file_id):
     try:
-        merge_chy3_letters(empty_certificate_form, input_workbook_file_id, sheet_name, template_letter_file_id)
+        merge_chy3_letters(
+            configuration, empty_certificate_form, input_workbook_file_id, sheet_name, template_letter_file_id
+        )
     except Exception as ex:
         LOG.exception(ex)
         return 1

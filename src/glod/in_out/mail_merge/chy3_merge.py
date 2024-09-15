@@ -4,10 +4,8 @@ import logging
 import os
 
 from datetime import date
-from decimal import Decimal
 from tempfile import TemporaryDirectory
 
-from a_tuin.db.session_scope import session_scope
 from a_tuin.in_out.google_drive import (
     download_as_pdf,
     get_gdrive_service,
@@ -15,11 +13,9 @@ from a_tuin.in_out.google_drive import (
     upload_to_gdrive,
     PDF_MIME_TYPE,
 )
-from a_tuin.in_out.google_docs import merge_letter, template_doc_properties
+from a_tuin.in_out.google_docs import merge_letter
 from a_tuin.in_out.pdf_merge import fill_form, concatenate
 
-from glod.configuration import configuration
-from glod.db import PPSQuery
 from glod.in_out.mail_merge.letter_merge import read_from_gsheet
 
 LOG = logging.getLogger(__name__)
@@ -34,6 +30,7 @@ VALID_FROM = "0"
 
 
 def _merge_letters(
+    configuration,
     gdrive,
     gdocs,
     temp_dir,
@@ -72,15 +69,10 @@ def _merge_letters(
 
 
 def merge_chy3_letters(
-    empty_certificate_form, input_workbook_file_id, sheet_name, template_letter_file_id
+        configuration, empty_certificate_form, input_workbook_file_id, sheet_name, template_letter_file_id
 ):
     current_year = date.today().year
-    consider_last_n_years = int(configuration.tax.chy3.consider_last_n_years)
-    last_n_years = tuple(
-        range(current_year - consider_last_n_years + 1, current_year + 1)
-    )
     valid_from_tax_year = current_year - 2001
-    donation_threshold = Decimal(configuration.tax.chy3.minimum_donation)
 
     drive_config = configuration.gdrive
     gdrive = get_gdrive_service(configuration)
@@ -100,11 +92,10 @@ def merge_chy3_letters(
     full_merge_pdf_filename = f"chy3_letters_from_{valid_from_tax_year}.pdf"
 
     targets = read_from_gsheet(input_workbook_file_id, sheet_name, merge_fields)
-    with TemporaryDirectory(
-        dir=working_folder, prefix=f"chy3_merge_"
-    ) as temp_dir:
+    with TemporaryDirectory(dir=working_folder, prefix=f"chy3_merge_") as temp_dir:
         output_files = list(
             _merge_letters(
+                configuration,
                 gdrive,
                 gdocs,
                 temp_dir,
