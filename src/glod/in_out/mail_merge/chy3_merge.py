@@ -75,10 +75,8 @@ def merge_chy3_letters(
     current_year = date.today().year
     valid_from_tax_year = current_year - 2001
 
-    drive_config = configuration.gdrive
     gdrive = get_gdrive_service(configuration)
     gdocs = get_gdocs_service(configuration)
-    template_letter_file_id = drive_config.chy3_template_doc_id
 
     working_folder = "."
     full_merge_pdf_filename = f"chy3_letters_from_{valid_from_tax_year}.pdf"
