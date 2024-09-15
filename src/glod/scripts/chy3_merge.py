@@ -13,11 +13,22 @@ from glod.in_out.mail_merge.chy3_merge import merge_chy3_letters
 LOG = logging.getLogger(__file__)
 logging.basicConfig(level=logging.DEBUG)
 
+MERGE_FIELDS = (
+    "GIVEN_NAME",
+    "DONOR",
+    "PPS",
+    "POSTAL_ADDRESS",
+    "PHONE",
+    "EMAIL",
+    "HOUSEHOLD_ID",
+    "REF",
+)
+
 
 def do_merge(empty_certificate_form, input_workbook_file_id, sheet_name, template_letter_file_id):
     try:
         merge_chy3_letters(
-            configuration, empty_certificate_form, input_workbook_file_id, sheet_name, template_letter_file_id
+            configuration, input_workbook_file_id, sheet_name, MERGE_FIELDS, template_letter_file_id, empty_certificate_form
         )
     except Exception as ex:
         LOG.exception(ex)

@@ -39,11 +39,12 @@ def _merge_letters(
     valid_from_tax_year,
     targets,
 ):
-    for given_name, donor, pps, postal_address, phone, email, household_id in targets:
+    for given_name, donor, pps, postal_address, phone, email, household_id, ref in targets:
         LOG.info(f"Merging letter for {given_name}, household id: {household_id}")
         cover_letter_filename = f"cover.{household_id}.pdf"
         cover_letter_path = os.path.join(temp_dir, cover_letter_filename)
-        replacements = dict(given_name=given_name)
+        replacements = dict(given_name=given_name, ref=ref)
+        # todo dynamically find and use fields from worksheet
         with merge_letter(
             gdrive, gdocs, template_file_id, replacements
         ) as merged_file_id:
@@ -69,7 +70,7 @@ def _merge_letters(
 
 
 def merge_chy3_letters(
-        configuration, empty_certificate_form, input_workbook_file_id, sheet_name, template_letter_file_id
+    configuration, input_workbook_file_id, sheet_name, merge_fields, template_letter_file_id, empty_certificate_form
 ):
     current_year = date.today().year
     valid_from_tax_year = current_year - 2001
@@ -80,15 +81,6 @@ def merge_chy3_letters(
     template_letter_file_id = drive_config.chy3_template_doc_id
 
     working_folder = "."
-    merge_fields = (
-        "GIVEN_NAME",
-        "DONOR",
-        "PPS",
-        "POSTAL_ADDRESS",
-        "PHONE",
-        "EMAIL",
-        "HOUSEHOLD_ID",
-    )
     full_merge_pdf_filename = f"chy3_letters_from_{valid_from_tax_year}.pdf"
 
     targets = read_from_gsheet(configuration, input_workbook_file_id, sheet_name, merge_fields)
