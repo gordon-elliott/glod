@@ -24,7 +24,7 @@ logging:
   version: 1
   formatters:
     simple:
-      format: '%(asctime)s - %(levelname)s - %(name)s - %(message)s'
+      format: '%(asctime)ss - %(levelname)s - %(name)s - %(message)s'
   handlers:
     console:
       class: logging.StreamHandler
@@ -102,8 +102,8 @@ ledger_sheet:
     -
     -
     - =if(eq(I{row_no}, "opening"), 1000000, J{prev_row}+1)
-    - =if(ISBLANK(H{row_no}), C{row_no}, H{row_no})
-    - =if(ISTEXT(K{row_no}), if(EQ("LODGMENT", LEFT(K{row_no}, 8)), value(mid(K{row_no}, 9, 12)), if(iserror(FIND(LEFT(K{row_no}, 2), "D0|D1|E0|E1|50")), "", LEFT(K{row_no}, 6))), K{row_no})
+    - =if(isblank(H{row_no}), iferror(regexextract(C{row_no}, "\*ATMLDG .* [A-Z] (L[0-9]*)"), C{row_no}), H{row_no})
+    - =if(ISTEXT(K{row_no}), if(EQ("LODGMENT", LEFT(K{row_no}, 8)), value(mid(K{row_no}, 9, 12)), if(iserror(FIND(LEFT(K{row_no}, 2), "L1|D0|D1|E0|E1|50")), "", LEFT(K{row_no}, 6))), K{row_no})
     - =CONCATENATE(A{row_no}, "|", if(L{row_no}="", J{row_no}, L{row_no}))
     - =E{row_no}*-1+F{row_no}
     - =if(eq(I{row_no}, "opening"), G{row_no}, round(O{prev_row}+N{row_no}, 6))
