@@ -75,25 +75,25 @@ ledger_sheet:
     rows: 1
   column_formats:
     -
-      range_name: A
-      cell_format:
+      ranges: A
+      format:
         numberFormat:
           type: TEXT
     -
-      range_name: B
-      cell_format:
+      ranges: B
+      format:
         numberFormat:
           type: DATE
           pattern: dd/mm/yyy
         horizontalAlignment: RIGHT
     -
-      range_name: C:D
-      cell_format:
+      ranges: C:D
+      format:
         numberFormat:
           type: TEXT
     -
-      range_name: E:G
-      cell_format:
+      ranges: E:G
+      format:
         numberFormat:
           type: NUMBER
           pattern: "#,##0.00"
