@@ -27,7 +27,7 @@ def do_load(account_filename, export_folder, export_file, output_spreadsheet, nu
         loader = StatementLoader(StatementItem, account_collection)
 
         statement_item_exports = list(
-            statement_item_export_files(__name__, configuration.gdrive, export_folder, export_file)
+            statement_item_export_files(__name__, configuration, configuration.gdrive, export_folder, export_file)
         )
 
         assert len(statement_item_exports) == 1, "Unexpected number of statement item export files"

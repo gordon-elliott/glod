@@ -132,8 +132,7 @@ def _statement_items_for_gsheet(statement_items):
     return gsheet_field_names, statement_items_for_gsheet
 
 
-def statement_item_export_files(module_name, drive_config, fy, sequence_no):
-    from glod.configuration import configuration
+def statement_item_export_files(module_name, configuration, drive_config, fy, sequence_no):
     service = get_gdrive_service(configuration)
     walk_folder = partial(files_in_folder, service)
 
@@ -228,7 +227,7 @@ def load_from_gsheet(configuration, export_folder, export_file, num_months):
     loader = StatementLoader(StatementItem, account_collection)
 
     statement_item_exports = list(
-        statement_item_export_files(__name__, configuration.gdrive, export_folder, export_file)
+        statement_item_export_files(__name__, configuration, configuration.gdrive, export_folder, export_file)
     )
 
     assert len(statement_item_exports) == 1, "Unexpected number of statement item export files"
