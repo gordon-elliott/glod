@@ -13,7 +13,6 @@ from a_tuin.in_out.google_drive import get_gdrive_service, files_in_folder, down
 from a_tuin.in_out.google_sheets import configure_client, insert_rows, open_sheet
 from a_tuin.in_out.gsheet_integration import get_gsheet_fields, load_class
 
-from glod.configuration import configuration
 from glod.in_out.casts import strip_commas, cast_dmy_date_from_string
 from glod.in_out.account import get_accounts_from_sheet
 from glod.in_out.ibb_bank_statement import StatementLoader
@@ -134,6 +133,7 @@ def _statement_items_for_gsheet(statement_items):
 
 
 def statement_item_export_files(module_name, drive_config, fy, sequence_no):
+    from glod.configuration import configuration
     service = get_gdrive_service(configuration)
     walk_folder = partial(files_in_folder, service)
 
@@ -146,6 +146,7 @@ def statement_item_export_files(module_name, drive_config, fy, sequence_no):
 
 
 def _new_sheet(module_name, drive_config, ledger_config, output_spreadsheet_name):
+    from glod.configuration import configuration
     credentials_path = get_credentials_path(configuration)
     google_sheets_client = configure_client(credentials_path)
     si_sheet = google_sheets_client.create(output_spreadsheet_name)
@@ -191,13 +192,7 @@ def _merge(statement_items, ledger_config, worksheet, account_collection):
 
 
 def output_statement_items(
-        module_name,
-        drive_config,
-        ledger_config,
-        output_csv,
-        output_spreadsheet,
-        account_collection,
-        statement_items
+        module_name, configuration, drive_config, ledger_config, output_csv, output_spreadsheet, account_collection, statement_items
 ):
     if output_spreadsheet:
         gsheet = open_sheet(configuration, output_spreadsheet)
@@ -246,6 +241,7 @@ def load_from_gsheet(configuration, export_folder, export_file, num_months):
     output_spreadsheet = configuration.gdrive.ledger_sheet_id
     output_statement_items(
         __name__,
+        configuration,
         configuration.gdrive,
         configuration.ledger_sheet,
         None,
