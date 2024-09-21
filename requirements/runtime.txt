@@ -3,7 +3,7 @@ google-auth
 google-api-python-client
 google-auth-httplib2
 google-auth-oauthlib
-# graphene>=2.0
+graphene>=2.0
 # TODO consider augmenting SQLAlchemy binding
 # graphene-sqlalchemy
 # graphql-core<3.0.0a0    # to avoid ImportError: cannot import name 'ResolveInfo' from 'graphql' from graphene
@@ -15,5 +15,5 @@ PyYAML
 # sanic
 # Sanic-GraphQL
 # sanic-jinja2
-# SQLAlchemy
+SQLAlchemy<2.0
 # SQLAlchemy-Utils

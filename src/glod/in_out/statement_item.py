@@ -15,6 +15,9 @@ from a_tuin.in_out.gsheet_integration import get_gsheet_fields, load_class
 
 from glod.configuration import configuration
 from glod.in_out.casts import strip_commas, cast_dmy_date_from_string
+from glod.in_out.account import get_accounts_from_sheet
+from glod.in_out.ibb_bank_statement import StatementLoader
+from glod.model.statement_item_collection import StatementItemCollection
 from glod.db.statement_item import StatementItem, StatementItemDesignatedBalance
 from glod.db.account import AccountQuery
 
@@ -222,3 +225,31 @@ def output_statement_items(
         with session_scope() as session:
             for statement_item in statement_items:
                 session.add(statement_item)
+
+
+def load_from_gsheet(configuration, export_folder, export_file, num_months):
+    account_collection = get_accounts_from_sheet(configuration)
+
+    loader = StatementLoader(StatementItem, account_collection)
+
+    statement_item_exports = list(
+        statement_item_export_files(__name__, configuration.gdrive, export_folder, export_file)
+    )
+
+    assert len(statement_item_exports) == 1, "Unexpected number of statement item export files"
+
+    items = loader.load_from_statement(statement_item_exports[0])
+    statement_items = StatementItemCollection(items) \
+        .only_most_common_months(num_months) \
+        .remove_net_zero_items()
+
+    output_spreadsheet = configuration.gdrive.ledger_sheet_id
+    output_statement_items(
+        __name__,
+        configuration.gdrive,
+        configuration.ledger_sheet,
+        None,
+        output_spreadsheet,
+        account_collection,
+        statement_items
+    )
