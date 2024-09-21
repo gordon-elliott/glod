@@ -6,7 +6,8 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 from io import StringIO
 from unittest import TestCase
 
-from glod.in_out.account import accounts_from_csv
+from glod.configuration import configuration
+from glod.in_out.account import accounts_from_csv, get_accounts_from_sheet
 
 
 ACCOUNT_CSV = """id,purpose,status,name,institution,sort code,account no,BIC,IBAN,display name,units
@@ -24,3 +25,7 @@ class TestAccount(TestCase):
         item3 = list(collection.lookup('01638842', '_account_no'))[0]
         self.assertEqual('mission committee', item3._purpose)
 
+    # def test_get_accounts_from_sheet(self):
+    #     configuration.gdrive.ledger_sheet_id = ""
+    #     collection = get_accounts_from_sheet(configuration)
+    #     assert collection

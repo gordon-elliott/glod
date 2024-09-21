@@ -7,6 +7,7 @@ from csv import DictReader
 
 from a_tuin.db.session_scope import session_scope
 from a_tuin.in_out.gsheet_integration import get_gsheet_fields, load_class
+from a_tuin.in_out.google_sheets import extract_from_sheet
 from a_tuin.metadata import (
     Mapping,
     DictFieldGroup,
@@ -17,7 +18,7 @@ from a_tuin.metadata import (
 from glod.db.account import Account, AccountStatus, AccountCollection
 from glod.db import AccountQuery
 
-
+ACCOUNT_FIELD_NAMES = ('id', 'purpose', 'status', 'name', 'institution', 'sort code', 'account no', 'BIC', 'IBAN')
 ACCOUNT_STATUS_MAP = {
     'in use': AccountStatus.Active,
     'ready': AccountStatus.Active,
@@ -70,3 +71,16 @@ def get_account_collection(account_file):
         with session_scope() as session:
             account_collection = AccountQuery(session).collection()
     return account_collection
+
+
+def get_accounts_from_sheet(configuration):
+    extract_from_detailed_ledger = extract_from_sheet(configuration, configuration.gdrive.ledger_sheet_id)
+    accounts = extract_from_detailed_ledger('bank accounts', 'A1', ACCOUNT_FIELD_NAMES)
+    items = []
+    for row_tuple in accounts:
+        row = dict(zip(ACCOUNT_FIELD_NAMES, row_tuple))
+        account_args = csv_to_constructor.cast_from(row)
+        items.append(Account(**account_args))
+
+    collection = AccountCollection(items)
+    return collection
