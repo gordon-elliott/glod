@@ -30,15 +30,8 @@ def do_load(account_file, export_file, output_csv, output_spreadsheet, num_month
             .only_most_common_months(num_months) \
             .remove_net_zero_items()
 
-        output_statement_items(
-            __name__,
-            configuration.gdrive,
-            configuration.ledger_sheet,
-            output_csv,
-            output_spreadsheet,
-            account_collection,
-            statement_items
-        )
+        output_statement_items(__name__, configuration, configuration.gdrive, configuration.ledger_sheet, output_csv,
+            output_spreadsheet, account_collection, statement_items)
 
     except Exception as ex:
         LOG.exception(ex)
