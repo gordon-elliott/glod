@@ -43,7 +43,7 @@ def _merge_letters(
         LOG.info(f"Merging letter for {given_name}, household id: {household_id}")
         cover_letter_filename = f"cover.{household_id}.pdf"
         cover_letter_path = os.path.join(temp_dir, cover_letter_filename)
-        replacements = dict(given_name=given_name, ref=ref)
+        replacements = dict(titles=given_name, ref=ref, Label=postal_address)
         # todo dynamically find and use fields from worksheet
         with merge_letter(
             gdrive, gdocs, template_file_id, replacements
