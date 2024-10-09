@@ -92,7 +92,7 @@ def merge_chy3_letters(
     if REF not in cover_merge_fields:
         raise ValueError(f"Template cover letter must include a field titled '{REF}'.")
 
-    merge_fields = form_merge_fields + cover_merge_fields
+    merge_fields = list(form_merge_fields) + cover_merge_fields
 
     targets = read_from_gsheet(configuration, input_workbook_file_id, sheet_name, merge_fields)
     with TemporaryDirectory(dir=working_folder, prefix=f"chy3_merge_") as temp_dir:
