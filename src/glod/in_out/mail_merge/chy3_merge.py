@@ -44,31 +44,47 @@ def _merge_letters(
     targets,
 ):
     for target in targets:
-        form_dict = dict(zip(FORM_FIELDS, target[:len(FORM_FIELDS)]))
         cover_dict = dict(zip(cover_merge_fields, target[-1 * len(cover_merge_fields):]))
-
         ref = cover_dict.get(REF)
-        cover_letter_filename = f"cover.{ref}.pdf"
-        cover_letter_path = os.path.join(temp_dir, cover_letter_filename)
 
-        LOG.info(f"Merging letter for {cover_dict} to {cover_letter_path}.")
+        merged_files = []
+        if template_file_id:
+            cover_letter_path = _merge_cover(gdocs, gdrive, temp_dir, template_file_id, cover_dict, ref)
+            merged_files.append(cover_letter_path)
 
-        with merge_letter(gdrive, gdocs, template_file_id, cover_dict) as merged_file_id:
-            download_as_pdf(gdrive, merged_file_id, cover_letter_path)
+        if template_filename:
+            chy3_file_path = _merge_form(configuration, temp_dir, template_filename, valid_from_tax_year, target, ref)
+            merged_files.append(chy3_file_path)
 
-        chy3_filename = f"chy3.{ref}.pdf"
-        chy3_file_path = os.path.join(temp_dir, chy3_filename)
-        merge_data = {
-            CHARITY_NAME: configuration.charity.name,
-            VALID_FROM: str(valid_from_tax_year),
-        }
-        merge_data.update(form_dict)
-        fill_form(template_filename, chy3_file_path, merge_data)
-
-        output_file = os.path.join(temp_dir, f"combined.{ref}.pdf")
-        concatenate([cover_letter_path, chy3_file_path], output_file)
+        if len(merged_files) >= 2:
+            output_file = os.path.join(temp_dir, f"combined.{ref}.pdf")
+            concatenate(merged_files, output_file)
+        else:
+            output_file = merged_files[0]
 
         yield output_file
+
+
+def _merge_cover(gdocs, gdrive, temp_dir, template_file_id, cover_dict, ref):
+    cover_letter_filename = f"cover.{ref}.pdf"
+    cover_letter_path = os.path.join(temp_dir, cover_letter_filename)
+    LOG.info(f"Merging letter for {cover_dict} to {cover_letter_path}.")
+    with merge_letter(gdrive, gdocs, template_file_id, cover_dict) as merged_file_id:
+        download_as_pdf(gdrive, merged_file_id, cover_letter_path)
+    return cover_letter_path
+
+
+def _merge_form(configuration, temp_dir, template_filename, valid_from_tax_year, target, ref):
+    chy3_filename = f"chy3.{ref}.pdf"
+    chy3_file_path = os.path.join(temp_dir, chy3_filename)
+    merge_data = {
+        CHARITY_NAME: configuration.charity.name,
+        VALID_FROM: str(valid_from_tax_year),
+    }
+    form_dict = dict(zip(FORM_FIELDS, target[:len(FORM_FIELDS)]))
+    merge_data.update(form_dict)
+    fill_form(template_filename, chy3_file_path, merge_data)
+    return chy3_file_path
 
 
 def merge_chy3_letters(
