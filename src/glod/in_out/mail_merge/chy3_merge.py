@@ -42,19 +42,19 @@ def _merge_letters(
     valid_from_tax_year,
     cover_merge_fields,
     targets,
+    include_cover
 ):
     for target in targets:
         cover_dict = dict(zip(cover_merge_fields, target[-1 * len(cover_merge_fields):]))
         ref = cover_dict.get(REF)
 
         merged_files = []
-        if template_file_id:
+        if include_cover:
             cover_letter_path = _merge_cover(gdocs, gdrive, temp_dir, template_file_id, cover_dict, ref)
             merged_files.append(cover_letter_path)
 
-        if template_filename:
-            chy3_file_path = _merge_form(configuration, temp_dir, template_filename, valid_from_tax_year, target, ref)
-            merged_files.append(chy3_file_path)
+        chy3_file_path = _merge_form(configuration, temp_dir, template_filename, valid_from_tax_year, target, ref)
+        merged_files.append(chy3_file_path)
 
         if len(merged_files) >= 2:
             output_file = os.path.join(temp_dir, f"combined.{ref}.pdf")
@@ -88,7 +88,13 @@ def _merge_form(configuration, temp_dir, template_filename, valid_from_tax_year,
 
 
 def merge_chy3_letters(
-    configuration, input_workbook_file_id, sheet_name, form_merge_fields, template_letter_file_id, empty_certificate_form
+        configuration,
+        input_workbook_file_id,
+        sheet_name,
+        form_merge_fields,
+        template_letter_file_id,
+        empty_certificate_form,
+        include_cover=True
 ):
     if len(form_merge_fields) != len(FORM_FIELDS):
         raise ValueError(
@@ -96,7 +102,7 @@ def merge_chy3_letters(
         )
 
     current_year = date.today().year
-    valid_from_tax_year = current_year - 2001
+    valid_from_tax_year = current_year - 2000
 
     gdrive = get_gdrive_service(configuration)
     gdocs = get_gdocs_service(configuration)
@@ -113,17 +119,8 @@ def merge_chy3_letters(
     targets = read_from_gsheet(configuration, input_workbook_file_id, sheet_name, merge_fields)
     with TemporaryDirectory(dir=working_folder, prefix=f"chy3_merge_") as temp_dir:
         output_files = list(
-            _merge_letters(
-                configuration,
-                gdrive,
-                gdocs,
-                temp_dir,
-                template_letter_file_id,
-                empty_certificate_form,
-                valid_from_tax_year,
-                cover_merge_fields,
-                targets,
-            )
+            _merge_letters(configuration, gdrive, gdocs, temp_dir, template_letter_file_id, empty_certificate_form,
+                valid_from_tax_year, cover_merge_fields, targets, include_cover)
         )
 
         full_merge_pdf_filepath = os.path.join(temp_dir, full_merge_pdf_filename)
