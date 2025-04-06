@@ -15,5 +15,5 @@ PyYAML
 # sanic
 # Sanic-GraphQL
 # sanic-jinja2
-SQLAlchemy<2.0
+SQLAlchemy
 # SQLAlchemy-Utils
