@@ -10,11 +10,13 @@ from sqlalchemy import (
     ForeignKeyConstraint,
     Table
 )
-from sqlalchemy.orm import mapper
+from sqlalchemy.orm import registry
 
 from a_tuin.db.metadata import metadata
 from a_tuin.metadata import IntField
 
+
+mapper_registry = registry()
 
 ID_COLUMN_NAME = 'id'
 ID_FIELDNAME = '_id'
@@ -71,4 +73,4 @@ class TableMap(object):
             self._table_name, metadata, *columns.values(), *constraints.values(), schema=self._schema
         )
         self._model_class.c = self._table.c
-        mapper(self._model_class, self._table, properties=fk_properties)
+        mapper_registry.map_imperatively(self._model_class, self._table, properties=fk_properties)
