@@ -6,7 +6,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2020'
 import io
 import logging
 import os
-import importlib_resources
+import importlib.resources
 
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
@@ -22,7 +22,7 @@ PDF_MIME_TYPE = 'application/pdf'
 
 
 def get_credentials_path(configuration):
-    ref = (importlib_resources.files(configuration.folders.root_package) /
+    ref = (importlib.resources.files(configuration.folders.root_package) /
            os.path.join(configuration.folders.config, configuration.gdrive.credentials_file))
     return ref
 
