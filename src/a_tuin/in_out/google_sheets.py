@@ -7,9 +7,9 @@ import logging
 from functools import partial
 from time import sleep
 
-from gspread import Client, SpreadsheetNotFound
+from gspread import Client, SpreadsheetNotFound, Spreadsheet, Worksheet
 from gspread.utils import a1_to_rowcol, absolute_range_name
-from gspread.exceptions import APIError
+from gspread.exceptions import APIError, WorksheetNotFound
 from google.oauth2 import service_account
 from google.auth.transport.requests import AuthorizedSession
 
@@ -151,7 +151,7 @@ def insert_rows(
     return data
 
 
-def open_sheet(configuration, output_spreadsheet):
+def open_spreadsheet(configuration, output_spreadsheet: str) -> Spreadsheet:
     credentials_path = get_credentials_path(configuration)
     google_sheets_client = configure_client(credentials_path)
 
@@ -160,3 +160,15 @@ def open_sheet(configuration, output_spreadsheet):
     except SpreadsheetNotFound:
         # TODO: get check for non-existent ss working
         return None
+
+
+def open_worksheet(spreadsheet: Spreadsheet, worksheet_name: str) -> Worksheet:
+    try:
+        worksheet = spreadsheet.worksheet(worksheet_name)
+    except WorksheetNotFound:
+        worksheet = None
+    if worksheet:
+        LOG.info(f"Merging with existing worksheet, {worksheet_name}, on gsheet {spreadsheet}")
+    else:
+        worksheet = spreadsheet.add_worksheet(title=worksheet_name, rows=3, cols=12)
+    return worksheet
