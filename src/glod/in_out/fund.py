@@ -5,10 +5,8 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from a_tuin.in_out.gsheet_integration import get_gsheet_fields, load_class
 from a_tuin.metadata import StringField, Mapping
-
-from glod.db.fund import FundRestriction, Fund
-from glod.db.account import AccountQuery
-
+from glod.model.account import AccountQuery
+from glod.model.fund import FundRestriction, Fund
 
 FUND_RESTRICTION_MAP = {
     '01. unrestricted': FundRestriction.Unrestricted,

@@ -5,10 +5,8 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from a_tuin.in_out.gsheet_integration import load_class
 from a_tuin.metadata import Mapping, StringField, IntField, UnusedField, ListFieldGroup, ComputedStringField
-
+from glod.model.pps import PPS
 from glod.model.pps import PPSStatus
-from glod.db.pps import PPS
-from glod.db.person import PersonQuery
 
 
 def ppses_from_gsheet(session, extract_from_detailed_ledger):

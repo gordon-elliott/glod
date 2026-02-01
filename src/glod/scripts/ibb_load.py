@@ -8,12 +8,11 @@ import argparse
 import logging
 import sys
 
+from glod.configuration import configuration
+from glod.in_out.account import get_account_collection
 from glod.in_out.ibb_bank_statement import StatementLoader
 from glod.in_out.statement_item import output_statement_items
-from glod.in_out.account import get_account_collection
-from glod.db.statement_item import StatementItem, StatementItemCollection
-from glod.configuration import configuration
-
+from glod.model.statement_item import StatementItem, StatementItemCollection
 
 LOG = logging.getLogger(__file__)
 logging.basicConfig(level=logging.INFO)

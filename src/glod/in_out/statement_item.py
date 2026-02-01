@@ -1,25 +1,21 @@
 __copyright__ = 'Copyright(c) Gordon Elliott 2020'
 
-from glod.model.statement_item import StatementItem, StatementItemDesignatedBalance
 
 """ 
 """
 
 import logging
-
-from functools import partial
 from csv import DictWriter, excel_tab
+from functools import partial
 
-from a_tuin.metadata import StringField, TransformedStringField, DictFieldGroup, Mapping, TupleFieldGroup, FloatField
 from a_tuin.in_out.google_drive import get_gdrive_service, files_in_folder, download_textfile, get_credentials_path
-from a_tuin.in_out.google_sheets import configure_client, insert_rows, open_sheet
-from a_tuin.in_out.gsheet_integration import get_gsheet_fields, load_class
-
-from glod.in_out.casts import strip_commas, cast_dmy_date_from_string
+from a_tuin.in_out.google_sheets import configure_client, insert_rows, open_spreadsheet
+from a_tuin.metadata import StringField, TransformedStringField, DictFieldGroup, Mapping, TupleFieldGroup, FloatField
 from glod.in_out.account import get_accounts_from_sheet
+from glod.in_out.casts import strip_commas
 from glod.in_out.ibb_bank_statement import StatementLoader
+from glod.model.statement_item import StatementItem, StatementItemDesignatedBalance
 from glod.model.statement_item_collection import StatementItemCollection
-
 
 LOG = logging.getLogger(__name__)
 COMPUTED_FIELDS = ('detail_override', 'designated_balance')
@@ -175,7 +171,7 @@ def output_statement_items(
         module_name, configuration, drive_config, ledger_config, output_csv, output_spreadsheet, account_collection, statement_items
 ):
     if output_spreadsheet:
-        gsheet = open_sheet(configuration, output_spreadsheet)
+        gsheet = open_spreadsheet(configuration, output_spreadsheet)
         if gsheet:
             import gspread
             worksheet_name = drive_config.statement_items_sheet_name

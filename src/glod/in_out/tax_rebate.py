@@ -3,15 +3,12 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2020'
 """ 
 """
 import logging
-
 from collections import defaultdict
 
 from a_tuin.in_out.gsheet_integration import load_class
 from a_tuin.metadata import Mapping, StringField, IntField, UnusedField, ListFieldGroup
-
+from glod.model import TaxRebate, PersonQuery, PPS, PersonRebateSubmission
 from glod.model.pps import PPSStatus
-from glod.db import TaxRebate, PersonQuery, PPS, PersonRebateSubmission
-
 
 LOG = logging.getLogger(__name__)
 

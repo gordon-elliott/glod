@@ -5,10 +5,9 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from a_tuin.in_out.gsheet_integration import load_class
 from a_tuin.metadata import Mapping, IntField, ListFieldGroup, UnusedField
-
-from glod.db.envelope import Envelope
-from glod.db.person import PersonQuery
-from glod.db.counterparty import CounterpartyQuery
+from glod.model.counterparty import CounterpartyQuery
+from glod.model.envelope import Envelope
+from glod.model.person import PersonQuery
 
 
 def envelopes_from_gsheet(session, extract_from_detailed_ledger):

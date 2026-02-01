@@ -2,11 +2,11 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 """ 
 """
-from a_tuin.metadata import IntField, StringField, UnusedField, ListFieldGroup, Mapping
 from a_tuin.in_out.gsheet_integration import load_class
-from glod.db.counterparty import Counterparty
-from glod.db.person import PersonQuery
-from glod.db import OrganisationQuery
+from a_tuin.metadata import IntField, StringField, UnusedField, ListFieldGroup, Mapping
+from glod.model import OrganisationQuery
+from glod.model.counterparty import Counterparty
+from glod.model.person import PersonQuery
 
 
 def cast_yes_no(value, _):

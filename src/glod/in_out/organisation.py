@@ -4,14 +4,12 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 """
 
 import logging
-
 from datetime import datetime
 
-from glod.db.person import Person
-from glod.db.organisation import Organisation, OrganisationCategory, OrganisationStatus
 from glod.model.communication_permission import CommunicationPermission
-from glod.db.organisation_address import OrganisationAddress
-
+from glod.model.organisation import Organisation, OrganisationCategory, OrganisationStatus
+from glod.model.organisation_address import OrganisationAddress
+from glod.model.person import Person
 
 LOG = logging.getLogger(__file__)
 

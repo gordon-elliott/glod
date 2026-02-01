@@ -5,14 +5,11 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 
 from a_tuin.in_out.gsheet_integration import load_class
 from a_tuin.metadata import StringField, Mapping, UnusedField, ListFieldGroup
-
-from glod.db.transaction import PaymentMethod, IncomeExpenditure, Transaction
-from glod.db.counterparty import CounterpartyQuery
-from glod.db.subject import SubjectQuery
-from glod.db.fund import FundQuery
-
 from glod.in_out.casts import strip_commas
-
+from glod.model.counterparty import CounterpartyQuery
+from glod.model.fund import FundQuery
+from glod.model.subject import SubjectQuery
+from glod.model.transaction import PaymentMethod, IncomeExpenditure, Transaction
 
 PAYMENT_METHOD_MAP = {
     'bank charges': PaymentMethod.BankCharges,
