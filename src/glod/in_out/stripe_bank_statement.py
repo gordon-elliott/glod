@@ -8,7 +8,6 @@ import stripe
 
 from a_tuin.in_out.formulae import cell_reference, running_total
 from a_tuin.in_out.google_sheets import insert_rows, open_spreadsheet, open_worksheet
-from glod.configuration import configuration
 
 
 def de_nest(dotted_path: str, nested_dict: dict, convert: Callable):
@@ -127,7 +126,7 @@ def is_available(balance_transaction: dict) -> bool:
     return status == "available"
 
 
-def load_from_stripe_api(api_key: str, output_spreadsheet: str, worksheet_name: str):
+def load_from_stripe_api(configuration, api_key: str, output_spreadsheet: str, worksheet_name: str):
     gsheet = open_spreadsheet(configuration, output_spreadsheet)
     worksheet = open_worksheet(gsheet, worksheet_name)
 
