@@ -12,7 +12,6 @@ from sumup.transactions import ListTransactionsV21Params
 
 from a_tuin.in_out.formulae import cell_reference, running_total
 from a_tuin.in_out.google_sheets import insert_rows, open_spreadsheet, open_worksheet
-from glod.configuration import configuration
 
 TRANSACTION_LIMIT = 1000
 SUCCESSFUL_STATUS = "SUCCESSFUL"
@@ -253,7 +252,7 @@ def _transactions(
 
 
 def load_from_sumup_api(
-    merchant_code: str, api_key: str, output_spreadsheet: str, worksheet_name: str, end_timestamp: datetime
+    configuration, merchant_code: str, api_key: str, output_spreadsheet: str, worksheet_name: str, end_timestamp: datetime
 ):
     sumup_gsheet = open_spreadsheet(configuration, output_spreadsheet)
     sumup_worksheet = open_worksheet(sumup_gsheet, worksheet_name)
