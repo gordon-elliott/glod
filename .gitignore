@@ -2,3 +2,5 @@
 /venv/
 /src/glod/crudl/node_modules/
 /src/glod/crudl/static/
+/src/glod/config/glod-5e151f67dc31.json
+/src/glod/config/dev.yaml

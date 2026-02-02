@@ -6,7 +6,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 from a_tuin.in_out.gsheet_integration import get_gsheet_fields, load_class
 from a_tuin.metadata import Mapping
 
-from glod.db.subject import Subject
+from glod.model.subject import Subject
 
 
 def subjects_from_gsheet(session, extract_from_detailed_ledger):

@@ -125,3 +125,9 @@ ledger_sheet:
     -
     - =if(V{row_no}="", "", Q{row_no}=V{row_no})
     - =if(AD{row_no}="", "", AD{row_no}=sum(E{row_no}:F{row_no}))
+
+stripe:
+  api_key:
+
+sumup:
+  api_key:

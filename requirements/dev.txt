@@ -1,6 +1,2 @@
-alembic
 pytest
-pytest-flask
-pytest-runner
-snapshottest
 wheel

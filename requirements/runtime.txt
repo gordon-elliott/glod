@@ -5,5 +5,5 @@ google-auth-httplib2
 google-auth-oauthlib
 gspread
 PyYAML
-SQLAlchemy
-
+stripe
+sumup

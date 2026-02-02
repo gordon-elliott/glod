@@ -6,8 +6,8 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2017'
 import logging
 
 from a_tuin.db.session_scope import session_scope
-from glod.db.transaction_check import TransactionCheckQuery
 
+from glod.model.transaction_check import TransactionCheckQuery
 
 LOG = logging.getLogger(__file__)
 

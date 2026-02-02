@@ -1,6 +1,4 @@
 __copyright__ = 'Copyright(c) Gordon Elliott 2020'
-
-
 """ Load statement from AIB iBB service via Google Drive
 """
 
@@ -10,10 +8,11 @@ import logging
 import sys
 
 from glod.configuration import configuration
-from glod.db.statement_item import StatementItem, StatementItemCollection
-from glod.in_out.statement_item import statement_item_export_files, output_statement_items
 from glod.in_out.account import get_account_collection
 from glod.in_out.ibb_bank_statement import StatementLoader
+from glod.in_out.statement_item import statement_item_export_files, output_statement_items
+from glod.model.statement_item import StatementItem
+from glod.model.statement_item_collection import StatementItemCollection
 
 LOG = logging.getLogger(__file__)
 logging.basicConfig(level=logging.DEBUG)

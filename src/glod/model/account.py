@@ -18,6 +18,9 @@ class AccountStatusField(IntEnumField):
         super().__init__(name, AccountStatus, is_mutable, required, default, description, validation)
 
 
+iban_field = StringField('IBAN')
+
+
 class Account(ObjectFieldGroupBase):
 
     public_interface = (
@@ -29,8 +32,13 @@ class Account(ObjectFieldGroupBase):
         StringField('sort_code'),
         StringField('account_no'),
         StringField('BIC'),
-        StringField('IBAN'),
+        iban_field,
+        # ComputedStringField('canonical_IBAN', lambda fg, i: fg._get_value(i, iban_field))
     )
+
+    @property
+    def canonical_IBAN(self) -> str:
+        return self.IBAN.replace(" ", "")
 
     def __str__(self):
         return '{0.__class__.__name__}({0._reference_no}, {0._account_no})'.format(self)

@@ -2,10 +2,9 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2020'
 
 from a_tuin.in_out.gsheet_integration import load_class
 from a_tuin.metadata import Mapping, UnusedField, ListFieldGroup, IntField, StringField
-
-from glod.db.tax_rebate_submission import TaxRebateSubmission
 from glod.in_out.casts import strip_commas, cast_dmy_date_from_string
 from glod.model.tax_rebate_submission import SubmissionStatus
+from glod.model.tax_rebate_submission import TaxRebateSubmission
 
 
 def tax_rebate_submissions_from_gsheet(session, extract_from_tax_rebates):

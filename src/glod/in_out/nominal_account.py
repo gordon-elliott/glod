@@ -9,7 +9,7 @@ from a_tuin.metadata import (
     StringField,
 )
 
-from glod.db.nominal_account import (
+from glod.model.nominal_account import (
     NominalAccount,
     NominalAccountSOFAHeading,
     NominalAccountCategory,

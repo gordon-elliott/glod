@@ -9,7 +9,6 @@ from unittest import TestCase
 from glod.configuration import configuration
 from glod.in_out.account import accounts_from_csv, get_accounts_from_sheet
 
-
 ACCOUNT_CSV = """id,purpose,status,name,institution,sort code,account no,BIC,IBAN,display name,units
 7001,current,in use,CHRIST CHURCH DGNY,AIB,933554,01638172,AIBKIE2D,IE66 AIBK 9335 5401 6381 72,current (1638172),
 7003,mission committee,in use,CHRIST CHURCH DEL,AIB,933554,01638842,AIBKIE2D,IE18 AIBK 9335 5401 6388 42,mission committee (1638842),
@@ -25,7 +24,8 @@ class TestAccount(TestCase):
         item3 = list(collection.lookup('01638842', '_account_no'))[0]
         self.assertEqual('mission committee', item3._purpose)
 
-    # def test_get_accounts_from_sheet(self):
-    #     configuration.gdrive.ledger_sheet_id = ""
-    #     collection = get_accounts_from_sheet(configuration)
-    #     assert collection
+    def test_get_accounts_from_sheet(self):
+        assert configuration.gdrive.credentials_file
+        assert configuration.gdrive.ledger_sheet_id
+        collection = get_accounts_from_sheet(configuration)
+        assert collection
