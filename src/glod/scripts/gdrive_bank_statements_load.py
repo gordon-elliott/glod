@@ -4,7 +4,7 @@ __copyright__ = 'Copyright(c) Gordon Elliott 2026'
 import logging
 from datetime import datetime, timezone
 
-from glod.configuration import configuration
+#from glod.configuration import configuration
 from glod.in_out.account import get_accounts_from_sheet
 from glod.in_out.ibb_bank_statement_2026 import StatementLoader
 from glod.in_out.statement_item import statement_item_export_files, output_statement_items
@@ -18,6 +18,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 def do_load(
+    configuration,
     sumup_merchant_code, sumup_api_key, sumup_output_spreadsheet, sumup_worksheet,
     stripe_api_key, stripe_output_spreadsheet, stripe_worksheet,
     export_folder, export_file, output_spreadsheet, num_months,
@@ -28,7 +29,7 @@ def do_load(
             sumup_merchant_code, sumup_api_key, sumup_output_spreadsheet, sumup_worksheet, end_timestamp
         )
         load_from_stripe_api(stripe_api_key, stripe_output_spreadsheet, stripe_worksheet)
-        _load_from_ibb(export_file, export_folder, num_months, output_spreadsheet)
+        _load_from_ibb(configuration, export_file, export_folder, num_months, output_spreadsheet)
 
     except Exception as ex:
         LOG.exception(ex)
@@ -37,7 +38,7 @@ def do_load(
     return 0
 
 
-def _load_from_ibb(export_file, export_folder, num_months, output_spreadsheet):
+def _load_from_ibb(configuration, export_file, export_folder, num_months, output_spreadsheet):
     statement_item_exports = list(
         statement_item_export_files(__name__, configuration, configuration.gdrive, export_folder, export_file)
     )
