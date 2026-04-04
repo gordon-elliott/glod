@@ -14,7 +14,10 @@ def de_nest(dotted_path: str, nested_dict: dict, convert: Callable):
     if dotted_path.startswith("_f"):
         return convert(nested_dict)
     if "." not in dotted_path:
-        return convert(nested_dict.get(dotted_path))
+        if hasattr(nested_dict, dotted_path):
+            return convert(getattr(nested_dict, dotted_path))
+        else:
+            return convert(nested_dict.get(dotted_path))
     head, tail = dotted_path.split(".", 1)
     if head in nested_dict:
         return de_nest(tail, nested_dict[head], convert)
