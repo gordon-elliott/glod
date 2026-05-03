@@ -7,8 +7,6 @@ from typing import Any
 
 from sumup import APIError
 from sumup import Sumup
-from sumup.payouts import ListPayoutsV1Params
-from sumup.transactions import ListTransactionsV21Params
 
 from a_tuin.in_out.formulae import cell_reference, running_total
 from a_tuin.in_out.google_sheets import insert_rows, open_spreadsheet, open_worksheet
@@ -186,12 +184,10 @@ def _payouts(
     try:
         payouts = sumup.payouts.list(
             merchant_code,
-            params=ListPayoutsV1Params(
-                start_date=start_timestamp.date(),
-                end_date=end_timestamp.date(),
-                limit=TRANSACTION_LIMIT,
-                order="desc"
-            )
+            start_date=start_timestamp.date(),
+            end_date=end_timestamp.date(),
+            limit=TRANSACTION_LIMIT,
+            order="desc"
         )  # , oldest_time="2025-12-02T00:00:00.000Z"))
 
     except APIError as e:
@@ -226,10 +222,8 @@ def _transactions(
 ) -> list[Any]:
     try:
         result = sumup.transactions.list(
-            merchant_code, params=ListTransactionsV21Params(
-                limit=TRANSACTION_LIMIT,
-                order="descending"
-            )
+            limit=TRANSACTION_LIMIT,
+            order="descending"
         )  # , oldest_ref=last_transaction_code))
     except APIError as e:
         print(f"{e}, {e.status} {e.body}")
