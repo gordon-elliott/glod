@@ -222,6 +222,7 @@ def _transactions(
 ) -> list[Any]:
     try:
         result = sumup.transactions.list(
+            merchant_code,
             limit=TRANSACTION_LIMIT,
             order="descending"
         )  # , oldest_ref=last_transaction_code))
